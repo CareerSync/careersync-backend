@@ -3,3 +3,6 @@ build/
 logs/
 .idea/
 out/
+
+# resources
+./src/main/resources/application.yml
