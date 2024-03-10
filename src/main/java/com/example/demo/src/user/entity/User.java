@@ -4,16 +4,17 @@ import com.example.demo.common.entity.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
-@Table(name = "USER") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
+@Table(name = "TB_USER") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
 public class User extends BaseEntity {
 
     @Id // PK를 의미하는 어노테이션
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "userId", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -29,13 +30,48 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private boolean isOAuth;
 
+    @Column(nullable = false)
+    private LocalDate birthDate;
+
+    @Column
+    private String profileImgUrl;
+
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean serviceTerm;
+
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean dataTerm;
+
+    @Column(columnDefinition = "TINYINT(1)")
+    private boolean locationTerm;
+
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth) {
+    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate,
+                boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
         this.isOAuth = isOAuth;
+        this.birthDate = birthDate;
+        this.serviceTerm = serviceTerm;
+        this.dataTerm = dataTerm;
+        this.locationTerm = locationTerm;
+    }
+
+    @Builder
+    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, String profileImgUrl,
+                boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.isOAuth = isOAuth;
+        this.birthDate = birthDate;
+        this.profileImgUrl = profileImgUrl;
+        this.serviceTerm = serviceTerm;
+        this.dataTerm = dataTerm;
+        this.locationTerm = locationTerm;
     }
 
     public void updateName(String name) {
