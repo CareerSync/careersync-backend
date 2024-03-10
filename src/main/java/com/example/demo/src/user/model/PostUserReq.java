@@ -35,6 +35,7 @@ public class PostUserReq {
                 .name(this.name)
                 .isOAuth(this.isOAuth)
                 .birthDate(this.birthDate)
+                .privacyDate(LocalDate.now().plusYears(1))
                 .profileImgUrl(this.profileImgUrl)
                 .serviceTerm(this.serviceTerm)
                 .dataTerm(this.dataTerm)
