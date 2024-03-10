@@ -27,22 +27,22 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isOAuth;
 
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    @Column
+    @Column(nullable = false)
     private String profileImgUrl;
 
-    @Column(columnDefinition = "TINYINT(1)")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean serviceTerm;
 
-    @Column(columnDefinition = "TINYINT(1)")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean dataTerm;
 
-    @Column(columnDefinition = "TINYINT(1)")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean locationTerm;
 
     @Builder
