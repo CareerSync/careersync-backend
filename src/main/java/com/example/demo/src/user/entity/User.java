@@ -34,6 +34,9 @@ public class User extends BaseEntity {
     private LocalDate birthDate;
 
     @Column(nullable = false)
+    private LocalDate privacyDate;
+
+    @Column(nullable = false)
     private String profileImgUrl;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
@@ -46,7 +49,7 @@ public class User extends BaseEntity {
     private boolean locationTerm;
 
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, String profileImgUrl,
+    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, LocalDate privacyDate, String profileImgUrl,
                 boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
         this.id = id;
         this.email = email;
@@ -54,6 +57,7 @@ public class User extends BaseEntity {
         this.name = name;
         this.isOAuth = isOAuth;
         this.birthDate = birthDate;
+        this.privacyDate = privacyDate;
         this.profileImgUrl = profileImgUrl;
         this.serviceTerm = serviceTerm;
         this.dataTerm = dataTerm;
