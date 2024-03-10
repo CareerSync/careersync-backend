@@ -68,6 +68,10 @@ public class User extends BaseEntity {
         this.name = name;
     }
 
+    public void updatePrivacyDate(LocalDate privacyDate) {
+        this.privacyDate = privacyDate;
+    }
+
     public void deleteUser() {
         this.state = State.INACTIVE;
     }
