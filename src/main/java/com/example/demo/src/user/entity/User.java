@@ -46,20 +46,6 @@ public class User extends BaseEntity {
     private boolean locationTerm;
 
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate,
-                boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.isOAuth = isOAuth;
-        this.birthDate = birthDate;
-        this.serviceTerm = serviceTerm;
-        this.dataTerm = dataTerm;
-        this.locationTerm = locationTerm;
-    }
-
-    @Builder
     public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, String profileImgUrl,
                 boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
         this.id = id;
