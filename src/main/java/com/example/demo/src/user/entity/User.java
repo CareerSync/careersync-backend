@@ -48,6 +48,14 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean locationTerm;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false, length = 10)
+    private AccountState accountState = AccountState.ACTIVE;
+
+    public enum AccountState {
+        ACTIVE, DORMANT, BLOCKED;
+    }
+
     @Builder
     public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, LocalDate privacyDate, String profileImgUrl,
                 boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
