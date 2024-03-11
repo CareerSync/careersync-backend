@@ -2,12 +2,10 @@ package com.example.demo.src.post.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.user.entity.User;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
@@ -27,5 +25,12 @@ public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
     private User user;
+
+    @Builder
+    public Post(Long id, String content, User user) {
+        this.id = id;
+        this.content = content;
+        this.user = user;
+    }
 
 }
