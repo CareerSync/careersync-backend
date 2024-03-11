@@ -24,7 +24,7 @@ public class PostService {
     private final UserRepository userRepository;
 
     // POST
-    private PostPostRes createPost(PostPostReq req) {
+    public PostPostRes createPost(PostPostReq req) {
 
         User user = userRepository.findByIdAndState(req.getUserId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
