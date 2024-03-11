@@ -116,11 +116,11 @@ public class UserController {
 
     /**
      * 유저정보삭제 API
-     * [DELETE] /app/users/:userId
+     * [PATCH] /app/users/:userId
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @DeleteMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public BaseResponse<String> deleteUser(@PathVariable("userId") Long userId){
         Long jwtUserId = jwtService.getUserId();
 
