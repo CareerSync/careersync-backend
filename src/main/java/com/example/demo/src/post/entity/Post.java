@@ -26,6 +26,10 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "userId")
     private User user;
 
+    public void setUser(User user){
+        this.user = user;
+    }
+
     @Builder
     public Post(Long id, String content, User user) {
         this.id = id;

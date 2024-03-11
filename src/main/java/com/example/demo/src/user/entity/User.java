@@ -1,10 +1,14 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.test.entity.Comment;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
@@ -52,6 +56,10 @@ public class User extends BaseEntity {
     @Column(name = "state", nullable = false, length = 10)
     private AccountState accountState = AccountState.ACTIVE;
 
+    // 양방향 매핑
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<Post> postList = new ArrayList<>();
+
     public enum AccountState {
         ACTIVE, DORMANT, BLOCKED;
     }
@@ -82,6 +90,12 @@ public class User extends BaseEntity {
 
     public void deleteUser() {
         this.state = State.INACTIVE;
+    }
+
+    // 연관관계 편의 메서드
+    public void addPost(Post post) {
+        post.setUser(this);
+        postList.add(post);
     }
 
 }
