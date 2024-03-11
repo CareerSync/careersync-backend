@@ -43,5 +43,11 @@ public class BaseResponse<T> {
         this.code = status.getCode();
     }
 
+    public BaseResponse(boolean isSuccess, String message, int code) {
+        this.isSuccess = isSuccess;
+        this.message = message;
+        this.code = code;
+    }
+
 }
 

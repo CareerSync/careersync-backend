@@ -29,8 +29,7 @@ public class TestController {
 
     private final TestService testService;
 
-    @Autowired
-    MessageUtils messageUtils;
+    private final MessageUtils messageUtils;
 
     /**
      * 로그 테스트 API

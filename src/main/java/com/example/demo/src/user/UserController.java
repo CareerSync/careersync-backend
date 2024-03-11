@@ -4,11 +4,13 @@ package com.example.demo.src.user;
 import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.oauth.OAuthService;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.user.model.*;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.bridge.Message;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -31,6 +33,8 @@ public class UserController {
 
     private final JwtService jwtService;
 
+    private final MessageUtils messageUtils;
+
 
     /**
      * 회원가입 API
@@ -43,14 +47,18 @@ public class UserController {
     public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
         // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
         if(postUserReq.getEmail() == null){
-            return new BaseResponse<>(USERS_EMPTY_EMAIL);
+            return new BaseResponse<>(USERS_EMPTY_EMAIL.isSuccess(),
+                    messageUtils.getMessage("USERS_EMPTY_EMAIL"),
+                    USERS_EMPTY_EMAIL.getCode());
         }
         //이메일 정규표현
         if(!isRegexEmail(postUserReq.getEmail())){
-            return new BaseResponse<>(POST_USERS_INVALID_EMAIL);
+            return new BaseResponse<>(POST_USERS_INVALID_EMAIL.isSuccess(),
+                    messageUtils.getMessage("POST_USERS_INVALID_EMAIL"),
+                    POST_USERS_INVALID_EMAIL.getCode());
         }
         PostUserRes postUserRes = userService.createUser(postUserReq);
-        return new BaseResponse<>(postUserRes);
+        return new BaseResponse<>(postUserRes, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -70,7 +78,7 @@ public class UserController {
         }
         // Get Users
         List<GetUserRes> getUsersRes = userService.getUsersByEmail(Email);
-        return new BaseResponse<>(getUsersRes);
+        return new BaseResponse<>(getUsersRes, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -83,7 +91,7 @@ public class UserController {
     @GetMapping("/{userId}") // (GET) 127.0.0.1:9000/app/users/:userId
     public BaseResponse<GetUserRes> getUser(@PathVariable("userId") Long userId) {
         GetUserRes getUserRes = userService.getUser(userId);
-        return new BaseResponse<>(getUserRes);
+        return new BaseResponse<>(getUserRes, messageUtils.getMessage("SUCCESS"));
     }
 
 
@@ -102,7 +110,7 @@ public class UserController {
         userService.modifyUserName(userId, patchUserReq);
 
         String result = "수정 완료!!";
-        return new BaseResponse<>(result);
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
 
     }
 
@@ -119,7 +127,7 @@ public class UserController {
         userService.deleteUser(userId);
 
         String result = "삭제 완료!!";
-        return new BaseResponse<>(result);
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -133,7 +141,7 @@ public class UserController {
         // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
         // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
         PostLoginRes postLoginRes = userService.logIn(postLoginReq);
-        return new BaseResponse<>(postLoginRes);
+        return new BaseResponse<>(postLoginRes, messageUtils.getMessage("SUCCESS"));
     }
 
 
@@ -163,7 +171,7 @@ public class UserController {
         log.info(">> 소셜 로그인 API 서버로부터 받은 code : {}", code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
         GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLoginOrJoin(socialLoginType,code);
-        return new BaseResponse<>(getSocialOAuthRes);
+        return new BaseResponse<>(getSocialOAuthRes, messageUtils.getMessage("SUCCESS"));
     }
 
 
