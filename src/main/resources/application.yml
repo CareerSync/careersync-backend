@@ -14,7 +14,7 @@ spring:
     init:
       platform: mysql
   datasource:
-    url: jdbc:mysql://localhost:3306/demo?autoReconnect=true&setTimezone=Asia/Seoul # 변경해주세요
+    url: jdbc:mysql://localhost:3306/demo?autoReconnect=true&setTimezone=Asia/Seoul?useUnicode=true&characterEncoding=utf8 # 변경해주세요
     username: root # username
     password: Shin5633^^ # password
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
