@@ -5,11 +5,14 @@ import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.test.model.PostCommentDto;
 import com.example.demo.src.test.model.GetMemoDto;
 import com.example.demo.src.test.model.MemoDto;
+import com.example.demo.utils.MessageUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +20,7 @@ import java.util.List;
 
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
-
+@Slf4j
 @Tag(name = "test 도메인", description = "메모 API, 코멘트 API") // swagger 접속: http://localhost:9000/swagger-ui/index.html
 @RequiredArgsConstructor
 @RestController
@@ -26,6 +29,7 @@ public class TestController {
 
     private final TestService testService;
 
+    private final MessageUtils messageUtils;
 
     /**
      * 로그 테스트 API
@@ -35,7 +39,7 @@ public class TestController {
     @ResponseBody
     @GetMapping("/log")
     public String logTest() {
-        System.out.println("테스트");
+        log.info("테스트");
         return "Success Test";
     }
 
@@ -55,9 +59,8 @@ public class TestController {
     @PostMapping("/memos")
     public BaseResponse<String> createMemo(@Validated @RequestBody MemoDto memoDto) {
         testService.createMemo(memoDto);
-        return new BaseResponse<>("생성 성공!!");
+        return new BaseResponse<>("생성 성공!!", messageUtils.getMessage("SUCCESS"));
     }
-
 
     /**
      * 메모 리스트 조회 API
@@ -70,9 +73,8 @@ public class TestController {
     @GetMapping("/memos")
     public BaseResponse<List<GetMemoDto>> getMemos(@RequestParam(required = true) int startPage) {
         List<GetMemoDto> getMemoDtoList = testService.getMemos(startPage);
-        return new BaseResponse<>(getMemoDtoList);
+        return new BaseResponse<>(getMemoDtoList, messageUtils.getMessage("SUCCESS"));
     }
-
 
     /**
      * 메모 정보 변경 API
@@ -86,10 +88,9 @@ public class TestController {
         testService.modifyMemo(memoId, memoDto);
 
         String result = "수정 성공!!";
-        return new BaseResponse<>(result);
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
 
     }
-
 
     /**
      * 코멘트 생성 API
@@ -102,6 +103,6 @@ public class TestController {
     @PostMapping("/comments")
     public BaseResponse<String> createComment(@RequestBody PostCommentDto postCommentDto) {
         testService.createComment(postCommentDto);
-        return new BaseResponse<>("성공");
+        return new BaseResponse<>("성공", messageUtils.getMessage("SUCCESS"));
     }
 }

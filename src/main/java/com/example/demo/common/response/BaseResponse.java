@@ -1,10 +1,12 @@
 package com.example.demo.common.response;
 
+import com.example.demo.utils.MessageUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.example.demo.common.response.BaseResponseStatus.SUCCESS;
 
@@ -27,11 +29,24 @@ public class BaseResponse<T> {
         this.result = result;
     }
 
+    public BaseResponse(T result, String message) {
+        this.isSuccess = SUCCESS.isSuccess();
+        this.message = message;
+        this.code = SUCCESS.getCode();
+        this.result = result;
+    }
+
     // 요청에 실패한 경우
     public BaseResponse(BaseResponseStatus status) {
         this.isSuccess = status.isSuccess();
         this.message = status.getMessage();
         this.code = status.getCode();
+    }
+
+    public BaseResponse(boolean isSuccess, String message, int code) {
+        this.isSuccess = isSuccess;
+        this.message = message;
+        this.code = code;
     }
 
 }

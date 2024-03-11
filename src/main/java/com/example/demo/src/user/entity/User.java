@@ -27,40 +27,37 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isOAuth;
 
     @Column(nullable = false)
     private LocalDate birthDate;
 
-    @Column
+    @Column(nullable = false)
+    private LocalDate privacyDate;
+
+    @Column(nullable = false)
     private String profileImgUrl;
 
-    @Column(columnDefinition = "TINYINT(1)")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean serviceTerm;
 
-    @Column(columnDefinition = "TINYINT(1)")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean dataTerm;
 
-    @Column(columnDefinition = "TINYINT(1)")
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean locationTerm;
 
-    @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate,
-                boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.name = name;
-        this.isOAuth = isOAuth;
-        this.birthDate = birthDate;
-        this.serviceTerm = serviceTerm;
-        this.dataTerm = dataTerm;
-        this.locationTerm = locationTerm;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false, length = 10)
+    private AccountState accountState = AccountState.ACTIVE;
+
+    public enum AccountState {
+        ACTIVE, DORMANT, BLOCKED;
     }
 
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, String profileImgUrl,
+    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, LocalDate privacyDate, String profileImgUrl,
                 boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
         this.id = id;
         this.email = email;
@@ -68,6 +65,7 @@ public class User extends BaseEntity {
         this.name = name;
         this.isOAuth = isOAuth;
         this.birthDate = birthDate;
+        this.privacyDate = privacyDate;
         this.profileImgUrl = profileImgUrl;
         this.serviceTerm = serviceTerm;
         this.dataTerm = dataTerm;
@@ -76,6 +74,10 @@ public class User extends BaseEntity {
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void updatePrivacyDate(LocalDate privacyDate) {
+        this.privacyDate = privacyDate;
     }
 
     public void deleteUser() {

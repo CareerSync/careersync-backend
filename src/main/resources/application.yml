@@ -14,7 +14,7 @@ spring:
     init:
       platform: mysql
   datasource:
-    url: jdbc:mysql://localhost:3306/demo?autoReconnect=true&setTimezone=Asia/Seoul # 변경해주세요
+    url: jdbc:mysql://localhost:3306/demo?autoReconnect=true&setTimezone=Asia/Seoul?useUnicode=true&characterEncoding=utf8 # 변경해주세요
     username: root # username
     password: Shin5633^^ # password
     driver-class-name: com.mysql.cj.jdbc.Driver # mysql 8버전
@@ -26,7 +26,8 @@ spring:
       client-secret:  # client-secret
       callback-login-url: http://localhost:9000/app/users/auth/google/login/callback # 등록한 정보에 맞게 수정해주세요
       scope: https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile # 등록한 정보에 맞게 수정해주세요
-
+  main:
+    allow-bean-definition-overriding: true
 spring.sql.init.platform: mysql
 server:
   port: 9000

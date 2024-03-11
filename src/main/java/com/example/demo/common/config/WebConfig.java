@@ -1,5 +1,6 @@
 package com.example.demo.common.config;
 
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -23,4 +24,5 @@ public class WebConfig implements WebMvcConfigurer {
                 // 해당 옵션 사용시 allowedOrigins를 * (전체)로 설정할 수 없다.
                 .allowCredentials(true);
     }
+
 }
