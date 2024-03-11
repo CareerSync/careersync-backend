@@ -1,6 +1,8 @@
 package com.example.demo.common.response;
 
+import com.example.demo.utils.MessageUtils;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -36,7 +38,6 @@ public enum BaseResponseStatus {
     INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
 
 
-
     /**
      * 500 :  Database, Server 오류
      */
@@ -51,7 +52,6 @@ public enum BaseResponseStatus {
     MODIFY_FAIL_MEMO(false,HttpStatus.INTERNAL_SERVER_ERROR.value(),"메모 수정 실패"),
 
     UNEXPECTED_ERROR(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), "예상치 못한 에러가 발생했습니다.");
-
 
     private final boolean isSuccess;
     private final int code;
