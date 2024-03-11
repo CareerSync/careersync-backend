@@ -26,8 +26,7 @@ public class SchedulerService {
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void privacyTermAgree() {
         log.info("개인정보처리방침 동의가 필요한 유저를 체크합니다.");
-        // 모든 회원의 privacyDate 가져온다음, 만약 오늘 날짜랑 매칭 된다면 개인정보처리방침 동의 필요하다고 메세지 전송
-        // 그리고 privacyDate 1년 추가해서 업데이트
+
         LocalDate now = LocalDate.now();
         LocalDate oneYearAfterDate = now.plusYears(1);
 
@@ -36,7 +35,6 @@ public class SchedulerService {
                     log.info("today date: {}", now);
                     log.info("user privacydate: {}", user.getPrivacyDate());
                     if (user.getPrivacyDate().equals(now)) {
-                        // 오늘 날짜랑 개인정보처리방침 동의가 새로 필요한 날짜랑 같은 경우
                         log.info("{} 회원님, 개인정보처리방침 동의가 새로 필요합니다.", user.getName());
                         user.updatePrivacyDate(oneYearAfterDate);
                     }
