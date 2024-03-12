@@ -12,12 +12,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReportReq {
+public class PostReportReq {
     private Long userId;
     private Long postId;
     private String category;
 
-    public Report toEntity(User user, Post post, String category) {
+    public Report toEntity(User user, Post post) {
         return Report.builder()
                 .user(user)
                 .post(post)
