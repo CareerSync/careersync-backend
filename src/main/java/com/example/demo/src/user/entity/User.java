@@ -53,11 +53,11 @@ public class User extends BaseEntity {
     private boolean locationTerm;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false, length = 10)
+    @Column(nullable = false, length = 10)
     private AccountState accountState = AccountState.ACTIVE;
 
     // 양방향 매핑
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<Post> postList = new ArrayList<>();
 
     public enum AccountState {
