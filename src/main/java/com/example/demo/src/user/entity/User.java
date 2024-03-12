@@ -2,6 +2,7 @@ package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.test.entity.Comment;
 import lombok.*;
 
@@ -60,6 +61,10 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<Post> postList = new ArrayList<>();
 
+    // 양방향 매핑
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<Report> reportList = new ArrayList<>();
+
     public enum AccountState {
         ACTIVE, DORMANT, BLOCKED;
     }
@@ -88,6 +93,7 @@ public class User extends BaseEntity {
         this.privacyDate = privacyDate;
     }
 
+    // 관리자가 신고당한 유저의 계정 정지
     public void updateAccountState(AccountState accountState) {
         this.accountState = accountState;
     }
