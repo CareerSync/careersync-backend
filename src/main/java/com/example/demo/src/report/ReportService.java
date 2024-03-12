@@ -12,9 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
-import static com.example.demo.common.response.BaseResponseStatus.INVALID_POST;
-import static com.example.demo.common.response.BaseResponseStatus.INVALID_USER;
+import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @Transactional
 @RequiredArgsConstructor
@@ -28,11 +29,19 @@ public class ReportService {
     // POST
     public PostReportRes createPost(PostReportReq req) {
 
+
+        // 유저와 게시글 -> 둘 다 ACTIVE한 상태여야 한다.
         User user = userRepository.findByIdAndState(req.getUserId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
         Post post = postRepository.findByIdAndState(req.getPostId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_POST));
+
+        // 이미 신고한 내역 있으면 중복 신고 안되도록 처리
+        Optional<Report> checkReport = reportRepository.findByUserAndPostId(user.getId(), post.getId());
+        if(checkReport.isPresent()){
+            throw new BaseException(POST_REPORT_EXISTS_USER_AND_POST);
+        }
 
         Report saveReport = reportRepository.save(req.toEntity(user, post));
         return new PostReportRes(saveReport.getId(), saveReport.getCategory());

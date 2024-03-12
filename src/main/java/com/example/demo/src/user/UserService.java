@@ -34,7 +34,7 @@ public class UserService {
     public PostUserRes createUser(PostUserReq postUserReq) {
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
-        if(checkUser.isPresent() == true){
+        if(checkUser.isPresent()){
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
 
