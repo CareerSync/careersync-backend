@@ -88,6 +88,10 @@ public class User extends BaseEntity {
         this.privacyDate = privacyDate;
     }
 
+    public void updateAccountState(AccountState accountState) {
+        this.accountState = accountState;
+    }
+
     public void deleteUser() {
         this.state = State.INACTIVE;
     }
