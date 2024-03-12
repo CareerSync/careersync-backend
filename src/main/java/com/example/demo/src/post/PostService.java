@@ -30,7 +30,7 @@ public class PostService {
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
         Post savePost = postRepository.save(req.toEntity(user));
-        return new PostPostRes(savePost.getId());
+        return new PostPostRes(savePost.getId(), savePost.getContent());
     }
 
 
