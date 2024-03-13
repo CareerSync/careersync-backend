@@ -1,5 +1,6 @@
 package com.example.demo.src.report.entity;
 
+import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.post.entity.Post;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Table(name = "TB_REPORT")
-public class Report {
+public class Report extends BaseEntity {
 
     @Id
     @Column(name = "reportId", nullable = false, updatable = false)
