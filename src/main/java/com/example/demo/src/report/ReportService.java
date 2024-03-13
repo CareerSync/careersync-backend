@@ -27,7 +27,7 @@ public class ReportService {
     private final PostRepository postRepository;
 
     // POST
-    public PostReportRes createPost(PostReportReq req) {
+    public PostReportRes createReport(PostReportReq req) {
 
 
         // 유저와 게시글 -> 둘 다 ACTIVE한 상태여야 한다.

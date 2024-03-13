@@ -28,11 +28,11 @@ public class ReportController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostReportRes> createPost(@RequestBody PostReportReq postReportReq) {
+    public BaseResponse<PostReportRes> createReport(@RequestBody PostReportReq postReportReq) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 신고 가능
 
-        PostReportRes postRes = reportService.createPost(postReportReq);
+        PostReportRes postRes = reportService.createReport(postReportReq);
         return new BaseResponse<>(postRes, messageUtils.getMessage("SUCCESS"));
     }
 
