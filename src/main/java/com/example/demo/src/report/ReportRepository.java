@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReportRepository extends JpaRepository<Report, Long> {
+    Optional<Report> findByIdAndState(Long id, State state);
     Optional<Report> findByUserIdAndPostId(Long userId, Long postId);
     List<Report> findAllByState(State state);
 }

@@ -72,8 +72,8 @@ public class PostController {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
 
-        GetPostRes getPosts = postService.getPost(postId);
-        return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
+        GetPostRes getPostRes = postService.getPost(postId);
+        return new BaseResponse<>(getPostRes, messageUtils.getMessage("SUCCESS"));
     }
 
     /**

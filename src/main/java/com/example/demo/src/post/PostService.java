@@ -69,12 +69,14 @@ public class PostService {
         return new GetPostRes(post);
     }
 
+    // PATCH
     public void modifyPostContent(Long postId, PatchPostReq patchPostReq) {
         Post post = postRepository.findByIdAndState(postId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_POST));
         post.updateContent(patchPostReq.getContent());
     }
 
+    // DELETE
     public void deletePost(Long postId) {
         Post post = postRepository.findByIdAndState(postId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_POST));

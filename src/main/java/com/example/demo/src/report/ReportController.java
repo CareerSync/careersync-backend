@@ -1,12 +1,10 @@
 package com.example.demo.src.report;
 
 import com.example.demo.common.response.BaseResponse;
+import com.example.demo.src.post.model.PatchPostReq;
 import com.example.demo.src.post.model.PostPostReq;
 import com.example.demo.src.post.model.PostPostRes;
-import com.example.demo.src.report.model.GetReportRes;
-import com.example.demo.src.report.model.GetReportUserRes;
-import com.example.demo.src.report.model.PostReportReq;
-import com.example.demo.src.report.model.PostReportRes;
+import com.example.demo.src.report.model.*;
 import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
@@ -55,6 +53,19 @@ public class ReportController {
     }
 
     /**
+     * 신고 내역 1개 조회 API
+     * [GET] /app/reports:reportId
+     * @return BaseResponse<GetReportRes>
+     */
+    @ResponseBody
+    @GetMapping("/{reportId}")
+    public BaseResponse<GetReportRes> getReport(@PathVariable("reportId") Long reportId) {
+        // Get Reports
+        GetReportRes getReportRes = reportService.getReport(reportId);
+        return new BaseResponse<>(getReportRes, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
      * 신고된 유저 조회 API
      * [GET] /app/reports/users
      * @return BaseResponse<List<GetReportUserRes>>
@@ -65,6 +76,40 @@ public class ReportController {
         // Get Reports
         List<GetReportUserRes> getReportedUserRes = reportService.getReportedUsers();
         return new BaseResponse<>(getReportedUserRes, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 신고내역 카테고리 수정 API
+     * [PATCH] /app/reports/:postId
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{reportId}")
+    public BaseResponse<String> modifyReportCategory(@PathVariable("reportId") Long reportId, @RequestBody PatchReportReq patchReportReq) {
+
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
+
+        reportService.modifyReportCategory(reportId, patchReportReq);
+
+        String result = "신고내역 카테고리 수정 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 신고내역 삭제 API
+     * [DELETE] /app/reports/:reportId
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @DeleteMapping("/{reportId}")
+    public BaseResponse<String> deleteReport(@PathVariable("reportId") Long reportId) {
+
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 삭제 가능
+
+        reportService.deleteReport(reportId);
+
+        String result = "신고내역 삭제 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
     }
 
 }

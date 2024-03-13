@@ -9,6 +9,8 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -46,6 +48,14 @@ public class Report extends BaseEntity {
 
     public void updateState(State state) {
         this.state = state;
+    }
+
+    public void updateCategory(String category) {
+        this.category = category;
+    }
+
+    public void deleteReport() {
+        this.state = INACTIVE;
     }
 
 }

@@ -3,11 +3,9 @@ package com.example.demo.src.report;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.post.PostRepository;
 import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.post.model.PatchPostReq;
 import com.example.demo.src.report.entity.Report;
-import com.example.demo.src.report.model.GetReportRes;
-import com.example.demo.src.report.model.GetReportUserRes;
-import com.example.demo.src.report.model.PostReportReq;
-import com.example.demo.src.report.model.PostReportRes;
+import com.example.demo.src.report.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetUserRes;
@@ -69,6 +67,28 @@ public class ReportService {
                 .collect(Collectors.toList());
 
         return getReportedUsers;
+    }
+
+    @Transactional(readOnly = true)
+    public GetReportRes getReport(Long reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
+
+        return new GetReportRes(report);
+    }
+
+    // PATCH
+    public void modifyReportCategory(Long reportId, PatchReportReq patchReportReq) {
+        Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
+        report.updateCategory(patchReportReq.getCategory());
+    }
+
+    // DELETE
+    public void deleteReport(Long reportId) {
+        Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
+        report.deleteReport();
     }
 
 }
