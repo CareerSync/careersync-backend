@@ -5,10 +5,12 @@ import com.example.demo.src.post.PostRepository;
 import com.example.demo.src.post.entity.Post;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.report.model.GetReportRes;
+import com.example.demo.src.report.model.GetReportUserRes;
 import com.example.demo.src.report.model.PostReportReq;
 import com.example.demo.src.report.model.PostReportRes;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
+import com.example.demo.src.user.model.GetUserRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,15 @@ public class ReportService {
                 .collect(Collectors.toList());
 
         return getReportResList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetReportUserRes> getReportedUsers() {
+        List<GetReportUserRes> getReportedUsers = reportRepository.findAllByState(ACTIVE).stream()
+                .map(report -> new GetReportUserRes(report, report.getReportedUser(report.getPost())))
+                .collect(Collectors.toList());
+
+        return getReportedUsers;
     }
 
 }

@@ -4,6 +4,7 @@ import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.post.model.PostPostReq;
 import com.example.demo.src.post.model.PostPostRes;
 import com.example.demo.src.report.model.GetReportRes;
+import com.example.demo.src.report.model.GetReportUserRes;
 import com.example.demo.src.report.model.PostReportReq;
 import com.example.demo.src.report.model.PostReportRes;
 import com.example.demo.src.user.model.GetUserRes;
@@ -42,10 +43,8 @@ public class ReportController {
 
     /**
      * 신고 조회 API
-     * [GET] /reports
-     * 신고 내역 전체 API
      * [GET] /app/reports
-     * @return BaseResponse<List<GetUserRes>>
+     * @return BaseResponse<List<GetReportRes>>
      */
     @ResponseBody
     @GetMapping("")
@@ -53,6 +52,19 @@ public class ReportController {
         // Get Reports
         List<GetReportRes> getReportRes = reportService.getReports();
         return new BaseResponse<>(getReportRes, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 신고된 유저 조회 API
+     * [GET] /app/reports/users
+     * @return BaseResponse<List<GetReportUserRes>>
+     */
+    @ResponseBody
+    @GetMapping("users")
+    public BaseResponse<List<GetReportUserRes>> getReportedUsers() {
+        // Get Reports
+        List<GetReportUserRes> getReportedUserRes = reportService.getReportedUsers();
+        return new BaseResponse<>(getReportedUserRes, messageUtils.getMessage("SUCCESS"));
     }
 
 }

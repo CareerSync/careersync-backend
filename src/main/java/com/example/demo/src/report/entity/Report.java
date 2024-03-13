@@ -2,7 +2,9 @@ package com.example.demo.src.report.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.report.model.GetReportUserRes;
 import com.example.demo.src.user.entity.User;
+import com.example.demo.src.user.model.GetUserRes;
 import lombok.*;
 
 import javax.persistence.*;
@@ -37,4 +39,9 @@ public class Report extends BaseEntity {
         this.user = user;
         this.post = post;
     }
+
+    public User getReportedUser(Post post) {
+        return post.getUser();
+    }
+
 }
