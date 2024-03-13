@@ -2,6 +2,7 @@ package com.example.demo.src.post;
 
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.post.model.GetPostRes;
+import com.example.demo.src.post.model.PatchPostReq;
 import com.example.demo.src.post.model.PostPostReq;
 import com.example.demo.src.post.model.PostPostRes;
 import com.example.demo.src.user.model.PostUserRes;
@@ -73,6 +74,23 @@ public class PostController {
 
         GetPostRes getPosts = postService.getPost(postId);
         return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 게시물 내용 수정 API
+     * [PATCH] /app/posts/:postId
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{postId}")
+    public BaseResponse<String> modifyPostContent(@PathVariable("postId") Long postId, @RequestBody PatchPostReq patchPostReq) {
+
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
+
+        postService.modifyPostContent(postId, patchPostReq);
+
+        String result = "게시물 내용 수정 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
     }
 
 

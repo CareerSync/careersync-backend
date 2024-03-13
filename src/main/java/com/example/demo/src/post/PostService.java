@@ -3,12 +3,14 @@ package com.example.demo.src.post;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.post.entity.Post;
 import com.example.demo.src.post.model.GetPostRes;
+import com.example.demo.src.post.model.PatchPostReq;
 import com.example.demo.src.post.model.PostPostReq;
 import com.example.demo.src.post.model.PostPostRes;
 import com.example.demo.src.test.entity.Memo;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.src.user.model.PatchUserReq;
 import com.example.demo.src.user.model.PostUserRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -61,10 +63,15 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public GetPostRes getPost(Long postId) {
-        Post post = postRepository.findById(postId)
+        Post post = postRepository.findByIdAndState(postId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_POST));
         return new GetPostRes(post);
     }
 
+    public void modifyPostContent(Long postId, PatchPostReq patchPostReq) {
+        Post post = postRepository.findByIdAndState(postId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
+        post.updateContent(patchPostReq.getContent());
+    }
 
 }

@@ -41,4 +41,8 @@ public class Post extends BaseEntity {
         return user.getId();
     }
 
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
 }
