@@ -37,7 +37,7 @@ public class Post extends BaseEntity {
         this.user = user;
     }
 
-    public Long getUserId() {
+    public Long findUserId() {
         return user.getId();
     }
 
