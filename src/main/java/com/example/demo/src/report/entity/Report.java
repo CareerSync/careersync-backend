@@ -44,4 +44,8 @@ public class Report extends BaseEntity {
         return post.getUser();
     }
 
+    public void updateState(State state) {
+        this.state = state;
+    }
+
 }
