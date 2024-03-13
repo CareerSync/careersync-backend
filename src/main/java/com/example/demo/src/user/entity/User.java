@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo.common.entity.BaseEntity.State.*;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -99,7 +101,7 @@ public class User extends BaseEntity {
     }
 
     public void deleteUser() {
-        this.state = State.INACTIVE;
+        this.state = INACTIVE;
     }
 
     // 연관관계 편의 메서드

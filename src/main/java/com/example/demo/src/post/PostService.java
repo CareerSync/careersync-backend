@@ -55,6 +55,7 @@ public class PostService {
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
         List<GetPostRes> getPostsResList =  user.getPostList().stream()
+                .filter(post -> post.getState() == ACTIVE)
                 .map(GetPostRes::new)
                 .collect(Collectors.toList());
 
@@ -72,6 +73,12 @@ public class PostService {
         Post post = postRepository.findByIdAndState(postId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_POST));
         post.updateContent(patchPostReq.getContent());
+    }
+
+    public void deletePost(Long postId) {
+        Post post = postRepository.findByIdAndState(postId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
+        post.deletePost();
     }
 
 }

@@ -85,11 +85,28 @@ public class PostController {
     @PatchMapping("/{postId}")
     public BaseResponse<String> modifyPostContent(@PathVariable("postId") Long postId, @RequestBody PatchPostReq patchPostReq) {
 
-        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
 
         postService.modifyPostContent(postId, patchPostReq);
 
         String result = "게시물 내용 수정 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 게시물 삭제 API
+     * [DELETE] /app/posts/:postId
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @DeleteMapping("/{postId}")
+    public BaseResponse<String> deletePost(@PathVariable("postId") Long postId) {
+
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 삭제 가능
+
+        postService.deletePost(postId);
+
+        String result = "게시물 삭제 완료";
         return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
     }
 

@@ -7,6 +7,8 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+import static com.example.demo.common.entity.BaseEntity.State.*;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -43,6 +45,10 @@ public class Post extends BaseEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void deletePost() {
+        this.state = INACTIVE;
     }
 
 }
