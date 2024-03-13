@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
-import static com.example.demo.common.response.BaseResponseStatus.INVALID_USER;
-import static com.example.demo.common.response.BaseResponseStatus.NOT_FIND_USER;
+import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @Transactional
 @RequiredArgsConstructor
@@ -60,6 +59,12 @@ public class PostService {
         return getPostsResList;
     }
 
+    @Transactional(readOnly = true)
+    public GetPostRes getPost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
+        return new GetPostRes(post);
+    }
 
 
 }

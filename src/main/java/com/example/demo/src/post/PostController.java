@@ -60,5 +60,20 @@ public class PostController {
         return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
     }
 
+    /**
+     * 게시물 1개 조회 API
+     * [GET] /app/posts/:postId
+     * @return BaseResponse<GetPostRes>
+     */
+    @ResponseBody
+    @GetMapping("/{postId}")
+    public BaseResponse<GetPostRes> getPost(@PathVariable("postId") Long postId) {
+
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
+
+        GetPostRes getPosts = postService.getPost(postId);
+        return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
+    }
+
 
 }
