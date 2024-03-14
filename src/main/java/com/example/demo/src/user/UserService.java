@@ -246,7 +246,7 @@ public class UserService {
     private List<Long> getRevIds() {
         return auditReader.createQuery()
                 .forRevisionsOfEntity(User.class, false, true)
-                .addProjection(AuditEntity.revisionNumber())
+                .addProjection(AuditEntity.id())
                 .getResultList();
     }
 }
