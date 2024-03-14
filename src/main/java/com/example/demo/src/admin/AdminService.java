@@ -12,6 +12,7 @@ import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetUserRes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.envers.AuditReader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

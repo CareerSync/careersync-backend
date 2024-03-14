@@ -94,6 +94,23 @@ public class UserController {
         return new BaseResponse<>(getUserRes, messageUtils.getMessage("SUCCESS"));
     }
 
+    /**
+     * 회원 변경 이력 조회
+     * [GET] /app/users/history/:revType
+     * revType 종류
+     * - Create: 0
+     * - Update: 1
+     * - Delete: 2
+     * @return BaseResponse<List<GetUserRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/history/{revType}")
+    public BaseResponse<List<GetUserRes>> getUserHistory(@PathVariable("revType") Long revType) {
+        List<GetUserRes> getUserResList = userService.getUserHistory(revType);
+        return new BaseResponse<>(getUserResList, messageUtils.getMessage("SUCCESS"));
+    }
+
 
 
     /**
