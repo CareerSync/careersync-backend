@@ -77,10 +77,10 @@ public class PostController {
     }
 
     /**
-     * 회원 CUD 히스토리 전체 조회
+     * 게시물 CUD 히스토리 전체 조회
      * [GET] /app/posts/log/history
      *
-     * 회원 CUD 히스토리 선택 조회
+     * 게시물 CUD 히스토리 선택 조회
      * [GET] /app/posts/log/history? revType=
      * revType 종류
      * - Create: INSERT
@@ -103,7 +103,7 @@ public class PostController {
     }
 
     /**
-     * 회원 CUD 히스토리 시간 기준 조회
+     * 게시물 CUD 히스토리 시간 기준 조회
      * [POST] /app/posts/history/time
      @return BaseResponse<List<GetPostLogRes>>
      */

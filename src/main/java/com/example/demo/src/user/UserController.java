@@ -114,8 +114,8 @@ public class UserController {
     public BaseResponse<List<GetUserLogRes>> getUserHistory(@RequestParam(required = false) String revType) {
 
         if (revType == null) {
-            List<GetUserLogRes> userHistoryByTime = userService.getUserHistory();
-            return new BaseResponse<>(userHistoryByTime, messageUtils.getMessage("SUCCESS"));
+            List<GetUserLogRes> getUserHistoryList = userService.getUserHistory();
+            return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
         }
 
         List<GetUserLogRes> getUserHistoryList = userService.getUserHistoryByRevType(revType);

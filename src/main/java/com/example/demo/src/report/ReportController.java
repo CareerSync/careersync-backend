@@ -5,7 +5,9 @@ import com.example.demo.src.post.model.PatchPostReq;
 import com.example.demo.src.post.model.PostPostReq;
 import com.example.demo.src.post.model.PostPostRes;
 import com.example.demo.src.report.model.*;
+import com.example.demo.src.user.model.GetUserLogRes;
 import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.src.user.model.PostUserLogTimeReq;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -79,19 +81,42 @@ public class ReportController {
     }
 
     /**
-     * 신고 내역 CUD 히스토리 조회
-     * [GET] /app/reports/history/:revType
+     * 신고 CUD 히스토리 전체 조회
+     * [GET] /app/reports/history
+     *
+     * 신고 CUD 히스토리 선택 조회
+     * [GET] /app/reports/history? revType=
      * revType 종류
-     * - Create: 0
-     * - Update: 1
-     * - Delete: 2
-     * @return BaseResponse<List<GetUserRes>>
+     * - Create: INSERT
+     * - Update: UPDATE
+     * - Delete: DELETE
+     * @return BaseResponse<List<GetReportLogRes>>
      */
     // Path-variable
     @ResponseBody
-    @GetMapping("/history/{revType}")
-    public BaseResponse<List<GetReportRes>> getReportHistory(@PathVariable("revType") Long revType) {
-        List<GetReportRes> getReportHistoryList = reportService.getReportHistory(revType);
+    @GetMapping("/log/history")
+    public BaseResponse<List<GetReportLogRes>> getReportHistory(@RequestParam(required = false) String revType) {
+
+        if (revType == null) {
+            List<GetReportLogRes> getReportHistoryList = reportService.getReportHistory();
+            return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
+        }
+
+        List<GetReportLogRes> getReportHistoryList = reportService.getReportHistoryByRevType(revType);
+        return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 신고 CUD 히스토리 시간 기준 조회
+     * [POST] /app/reports/history/time
+     @return BaseResponse<List<GetReportLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @PostMapping("/log/history/time")
+    public BaseResponse<List<GetReportLogRes>> getUserHistoryByTime(@RequestBody PostUserLogTimeReq req) {
+
+        List<GetReportLogRes> getReportHistoryList = reportService.getReportHistoryByTime(req);
         return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
