@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,6 +179,24 @@ public class UserService {
         return userLogs;
     }
 
+    @Transactional(readOnly = true)
+    public List<GetUserLogRes> getUserHistoryByTime(PostUserLogTimeReq req) {
+
+        LocalDateTime startTime = req.getStartTime();
+        LocalDateTime endTime = req.getEndTime();
+
+        List<Long> revIds = getRevIds();
+
+        List<GetUserLogRes> userLogs = new ArrayList<>();
+
+        revIds.stream()
+                .forEach((id) -> {
+                    getUserLogResByTime(userLogs, id, startTime, endTime);
+                });
+
+        return userLogs;
+    }
+
     private void getUserLogResByType(List<GetUserLogRes> userLogs, Long rev, String revType) {
 
         String rType = revType;
@@ -185,17 +204,9 @@ public class UserService {
         Revisions<Long, User> revisions = userRepository.findRevisions(rev);
 
         for (Revision<Long, User> revision : revisions.getContent()) {
-
             if (String.valueOf(revision.getMetadata().getRevisionType()).equals(rType)) {
-                Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
-                String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
-
-                Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
-                LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneOffset.UTC);
-                GetUserLogRes getUserLogRes = new GetUserLogRes(revisionNumber, revisionType, localDateTime);
-                userLogs.add(getUserLogRes);
+                userLogs.add(makeGetUserLogRes(revision));
             }
-
         }
     }
 
@@ -203,18 +214,36 @@ public class UserService {
 
         Revisions<Long, User> revisions = userRepository.findRevisions(rev);
         for (Revision<Long, User> revision : revisions.getContent()) {
-                Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
-                String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
-
-                Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
-                LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneOffset.UTC);
-                GetUserLogRes getUserLogRes = new GetUserLogRes(revisionNumber, revisionType, localDateTime);
-                userLogs.add(getUserLogRes);
+                userLogs.add(makeGetUserLogRes(revision));
         }
     }
 
-    private List<Long> getRevIds() {
+    private void getUserLogResByTime(List<GetUserLogRes> userLogs, Long rev,
+                                     LocalDateTime startTime, LocalDateTime endTime) {
 
+        Revisions<Long, User> revisions = userRepository.findRevisions(rev);
+        for (Revision<Long, User> revision : revisions.getContent()) {
+            Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
+
+            if (!localDateTime.isBefore(startTime) && !localDateTime.isAfter(endTime)) {
+                GetUserLogRes getUserLogRes = makeGetUserLogRes(revision);
+                userLogs.add(getUserLogRes);
+            }
+
+        }
+    }
+
+    private GetUserLogRes makeGetUserLogRes(Revision<Long, User> revision) {
+        Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
+        String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
+
+        Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
+        return new GetUserLogRes(revisionNumber, revisionType, localDateTime);
+    }
+
+    private List<Long> getRevIds() {
         return auditReader.createQuery()
                 .forRevisionsOfEntity(User.class, false, true)
                 .addProjection(AuditEntity.revisionNumber())

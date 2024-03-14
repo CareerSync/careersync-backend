@@ -97,20 +97,21 @@ public class UserController {
     }
 
     /**
-     * 회원 CUD 히스토리 조회
+     * 회원 CUD 히스토리 전체 조회
+     * [GET] /app/users/history
+     *
+     * 회원 CUD 히스토리 선택 조회
      * [GET] /app/users/history? revType=
      * revType 종류
-     * - Create: 0
-     * - Update: 1
-     * - Delete: 2
+     * - Create: INSERT
+     * - Update: UPDATE
+     * - Delete: DELETE
      * @return BaseResponse<List<GetUserLogRes>>
      */
     // Path-variable
     @ResponseBody
     @GetMapping("/log/history")
     public BaseResponse<List<GetUserLogRes>> getUserHistory(@RequestParam(required = false) String revType) {
-
-        log.info("revType: {}", revType);
 
         if (revType == null) {
             List<GetUserLogRes> userHistoryByTime = userService.getUserHistory();
@@ -121,7 +122,19 @@ public class UserController {
         return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
+    /**
+     * 회원 CUD 히스토리 시간 기준 조회
+     * [POST] /app/users/history/time
+     @return BaseResponse<List<GetUserLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @PostMapping("/log/history/time")
+    public BaseResponse<List<GetUserLogRes>> getUserHistoryByTime(@RequestBody PostUserLogTimeReq req) {
 
+        List<GetUserLogRes> getUserHistoryList = userService.getUserHistoryByTime(req);
+        return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
 
 
     /**
