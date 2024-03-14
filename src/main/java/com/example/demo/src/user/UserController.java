@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.oauth.OAuthService;
+import com.example.demo.src.user.entity.User;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.user.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.bridge.Message;
+import org.springframework.data.history.Revisions;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -96,20 +98,29 @@ public class UserController {
 
     /**
      * 회원 CUD 히스토리 조회
-     * [GET] /app/users/history/:revType
+     * [GET] /app/users/history? revType=
      * revType 종류
      * - Create: 0
      * - Update: 1
      * - Delete: 2
-     * @return BaseResponse<List<GetUserRes>>
+     * @return BaseResponse<List<GetUserLogRes>>
      */
     // Path-variable
     @ResponseBody
-    @GetMapping("/history/{revType}")
-    public BaseResponse<List<GetUserRes>> getUserHistory(@PathVariable("revType") Long revType) {
-        List<GetUserRes> getUserHistoryList = userService.getUserHistory(revType);
+    @GetMapping("/log/history")
+    public BaseResponse<List<GetUserLogRes>> getUserHistory(@RequestParam(required = false) String revType) {
+
+        log.info("revType: {}", revType);
+
+        if (revType == null) {
+            List<GetUserLogRes> userHistoryByTime = userService.getUserHistory();
+            return new BaseResponse<>(userHistoryByTime, messageUtils.getMessage("SUCCESS"));
+        }
+
+        List<GetUserLogRes> getUserHistoryList = userService.getUserHistoryByRevType(revType);
         return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
     }
+
 
 
 

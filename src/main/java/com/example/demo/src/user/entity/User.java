@@ -4,9 +4,12 @@ import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.post.entity.Post;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.test.entity.Comment;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -14,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.demo.common.entity.BaseEntity.State.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.*;
 import static org.hibernate.envers.RelationTargetAuditMode.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,6 +25,8 @@ import static org.hibernate.envers.RelationTargetAuditMode.*;
 @Getter
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
 @Audited
+@EntityListeners(AuditingEntityListener.class)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 @Table(name = "TB_USER") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
 public class User extends BaseEntity {
 
@@ -66,11 +72,13 @@ public class User extends BaseEntity {
     // 양방향 매핑
     @Audited(targetAuditMode = NOT_AUDITED)
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     List<Post> postList = new ArrayList<>();
 
     // 양방향 매핑
     @Audited(targetAuditMode = NOT_AUDITED)
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     List<Report> reportList = new ArrayList<>();
 
     public enum AccountState {

@@ -2,20 +2,25 @@ package com.example.demo.src.user;
 
 
 
-import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
+import org.springframework.data.history.Revision;
+import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +33,7 @@ import static org.hibernate.envers.RevisionType.*;
 @Transactional
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -139,43 +145,79 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetUserRes> getUserHistory(Long revId) {
+    public List<GetUserLogRes> getUserHistoryByRevType(String revType) {
 
-        if (revId == 0) {
-            List<User> resultList = auditReader.createQuery()
-                    .forRevisionsOfEntity(User.class, true, true)
-                    .add(AuditEntity.revisionType().eq(ADD))
-                    .getResultList();
-
-            return resultList.stream()
-                    .map(GetUserRes::new)
-                    .collect(Collectors.toList());
-        }
-
-        if (revId == 1) {
-            List<User> resultList = auditReader.createQuery()
-                    .forRevisionsOfEntity(User.class, true, true)
-                    .add(AuditEntity.revisionType().eq(MOD))
-                    .getResultList();
-
-            return resultList.stream()
-                    .map(GetUserRes::new)
-                    .collect(Collectors.toList());
-        }
-
-        if(revId == 2){
-            List<User> resultList = auditReader.createQuery()
-                    .forRevisionsOfEntity(User.class, true, true)
-                    .add(AuditEntity.revisionType().eq(DEL))
-                    .getResultList();
-
-            return resultList.stream()
-                    .map(GetUserRes::new)
-                    .collect(Collectors.toList());
-        }
-
-        else {
+        if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
             throw new BaseException(REVTYPE_ERROR);
         }
+
+        List<Long> revIds = getRevIds();
+
+        List<GetUserLogRes> userLogs = new ArrayList<>();
+
+        revIds.stream()
+                .forEach((id) -> {
+                    getUserLogResByType(userLogs, id, revType);
+                });
+
+        return userLogs;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetUserLogRes> getUserHistory() {
+
+        List<Long> revIds = getRevIds();
+
+        List<GetUserLogRes> userLogs = new ArrayList<>();
+
+        revIds.stream()
+                .forEach((id) -> {
+                    getUserLogRes(userLogs, id);
+                });
+
+        return userLogs;
+    }
+
+    private void getUserLogResByType(List<GetUserLogRes> userLogs, Long rev, String revType) {
+
+        String rType = revType;
+
+        Revisions<Long, User> revisions = userRepository.findRevisions(rev);
+
+        for (Revision<Long, User> revision : revisions.getContent()) {
+
+            if (String.valueOf(revision.getMetadata().getRevisionType()).equals(rType)) {
+                Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
+                String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
+
+                Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneOffset.UTC);
+                GetUserLogRes getUserLogRes = new GetUserLogRes(revisionNumber, revisionType, localDateTime);
+                userLogs.add(getUserLogRes);
+            }
+
+        }
+    }
+
+    private void getUserLogRes(List<GetUserLogRes> userLogs, Long rev) {
+
+        Revisions<Long, User> revisions = userRepository.findRevisions(rev);
+        for (Revision<Long, User> revision : revisions.getContent()) {
+                Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
+                String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
+
+                Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
+                LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneOffset.UTC);
+                GetUserLogRes getUserLogRes = new GetUserLogRes(revisionNumber, revisionType, localDateTime);
+                userLogs.add(getUserLogRes);
+        }
+    }
+
+    private List<Long> getRevIds() {
+
+        return auditReader.createQuery()
+                .forRevisionsOfEntity(User.class, false, true)
+                .addProjection(AuditEntity.revisionNumber())
+                .getResultList();
     }
 }
