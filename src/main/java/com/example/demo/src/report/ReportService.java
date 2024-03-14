@@ -10,6 +10,8 @@ import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetUserRes;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.query.AuditEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
+import static org.hibernate.envers.RevisionType.*;
 
 @Transactional
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class ReportService {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final AuditReader auditReader;
 
     // POST
     public PostReportRes createReport(PostReportReq req) {
@@ -75,6 +79,47 @@ public class ReportService {
                 .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
 
         return new GetReportRes(report);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetReportRes> getReportHistory(Long revId) {
+
+        if (revId == 0) {
+            List<Report> resultList = auditReader.createQuery()
+                    .forRevisionsOfEntity(Report.class, true, true)
+                    .add(AuditEntity.revisionType().eq(ADD))
+                    .getResultList();
+
+            return resultList.stream()
+                    .map(GetReportRes::new)
+                    .collect(Collectors.toList());
+        }
+
+        if (revId == 1) {
+            List<Report> resultList = auditReader.createQuery()
+                    .forRevisionsOfEntity(Report.class, true, true)
+                    .add(AuditEntity.revisionType().eq(MOD))
+                    .getResultList();
+
+            return resultList.stream()
+                    .map(GetReportRes::new)
+                    .collect(Collectors.toList());
+        }
+
+        if(revId == 2){
+            List<Report> resultList = auditReader.createQuery()
+                    .forRevisionsOfEntity(Report.class, true, true)
+                    .add(AuditEntity.revisionType().eq(DEL))
+                    .getResultList();
+
+            return resultList.stream()
+                    .map(GetReportRes::new)
+                    .collect(Collectors.toList());
+        }
+
+        else {
+            throw new BaseException(REVTYPE_ERROR);
+        }
     }
 
     // PATCH

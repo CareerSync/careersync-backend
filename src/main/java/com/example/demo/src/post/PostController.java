@@ -5,6 +5,7 @@ import com.example.demo.src.post.model.GetPostRes;
 import com.example.demo.src.post.model.PatchPostReq;
 import com.example.demo.src.post.model.PostPostReq;
 import com.example.demo.src.post.model.PostPostRes;
+import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
@@ -74,6 +75,23 @@ public class PostController {
 
         GetPostRes getPostRes = postService.getPost(postId);
         return new BaseResponse<>(getPostRes, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 게시물 내역 CUD 히스토리 조회
+     * [GET] /app/posts/history/:revType
+     * revType 종류
+     * - Create: 0
+     * - Update: 1
+     * - Delete: 2
+     * @return BaseResponse<List<GetPostRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/history/{revType}")
+    public BaseResponse<List<GetPostRes>> getPostHistory(@PathVariable("revType") Long revType) {
+        List<GetPostRes> getPostHistoryList = postService.getPostHistory(revType);
+        return new BaseResponse<>(getPostHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
     /**

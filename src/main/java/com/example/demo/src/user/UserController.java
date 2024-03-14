@@ -95,7 +95,7 @@ public class UserController {
     }
 
     /**
-     * 회원 변경 이력 조회
+     * 회원 CUD 히스토리 조회
      * [GET] /app/users/history/:revType
      * revType 종류
      * - Create: 0
@@ -107,8 +107,8 @@ public class UserController {
     @ResponseBody
     @GetMapping("/history/{revType}")
     public BaseResponse<List<GetUserRes>> getUserHistory(@PathVariable("revType") Long revType) {
-        List<GetUserRes> getUserResList = userService.getUserHistory(revType);
-        return new BaseResponse<>(getUserResList, messageUtils.getMessage("SUCCESS"));
+        List<GetUserRes> getUserHistoryList = userService.getUserHistory(revType);
+        return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
 

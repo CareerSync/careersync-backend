@@ -79,6 +79,23 @@ public class ReportController {
     }
 
     /**
+     * 신고 내역 CUD 히스토리 조회
+     * [GET] /app/reports/history/:revType
+     * revType 종류
+     * - Create: 0
+     * - Update: 1
+     * - Delete: 2
+     * @return BaseResponse<List<GetUserRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/history/{revType}")
+    public BaseResponse<List<GetReportRes>> getReportHistory(@PathVariable("revType") Long revType) {
+        List<GetReportRes> getReportHistoryList = reportService.getReportHistory(revType);
+        return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
      * 신고내역 카테고리 수정 API
      * [PATCH] /app/reports/:postId
      * @return BaseResponse<String>
