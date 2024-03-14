@@ -1,11 +1,10 @@
 package com.example.demo.src.post;
 
 import com.example.demo.common.response.BaseResponse;
-import com.example.demo.src.post.model.GetPostRes;
-import com.example.demo.src.post.model.PatchPostReq;
-import com.example.demo.src.post.model.PostPostReq;
-import com.example.demo.src.post.model.PostPostRes;
+import com.example.demo.src.post.model.*;
+import com.example.demo.src.user.model.GetUserLogRes;
 import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.src.user.model.PostUserLogTimeReq;
 import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
@@ -78,20 +77,43 @@ public class PostController {
     }
 
     /**
-     * 게시물 내역 CUD 히스토리 조회
-     * [GET] /app/posts/history/:revType
+     * 회원 CUD 히스토리 전체 조회
+     * [GET] /app/posts/log/history
+     *
+     * 회원 CUD 히스토리 선택 조회
+     * [GET] /app/posts/log/history? revType=
      * revType 종류
-     * - Create: 0
-     * - Update: 1
-     * - Delete: 2
-     * @return BaseResponse<List<GetPostRes>>
+     * - Create: INSERT
+     * - Update: UPDATE
+     * - Delete: DELETE
+     * @return BaseResponse<List<GetPostLogRes>>
      */
     // Path-variable
     @ResponseBody
-    @GetMapping("/history/{revType}")
-    public BaseResponse<List<GetPostRes>> getPostHistory(@PathVariable("revType") Long revType) {
-        List<GetPostRes> getPostHistoryList = postService.getPostHistory(revType);
+    @GetMapping("/log/history")
+    public BaseResponse<List<GetPostLogRes>> getPostHistory(@RequestParam(required = false) String revType) {
+
+        if (revType == null) {
+            List<GetPostLogRes> postHistoryByTime = postService.getPostHistory();
+            return new BaseResponse<>(postHistoryByTime, messageUtils.getMessage("SUCCESS"));
+        }
+
+        List<GetPostLogRes> getPostHistoryList = postService.getPostHistoryByRevType(revType);
         return new BaseResponse<>(getPostHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 회원 CUD 히스토리 시간 기준 조회
+     * [POST] /app/posts/history/time
+     @return BaseResponse<List<GetPostLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @PostMapping("/log/history/time")
+    public BaseResponse<List<GetPostLogRes>> getPostHistoryByTime(@RequestBody PostUserLogTimeReq req) {
+
+        List<GetPostLogRes> getUserHistoryList = postService.getPostHistoryByTime(req);
+        return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
