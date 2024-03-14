@@ -2,18 +2,24 @@ package com.example.demo.src.post.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 import static com.example.demo.common.entity.BaseEntity.State.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static javax.persistence.FetchType.*;
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false)
 @Getter
 @Entity
+@JsonAutoDetect(fieldVisibility = ANY)
 @Audited
 @Table(name = "TB_POST")
 public class Post extends BaseEntity {
@@ -24,10 +30,10 @@ public class Post extends BaseEntity {
     private Long id;
 
     @Column(length = 2200)
-    @Audited(withModifiedFlag = true)
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotAudited
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "userId")
     private User user;
 
