@@ -3,6 +3,7 @@ package com.example.demo.src.post.entity;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import static com.example.demo.common.entity.BaseEntity.State.*;
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @Entity
+@Audited
 @Table(name = "TB_POST")
 public class Post extends BaseEntity {
 
@@ -22,6 +24,7 @@ public class Post extends BaseEntity {
     private Long id;
 
     @Column(length = 2200)
+    @Audited(withModifiedFlag = true)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

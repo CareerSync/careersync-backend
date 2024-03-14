@@ -6,15 +6,18 @@ import com.example.demo.src.report.model.GetReportUserRes;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetUserRes;
 import lombok.*;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
 import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
+import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = false)
 @Getter
 @Entity
+@Audited
 @Table(name = "TB_REPORT")
 public class Report extends BaseEntity {
 
@@ -24,6 +27,7 @@ public class Report extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, length = 30)
+    @Audited(withModifiedFlag = true)
     private String category;
 
     @ManyToOne(fetch = FetchType.LAZY)
