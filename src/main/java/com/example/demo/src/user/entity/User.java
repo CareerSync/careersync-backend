@@ -1,15 +1,32 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.report.entity.Report;
+import com.example.demo.src.test.entity.Comment;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
+import org.hibernate.envers.RelationTargetAuditMode;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.demo.common.entity.BaseEntity.State.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static org.hibernate.envers.RelationTargetAuditMode.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = false)
 @Getter
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
+@JsonAutoDetect(fieldVisibility = ANY)
+@Audited
 @Table(name = "TB_USER") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
 public class User extends BaseEntity {
 
@@ -49,8 +66,20 @@ public class User extends BaseEntity {
     private boolean locationTerm;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "state", nullable = false, length = 10)
+    @Column(nullable = false, length = 10)
     private AccountState accountState = AccountState.ACTIVE;
+
+    // 양방향 매핑
+    @NotAudited
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<Post> postList = new ArrayList<>();
+
+    // 양방향 매핑
+    @NotAudited
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<Report> reportList = new ArrayList<>();
 
     public enum AccountState {
         ACTIVE, DORMANT, BLOCKED;
@@ -80,8 +109,19 @@ public class User extends BaseEntity {
         this.privacyDate = privacyDate;
     }
 
+    // 관리자가 신고당한 유저의 계정 정지
+    public void updateAccountState(AccountState accountState) {
+        this.accountState = accountState;
+    }
+
     public void deleteUser() {
-        this.state = State.INACTIVE;
+        this.state = INACTIVE;
+    }
+
+    // 연관관계 편의 메서드
+    public void addPost(Post post) {
+        post.setUser(this);
+        postList.add(post);
     }
 
 }

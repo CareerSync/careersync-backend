@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.oauth.OAuthService;
+import com.example.demo.src.user.entity.User;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.user.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.bridge.Message;
+import org.springframework.data.history.Revisions;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -94,6 +96,45 @@ public class UserController {
         return new BaseResponse<>(getUserRes, messageUtils.getMessage("SUCCESS"));
     }
 
+    /**
+     * 회원 CUD 히스토리 전체 조회
+     * [GET] /app/users/history
+     *
+     * 회원 CUD 히스토리 선택 조회
+     * [GET] /app/users/history? revType=
+     * revType 종류
+     * - Create: INSERT
+     * - Update: UPDATE
+     * - Delete: DELETE
+     * @return BaseResponse<List<GetUserLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/log/history")
+    public BaseResponse<List<GetUserLogRes>> getUserHistory(@RequestParam(required = false) String revType) {
+
+        if (revType == null) {
+            List<GetUserLogRes> getUserHistoryList = userService.getUserHistory();
+            return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
+        }
+
+        List<GetUserLogRes> getUserHistoryList = userService.getUserHistoryByRevType(revType);
+        return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 회원 CUD 히스토리 시간 기준 조회
+     * [POST] /app/users/history/time
+     @return BaseResponse<List<GetUserLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @PostMapping("/log/history/time")
+    public BaseResponse<List<GetUserLogRes>> getUserHistoryByTime(@RequestBody PostUserLogTimeReq req) {
+
+        List<GetUserLogRes> getUserHistoryList = userService.getUserHistoryByTime(req);
+        return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
 
 
     /**
@@ -120,7 +161,7 @@ public class UserController {
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PatchMapping("/{userId}")
+    @DeleteMapping("/{userId}")
     public BaseResponse<String> deleteUser(@PathVariable("userId") Long userId){
         Long jwtUserId = jwtService.getUserId();
 
