@@ -27,11 +27,14 @@ public enum BaseResponseStatus {
     POST_TEST_EXISTS_MEMO(false,HttpStatus.BAD_REQUEST.value(),"중복된 메모입니다."),
     POST_REPORT_EXISTS_USER_AND_POST(false,HttpStatus.BAD_REQUEST.value(),"중복된 신고 내역입니다."),
     REVTYPE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"잘못된 revision type 값입니다."),
+    PAYMENT_PRICE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"결제한 금액과 저장된 상품 금액이 다릅니다."),
 
     RESPONSE_ERROR(false, HttpStatus.NOT_FOUND.value(), "값을 불러오는데 실패하였습니다."),
 
     DUPLICATED_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "중복된 이메일입니다."),
     DUPLICATED_ITEM(false, HttpStatus.BAD_REQUEST.value(), "중복된 상품입니다."),
+    DUPLICATED_IMP_UID(false, HttpStatus.BAD_REQUEST.value(), "중복된 아임포트 고유번호입니다."),
+    DUPLICATED_MERCHANT_UID(false, HttpStatus.BAD_REQUEST.value(), "중복된 거래 고유번호입니다."),
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),
     INVALID_POST(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 게시글입니다."),
@@ -42,6 +45,7 @@ public enum BaseResponseStatus {
     NOT_FIND_USER(false,HttpStatus.NOT_FOUND.value(),"일치하는 유저가 없습니다."),
     NOT_FIND_POST(false,HttpStatus.NOT_FOUND.value(),"일치하는 게시물이 없습니다."),
     NOT_FIND_REPORT(false, HttpStatus.NOT_FOUND.value(),"일치하는 신고 내역이 없습니다."),
+    NOT_FIND_ITEM(false, HttpStatus.NOT_FOUND.value(),"일치하는 상품이 없습니다."),
     INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
 
 
