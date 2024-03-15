@@ -1,6 +1,7 @@
 package com.example.demo.src.payment.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.src.service.entity.Service;
 import com.example.demo.src.subscription.entity.Subscription;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -30,8 +31,8 @@ public class Payment extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "subscriptionId")
-    private Subscription subscription;
+    @JoinColumn(name = "serviceId")
+    private Service service;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false, length = 10)
