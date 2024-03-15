@@ -1,9 +1,9 @@
 package com.example.demo.src.service.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,11 +15,11 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 @Getter
 @Entity
 @JsonAutoDetect(fieldVisibility = ANY)
-@Table(name = "TB_SERVICE")
-public class Service extends BaseEntity {
+@Table(name = "TB_ITEM")
+public class Item extends BaseEntity {
 
     @Id
-    @Column(name = "serviceId", nullable = false, updatable = false)
+    @Column(name = "itemId", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -28,5 +28,12 @@ public class Service extends BaseEntity {
 
     @Column(nullable = false)
     private int price;
+
+    @Builder
+    public Item(Long id, String name, int price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
 
 }
