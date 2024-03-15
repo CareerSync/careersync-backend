@@ -158,10 +158,12 @@ public class PaymentService {
                     .map(GetPaymentRes::new)
                     .collect(Collectors.toList());
         }
-        else  {
+        else if(paymentState.equals(FAIL)) {
             return paymentRepository.findAllByPaymentState(FAIL).stream()
                     .map(GetPaymentRes::new)
                     .collect(Collectors.toList());
+        } else {
+            throw new BaseException(PAYMENT_TYPE_ERROR);
         }
     }
 
