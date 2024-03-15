@@ -31,6 +31,11 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false
+  imp:
+    code: imp57126857
+    api-key: 6868120223521311
+    api-secret-key: qmMYtwNFNVu8yAnC6v1sfWwRLn83DSIJelqouYIxEG829oupHI3gFSA6QVUnOKGr25W66TqW7rYvRcM4
+
 
 spring.sql.init.platform: mysql
 server:
