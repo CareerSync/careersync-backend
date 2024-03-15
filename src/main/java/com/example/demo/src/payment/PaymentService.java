@@ -3,10 +3,7 @@ package com.example.demo.src.payment;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponseStatus;
-import com.example.demo.src.payment.model.CancelReq;
-import com.example.demo.src.payment.model.PaymentReq;
-import com.example.demo.src.payment.model.PaymentRes;
-import com.example.demo.src.payment.model.VerificationReq;
+import com.example.demo.src.payment.model.*;
 import com.example.demo.src.service.ItemRepository;
 import com.example.demo.src.service.entity.Item;
 import com.example.demo.src.user.UserRepository;
@@ -28,10 +25,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.*;
 import static com.example.demo.common.response.BaseResponseStatus.*;
+import static com.example.demo.src.payment.entity.Payment.*;
 import static com.example.demo.src.payment.entity.Payment.PaymentState.*;
 import static com.example.demo.src.payment.entity.Payment.PaymentState.SUCCESS;
 import static org.springframework.transaction.annotation.Propagation.*;
@@ -58,7 +58,7 @@ public class PaymentService {
         this.iamportClient = new IamportClient(apiKey, secretKey);
     }
 
-    // POST
+    // GET
     public void startPayment(HttpServletResponse response) throws IOException {
 
         // 회원이 아니라면 에러반환
@@ -142,10 +142,33 @@ public class PaymentService {
         out.flush();
     }
 
+    @Transactional(readOnly = true)
+    public List<GetPaymentRes> getPayments() {
+        List<GetPaymentRes> paymentResList = paymentRepository.findAll().stream()
+                .map(GetPaymentRes::new)
+                .collect(Collectors.toList());
 
-//    public IamportResponse<Payment> validateIamport(VerificationReq req) {
+        return paymentResList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetPaymentRes> getPaymentsByState(PaymentState paymentState) {
+        if (paymentState.equals(SUCCESS)) {
+            return paymentRepository.findAllByPaymentState(SUCCESS).stream()
+                    .map(GetPaymentRes::new)
+                    .collect(Collectors.toList());
+        }
+        else  {
+            return paymentRepository.findAllByPaymentState(FAIL).stream()
+                    .map(GetPaymentRes::new)
+                    .collect(Collectors.toList());
+        }
+    }
+
+
+    // POST
     @Transactional(noRollbackFor = BaseException.class)
-        public PaymentRes validateIamport(VerificationReq req) {
+    public PaymentRes validateIamport(VerificationReq req) {
 
         String impUid = req.getImpUid();
         String merchantUid = req.getMerchantUid();
@@ -180,8 +203,8 @@ public class PaymentService {
             throw new BaseException(DUPLICATED_IMP_UID);
         }
 
-            // 이미 등록된 주문 번호면 결제 실패
-            Optional<com.example.demo.src.payment.entity.Payment> findPaymentByMerchantUid = paymentRepository.findByMerchantUidAndState(merchantUid, ACTIVE);
+        // 이미 등록된 주문 번호면 결제 실패
+        Optional<com.example.demo.src.payment.entity.Payment> findPaymentByMerchantUid = paymentRepository.findByMerchantUidAndState(merchantUid, ACTIVE);
 
         if (findPaymentByMerchantUid.isPresent()){
             // 결제 실패 기록 남기기
@@ -192,27 +215,26 @@ public class PaymentService {
         }
 
         // db에 저장된 상품 금액과 사용자가 결제한 금액이 같은지 확인
-            // 금액이 다르면 결제 취소
+        // 금액이 다르면 결제 취소
+        int itemDBPrice = findItem.get().getPrice();
 
-            int itemDBPrice = findItem.get().getPrice();
+        if (itemDBPrice != amount) {
+            // 결제 실패 기록 남기기
+            savePayment(user, item, impUid, merchantUid, FAIL);
 
-            if (itemDBPrice != amount) {
-                // 결제 실패 기록 남기기
-                savePayment(user, item, impUid, merchantUid, FAIL);
+            // 결제 실패 했으므로, 전액 환불
+            cancelReservationWithFullRefund(impUid);
+            throw new BaseException(PAYMENT_PRICE_ERROR);
+        }
 
-                // 결제 실패 했으므로, 전액 환불
-                cancelReservationWithFullRefund(impUid);
-                throw new BaseException(PAYMENT_PRICE_ERROR);
-            }
-
-            // 결제 성공 기록 남기기
-            return savePayment(user, item, impUid, merchantUid, SUCCESS);
+        // 결제 성공 기록 남기기
+        return savePayment(user, item, impUid, merchantUid, SUCCESS);
 
     }
 
     public PaymentRes savePayment(User user, Item item, String impUid, String merchantUid,
-                                  com.example.demo.src.payment.entity.Payment.PaymentState paymentState) {
-        com.example.demo.src.payment.entity.Payment payment = com.example.demo.src.payment.entity.Payment.builder()
+                                  PaymentState paymentState) {
+        com.example.demo.src.payment.entity.Payment payment = builder()
                 .user(user)
                 .item(item)
                 .impUid(impUid)

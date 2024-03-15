@@ -31,7 +31,7 @@ public class Payment extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "serviceId")
+    @JoinColumn(name = "itemId")
     private Item item;
 
     @Column(nullable = false)

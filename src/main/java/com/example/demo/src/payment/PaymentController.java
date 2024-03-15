@@ -1,10 +1,7 @@
 package com.example.demo.src.payment;
 
 import com.example.demo.common.response.BaseResponse;
-import com.example.demo.src.payment.model.CancelReq;
-import com.example.demo.src.payment.model.PaymentReq;
-import com.example.demo.src.payment.model.PaymentRes;
-import com.example.demo.src.payment.model.VerificationReq;
+import com.example.demo.src.payment.model.*;
 import com.example.demo.utils.MessageUtils;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
@@ -15,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+
+import static com.example.demo.src.payment.entity.Payment.*;
 
 @RestController
 @Slf4j
@@ -56,5 +56,27 @@ public class PaymentController {
         IamportResponse<Payment> cancelResponse = paymentService.cancelReservation(cancelReq);
         return new BaseResponse<>(cancelResponse, messageUtils.getMessage("SUCCESS"));
     }
+
+    /**
+     *  결제 내역 조회 API
+     * [GET] /app/payment? paymentState
+     * RequestParam
+     * - SUCCESS : 성공한 결제 로그만 보여줌
+     * - FAIL : 실패한 결제 로그만 보여줌
+     * - 없을 경우, 모든 결제 로그 조회
+     * @return BaseResponse<List<GetPayment>>
+     */
+    @GetMapping("")
+    public BaseResponse<List<GetPaymentRes>> cancelPayment(@RequestParam(name = "paymentState", required = false) PaymentState paymentState){
+
+        if (paymentState == null) {
+            List<GetPaymentRes> payments = paymentService.getPayments();
+            return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
+        }
+
+        List<GetPaymentRes> payments = paymentService.getPaymentsByState(paymentState);
+        return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
+    }
+
 
 }
