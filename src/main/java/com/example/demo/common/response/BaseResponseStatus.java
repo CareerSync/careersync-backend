@@ -31,6 +31,7 @@ public enum BaseResponseStatus {
     RESPONSE_ERROR(false, HttpStatus.NOT_FOUND.value(), "값을 불러오는데 실패하였습니다."),
 
     DUPLICATED_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "중복된 이메일입니다."),
+    DUPLICATED_ITEM(false, HttpStatus.BAD_REQUEST.value(), "중복된 상품입니다."),
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),
     INVALID_POST(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 게시글입니다."),
