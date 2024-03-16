@@ -147,8 +147,9 @@ public class UserController {
     public BaseResponse<String> modifyUserName(@PathVariable("userId") Long userId, @RequestBody PatchUserReq patchUserReq){
 
         Long jwtUserId = jwtService.getUserId();
+        log.info("jwtUserId: {}", jwtUserId);
 
-        userService.modifyUserName(userId, patchUserReq);
+        userService.modifyUserName(jwtUserId, patchUserReq);
 
         String result = "수정 완료!!";
         return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
@@ -156,8 +157,39 @@ public class UserController {
     }
 
     /**
+     * 유저 생일정보 변경 API
+     * [PATCH] /app/users/:userId/birthDate
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userId}/birthDate")
+    public BaseResponse<String> modifyBirthDate(@PathVariable("userId") Long userId, @RequestBody PatchUserBirthDateReq req){
+        Long jwtUserId = jwtService.getUserId();
+
+        userService.modifyBirthDate(jwtUserId, req);
+
+        String result = "유저 생일 정보 적용 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 유저 이용약관 수정 API
+     * [PATCH] /app/users/:userId/privacyTerm
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userId}/privacyTerm")
+    public BaseResponse<String> modifyPrivacyTerm(@PathVariable("userId") Long userId, @RequestBody PatchUserPrivacyTermReq req){
+        Long jwtUserId = jwtService.getUserId();
+
+        userService.modifyPrivacy(jwtUserId, req);
+        String result = "유저 이용 약관 정보 적용 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
      * 유저정보삭제 API
-     * [PATCH] /app/users/:userId
+     * [DELETE] /app/users/:userId
      * @return BaseResponse<String>
      */
     @ResponseBody
@@ -165,7 +197,7 @@ public class UserController {
     public BaseResponse<String> deleteUser(@PathVariable("userId") Long userId){
         Long jwtUserId = jwtService.getUserId();
 
-        userService.deleteUser(userId);
+        userService.deleteUser(jwtUserId);
 
         String result = "삭제 완료!!";
         return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
@@ -179,7 +211,7 @@ public class UserController {
     @ResponseBody
     @PostMapping("/logIn")
     public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-        // TODO: 로그인 값들에 대한 형식적인 validatin 처리해주셔야합니다!
+        // TODO: 로그인 값들에 대한 형식적인 validation 처리해주셔야합니다!
         // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
         PostLoginRes postLoginRes = userService.logIn(postLoginReq);
         return new BaseResponse<>(postLoginRes, messageUtils.getMessage("SUCCESS"));

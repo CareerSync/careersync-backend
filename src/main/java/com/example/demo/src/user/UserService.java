@@ -2,6 +2,7 @@ package com.example.demo.src.user;
 
 
 
+import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -10,25 +11,23 @@ import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.demo.common.Constant.SocialLoginType.*;
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
-import static org.hibernate.envers.RevisionType.*;
+import static com.example.demo.src.user.entity.User.AccountState.*;
 
 // Service Create, Update, Delete 의 로직 처리
 @Transactional
@@ -41,9 +40,23 @@ public class UserService {
     private final JwtService jwtService;
     private final AuditReader auditReader;
 
-
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
+
+        // 소셜 로그인인지 구분
+        boolean oAuth = postUserReq.isOAuth();
+
+        log.info("oAuth : {}", oAuth);
+
+        // 소셜 로그인을 사용하기로 메세지 넘기기
+        if (oAuth) {
+//            validateSocialLoginType(postUserReq.getSocialLoginType());
+            log.info("wrong login request");
+            // GOOGLE, KAKAO, NAVER, APPLE 중 하나라면 소셜 로그인 진행 후 회원가입 진행
+            //createOAuthUser(postUserReq);
+            throw new BaseException(INVALID_LOGIN_METHOD);
+        }
+
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
         if(checkUser.isPresent()){
@@ -58,12 +71,21 @@ public class UserService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
+        // 일반 로그인
         User saveUser = userRepository.save(postUserReq.toEntity());
         return new PostUserRes(saveUser.getId());
 
     }
 
+    private void validateSocialLoginType(SocialLoginType socialLoginType) {
+        if (!(socialLoginType.equals(GOOGLE) || socialLoginType.equals(KAKAO) ||
+                socialLoginType.equals(NAVER) || socialLoginType.equals(APPLE))) {
+            throw new BaseException(INVALID_OAUTH_TYPE);
+        }
+    }
+
     public PostUserRes createOAuthUser(User user) {
+
         User saveUser = userRepository.save(user);
 
         // JWT 발급
@@ -72,9 +94,20 @@ public class UserService {
 
     }
 
+
+
+
     public PostLoginRes logIn(PostLoginReq postLoginReq) {
         User user = userRepository.findByEmailAndState(postLoginReq.getEmail(), ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+        if (user.getAccountState().equals(BLOCKED)) {
+            throw new BaseException(USER_BLOCKED_ERROR);
+        }
+
+        if (user.getState().equals(INACTIVE)) {
+            throw new BaseException(USER_INACTIVE_ERROR);
+        }
 
         String encryptPwd;
         try {
@@ -86,7 +119,7 @@ public class UserService {
         if(user.getPassword().equals(encryptPwd)){
             Long userId = user.getId();
             String jwt = jwtService.createJwt(userId);
-            return new PostLoginRes(userId,jwt);
+            return new PostLoginRes(userId, jwt);
         } else{
             throw new BaseException(FAILED_TO_LOGIN);
         }
@@ -98,6 +131,19 @@ public class UserService {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         user.updateName(patchUserReq.getName());
+    }
+
+    public void modifyBirthDate(Long userId, PatchUserBirthDateReq birthDateReq) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updateBirthDate(birthDateReq.getLocalDate());
+    }
+
+    public void modifyPrivacy(Long userId, PatchUserPrivacyTermReq privacyTermReq) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updatePrivacyTerm(privacyTermReq.isServiceTerm(), privacyTermReq.isDataTerm(),
+                privacyTermReq.isLocationTerm());
     }
 
     // DELETE

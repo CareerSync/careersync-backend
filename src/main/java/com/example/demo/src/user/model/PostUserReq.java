@@ -1,5 +1,7 @@
 package com.example.demo.src.user.model;
 
+import com.example.demo.common.Constant;
+import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.src.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +20,7 @@ public class PostUserReq {
     private String password;
     private String name;
     private String profileImgUrl;
+    private SocialLoginType socialLoginType;
 
     private boolean isOAuth;
     private boolean serviceTerm;
@@ -37,6 +40,7 @@ public class PostUserReq {
                 .birthDate(this.birthDate)
                 .privacyDate(LocalDate.now().plusYears(1))
                 .profileImgUrl(this.profileImgUrl)
+
                 .serviceTerm(this.serviceTerm)
                 .dataTerm(this.dataTerm)
                 .locationTerm(this.locationTerm)

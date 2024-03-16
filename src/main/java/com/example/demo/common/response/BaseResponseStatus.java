@@ -30,7 +30,9 @@ public enum BaseResponseStatus {
     PAYMENT_TYPE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"잘못된 payment type 값입니다."),
     PAYMENT_PRICE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"결제한 금액과 저장된 상품 금액이 다릅니다."),
     SUBSCRIPTION_ERROR(false,HttpStatus.BAD_REQUEST.value(),"결제 실패 혹은 이미 환불된 결제 내역의 상품을 구독하려 합니다."),
-
+    INVALID_LOGIN_METHOD(false,HttpStatus.BAD_REQUEST.value(),"소셜 로그인 방식을 사용해주세요."),
+    USER_BLOCKED_ERROR(false,HttpStatus.BAD_REQUEST.value(),"차단당한 유저입니다."),
+    USER_INACTIVE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"탈퇴한 유저입니다."),
     RESPONSE_ERROR(false, HttpStatus.NOT_FOUND.value(), "값을 불러오는데 실패하였습니다."),
 
     DUPLICATED_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "중복된 이메일입니다."),
