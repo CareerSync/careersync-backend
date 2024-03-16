@@ -111,9 +111,9 @@ public class PaymentService {
                 "                    pg: \"html5_inicis\",\t\t//KG이니시스 pg파라미터 값\n" +
                 "                    pay_method: \"card\",\t\t//결제 방법\n" +
                 "                    merchant_uid: 'merchant_' + new Date().getTime(), //주문번호\n" +
-                "                    name: '당근',\t\t//상품 명\n" +
-                "                    amount: 300,\t\t\t//금액\n" +
-                "         \t\t\t\tbuyer_email: \"shinsj4653@gmail.com\",\n" +
+                "                    name: '당근100',\t\t//상품 명\n" +
+                "                    amount: 100,\t\t\t//금액\n" +
+                "         \t\t\t\tbuyer_email: \"shin@gmail.com\",\n" +
                 "      \t\t\t\tbuyer_name: \"홍길동\",\n" +
                 "      \t\t\t\tbuyer_tel: \"010-4242-4242\",\n" +
                 "      \t\t\t\tbuyer_addr: \"서울특별시 강남구 신사동\",\n" +
