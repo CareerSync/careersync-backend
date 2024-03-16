@@ -29,6 +29,7 @@ public enum BaseResponseStatus {
     REVTYPE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"잘못된 revision type 값입니다."),
     PAYMENT_TYPE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"잘못된 payment type 값입니다."),
     PAYMENT_PRICE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"결제한 금액과 저장된 상품 금액이 다릅니다."),
+    SUBSCRIPTION_ERROR(false,HttpStatus.BAD_REQUEST.value(),"결제 실패 혹은 이미 환불된 결제 내역의 상품을 구독하려 합니다."),
 
     RESPONSE_ERROR(false, HttpStatus.NOT_FOUND.value(), "값을 불러오는데 실패하였습니다."),
 
@@ -36,9 +37,12 @@ public enum BaseResponseStatus {
     DUPLICATED_ITEM(false, HttpStatus.BAD_REQUEST.value(), "중복된 상품입니다."),
     DUPLICATED_IMP_UID(false, HttpStatus.BAD_REQUEST.value(), "중복된 아임포트 고유번호입니다."),
     DUPLICATED_MERCHANT_UID(false, HttpStatus.BAD_REQUEST.value(), "중복된 거래 고유번호입니다."),
+    DUPLICATED_SUBSCRIPTION(false, HttpStatus.BAD_REQUEST.value(), "중복된 유저 혹은 상품입니다."),
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),
     INVALID_POST(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 게시글입니다."),
+    INVALID_PAYMENT_USER(false, HttpStatus.NOT_FOUND.value(), "결제 내역에 존재하지 않는 유저입니다."),
+    INVALID_PAYMENT_ITEM(false, HttpStatus.NOT_FOUND.value(), "결제 내역에 존재하지 않는 상품입니다."),
     FAILED_TO_LOGIN(false,HttpStatus.NOT_FOUND.value(),"없는 아이디거나 비밀번호가 틀렸습니다."),
     EMPTY_JWT(false, HttpStatus.UNAUTHORIZED.value(), "JWT를 입력해주세요."),
     INVALID_JWT(false, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
