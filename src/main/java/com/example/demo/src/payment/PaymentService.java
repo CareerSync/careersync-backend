@@ -75,10 +75,11 @@ public class PaymentService {
 
         ResponseCookie cookie = ResponseCookie.from("Lax", "Lax")
                 .path("/")
-                .sameSite("Lax")
-                .httpOnly(true)
+                .sameSite("None")
+                .secure(true)
                 .domain("gridgetest-server.shop")
                 .build();
+
         response.addHeader("Set-Cookie",cookie.toString());
 
         PrintWriter out = response.getWriter();
