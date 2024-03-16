@@ -74,10 +74,10 @@ public class PaymentService {
         response.setContentType("text/html; charset=UTF-8");
 
         ResponseCookie cookie = ResponseCookie.from("Lax", "Lax")
-                .path("/")
+                .path("/app/payment/startPayment")
                 .sameSite("None")
                 .secure(true)
-                .domain("https://gridgetest-server.shop")
+                .domain("gridgetest-server.shop")
                 .build();
 
         response.addHeader("Set-Cookie",cookie.toString());
