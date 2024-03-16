@@ -112,7 +112,7 @@ public class PaymentService {
                 "                            url: \"/app/payment/validate\", \n" +
                 "                            method: \"POST\",\n" +
                 "                            contentType: \"application/json\",\n" +
-                "                            dataType: \"json\",\n" +
+                "                            dataType: \"jsonp\",\n" +
                 "                            data: JSON.stringify({\n" +
                 "                                impUid: rsp.imp_uid,            // 결제 고유번호\n" +
                 "                                merchantUid: rsp.merchant_uid,   // 주문번호\n" +
