@@ -75,7 +75,7 @@ public class PaymentService {
 
         ResponseCookie cookie = ResponseCookie.from("Lax", "Lax")
                 .path("/")
-                .sameSite("Secure")
+                .sameSite("None")
                 .secure(true)
                 .domain("gridgetest-server.shop")
                 .build();
