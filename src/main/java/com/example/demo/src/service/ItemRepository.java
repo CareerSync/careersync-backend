@@ -9,5 +9,6 @@ import static com.example.demo.common.entity.BaseEntity.*;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
+    Optional<Item> findByIdAndState(Long id, State state);
     Optional<Item> findByNameAndState(String name, State state);
 }

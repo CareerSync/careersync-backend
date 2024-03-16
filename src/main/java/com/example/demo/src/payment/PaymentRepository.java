@@ -2,6 +2,8 @@ package com.example.demo.src.payment;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.payment.entity.Payment;
+import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -15,4 +17,10 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByMerchantUidAndState(String merchantUid, State state);
 
     List<Payment> findAllByPaymentState(PaymentState paymentState);
+
+    Optional<Payment> findByUser(User user);
+    Optional<Payment> findByItem(Item item);
+
+    Optional<Payment> findByUserAndItem(User user, Item item);
+
 }
