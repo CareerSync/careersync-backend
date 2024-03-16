@@ -1,10 +1,12 @@
 package com.example.demo.src.subscription.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.service.entity.Service;
+import com.example.demo.src.payment.entity.Payment;
+import com.example.demo.src.service.entity.Item;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,10 +28,27 @@ public class Subscription extends BaseEntity {
     private Long id;
 
     @OneToOne
+    @JoinColumn(name = "userId")
     private User user;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "serviceId")
-    private Service service;
+    private Item item;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private SubscriptionState subscriptionState;
+
+    public enum SubscriptionState {
+        SUCCESS, FAIL
+    }
+
+    @Builder
+    public Subscription(Long id, User user, Item item, SubscriptionState subscriptionState) {
+        this.id = id;
+        this.user = user;
+        this.item = item;
+        this.subscriptionState = subscriptionState;
+    }
 
 }
