@@ -71,7 +71,7 @@ public class PaymentService {
 //            throw new BaseException(NOT_FIND_ITEM);
 //        }
         response.setCharacterEncoding("UTF-8");
-        response.setContentType("text/html; chartset=UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
 
         ResponseCookie cookie = ResponseCookie.from("Lax", "Lax")
                 .path("/")
