@@ -30,7 +30,9 @@ import java.util.stream.Collectors;
 
 import static com.example.demo.common.Constant.SocialLoginType.*;
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
+import static com.example.demo.src.user.entity.User.AccountState.*;
 import static org.hibernate.envers.RevisionType.*;
 
 // Service Create, Update, Delete 의 로직 처리
@@ -53,7 +55,7 @@ public class UserService {
 
         // 소셜 로그인을 사용하기로 메세지 넘기기
         if (oAuth) {
-            throw new BaseException(INVALID_LOGIN_METHOD);
+
         }
 
         //중복 체크
@@ -89,6 +91,14 @@ public class UserService {
         User user = userRepository.findByEmailAndState(postLoginReq.getEmail(), ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
+        if (user.getAccountState().equals(BLOCKED)) {
+            throw new BaseException(USER_BLOCKED_ERROR);
+        }
+
+        if (user.getState().equals(INACTIVE)) {
+            throw new BaseException(USER_INACTIVE_ERROR);
+        }
+
         String encryptPwd;
         try {
             encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
@@ -99,7 +109,7 @@ public class UserService {
         if(user.getPassword().equals(encryptPwd)){
             Long userId = user.getId();
             String jwt = jwtService.createJwt(userId);
-            return new PostLoginRes(userId,jwt);
+            return new PostLoginRes(userId, jwt);
         } else{
             throw new BaseException(FAILED_TO_LOGIN);
         }
