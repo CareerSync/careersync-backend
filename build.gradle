@@ -23,6 +23,10 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
+jar {
+    enabled = false
+}
+
 dependencies {
     implementation 'org.jetbrains:annotations:23.0.0'
 

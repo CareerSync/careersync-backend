@@ -40,7 +40,7 @@ public class TestController {
     @GetMapping("/log")
     public String logTest() {
         log.info("테스트");
-        return "Success Test";
+        return "Success CI/CD Test";
     }
 
     /**
