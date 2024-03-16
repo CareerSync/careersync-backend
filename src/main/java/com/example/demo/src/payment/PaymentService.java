@@ -2,6 +2,7 @@ package com.example.demo.src.payment;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.payment.IamportClientInitializer;
 import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.payment.model.*;
 import com.example.demo.src.service.ItemRepository;
@@ -55,7 +56,8 @@ public class PaymentService {
 
     @PostConstruct
     public void init() {
-        this.iamportClient = new IamportClient(apiKey, secretKey);
+        IamportClientInitializer clientInitializer = new IamportClientInitializer(apiKey, secretKey);
+        this.iamportClient = clientInitializer.initializeIamportClient();
     }
 
     // GET
