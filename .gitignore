@@ -5,4 +5,4 @@ logs/
 out/
 
 # resources
-./src/main/resources/application.yml
+application.yml

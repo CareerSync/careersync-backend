@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @RevisionEntity
-@Table(name = "REVINFO")
+@Table(name = "TB_REVINFO")
 public class Revision implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REV_SEQ")
