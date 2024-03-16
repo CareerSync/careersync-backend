@@ -60,6 +60,7 @@ dependencies {
 
     // Swagger
     implementation ('org.springdoc:springdoc-openapi-ui:1.6.14')
+    //implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.1.0'
 
     // Envers
     implementation ('org.springframework.data:spring-data-envers')
