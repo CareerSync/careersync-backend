@@ -1,4 +1,4 @@
-package com.example.demo.src.service.entity;
+package com.example.demo.src.item.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;

@@ -1,7 +1,6 @@
 package com.example.demo.src.subscription;
 
-import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.subscription.entity.Subscription;
 import com.example.demo.src.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,9 +1,9 @@
-package com.example.demo.src.service;
+package com.example.demo.src.item;
 
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.service.entity.Item;
-import com.example.demo.src.service.model.PostItemReq;
-import com.example.demo.src.service.model.PostItemRes;
+import com.example.demo.src.item.entity.Item;
+import com.example.demo.src.item.model.PostItemReq;
+import com.example.demo.src.item.model.PostItemRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

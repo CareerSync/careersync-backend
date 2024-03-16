@@ -1,7 +1,7 @@
 package com.example.demo.src.payment.model;
 
 import com.example.demo.src.payment.entity.Payment;
-import com.example.demo.src.service.model.GetItemRes;
+import com.example.demo.src.item.model.GetItemRes;
 import com.example.demo.src.user.model.GetUserRes;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

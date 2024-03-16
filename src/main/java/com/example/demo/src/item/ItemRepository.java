@@ -1,6 +1,6 @@
-package com.example.demo.src.service;
+package com.example.demo.src.item;
 
-import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.item.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

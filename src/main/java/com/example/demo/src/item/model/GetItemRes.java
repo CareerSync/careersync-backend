@@ -1,6 +1,6 @@
-package com.example.demo.src.service.model;
+package com.example.demo.src.item.model;
 
-import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.item.entity.Item;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

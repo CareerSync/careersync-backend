@@ -2,13 +2,10 @@ package com.example.demo.common.scheduler;
 
 import com.example.demo.common.payment.IamportClientInitializer;
 import com.example.demo.src.payment.PaymentRepository;
-import com.example.demo.src.service.ItemRepository;
-import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.subscription.SubscriptionRepository;
 import com.example.demo.src.user.UserRepository;
-import com.example.demo.src.user.UserService;
 import com.example.demo.src.user.entity.User;
-import com.example.demo.src.user.model.GetUserRes;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CancelData;
@@ -24,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 
@@ -142,7 +137,5 @@ public class SchedulerService {
 
         return new AgainPaymentData(customData, merchantUid, amount);
     }
-
-
 
 }

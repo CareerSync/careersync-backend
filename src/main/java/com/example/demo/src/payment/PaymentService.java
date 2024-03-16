@@ -1,12 +1,10 @@
 package com.example.demo.src.payment;
 
-import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.payment.IamportClientInitializer;
-import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.payment.model.*;
-import com.example.demo.src.service.ItemRepository;
-import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.item.ItemRepository;
+import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.siot.IamportRestClient.IamportClient;
@@ -17,11 +15,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -35,7 +31,6 @@ import static com.example.demo.common.response.BaseResponseStatus.*;
 import static com.example.demo.src.payment.entity.Payment.*;
 import static com.example.demo.src.payment.entity.Payment.PaymentState.*;
 import static com.example.demo.src.payment.entity.Payment.PaymentState.SUCCESS;
-import static org.springframework.transaction.annotation.Propagation.*;
 
 @Transactional
 @RequiredArgsConstructor
@@ -113,7 +108,7 @@ public class PaymentService {
                 "      \t\t\t\t//rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.\n" +
                 "                    if (rsp.success) {\n" +
                 "                        $.ajax({\n" +
-                "                            url: \"/app/payment/validate\", \n" +
+                "                            url: \"https://gridgetest-server.shop/app/payment/validate\", \n" +
                 "                            method: \"POST\",\n" +
                 "                            contentType: \"application/json\",\n" +
                 "                            data: JSON.stringify({\n" +

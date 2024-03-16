@@ -1,7 +1,7 @@
 package com.example.demo.src.payment.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.AccessLevel;

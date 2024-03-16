@@ -1,4 +1,4 @@
-package com.example.demo.src.service.model;
+package com.example.demo.src.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

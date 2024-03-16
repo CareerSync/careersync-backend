@@ -1,12 +1,10 @@
 package com.example.demo.src.subscription;
 
-import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.common.response.BaseResponseStatus;
 import com.example.demo.src.payment.PaymentRepository;
 import com.example.demo.src.payment.entity.Payment;
-import com.example.demo.src.service.ItemRepository;
-import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.item.ItemRepository;
+import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.subscription.entity.Subscription;
 import com.example.demo.src.subscription.model.PostSubscriptionReq;
 import com.example.demo.src.subscription.model.PostSubscriptionRes;
@@ -22,9 +20,7 @@ import java.util.Optional;
 
 import static com.example.demo.common.entity.BaseEntity.State.*;
 import static com.example.demo.common.response.BaseResponseStatus.*;
-import static com.example.demo.src.payment.entity.Payment.PaymentState.*;
 import static com.example.demo.src.payment.entity.Payment.PaymentState.FAIL;
-import static com.example.demo.src.subscription.entity.Subscription.SubscriptionState.*;
 
 
 @Transactional
