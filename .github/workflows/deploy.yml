@@ -63,3 +63,4 @@ jobs:
           sudo docker pull shinsj4653/gdsc-solution-challenge-team4-pointer:${GITHUB_SHA::7}
           sudo docker tag shinsj4653/gdsc-solution-challenge-team4-pointer:${GITHUB_SHA::7} gridge-test-server
           sudo docker-compose up -d
+          sudo docker image prune -f
