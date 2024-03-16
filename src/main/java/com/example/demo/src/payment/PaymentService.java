@@ -77,7 +77,7 @@ public class PaymentService {
                 .path("/")
                 .sameSite("None")
                 .secure(true)
-                .domain("gridgetest-server.shop")
+                .domain("https://gridgetest-server.shop")
                 .build();
 
         response.addHeader("Set-Cookie",cookie.toString());
@@ -124,7 +124,7 @@ public class PaymentService {
                 "      \t\t\t\t//rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.\n" +
                 "                    if (rsp.success) {\n" +
                 "                        $.ajax({\n" +
-                "                            url: \"/app/payment/validate\", \n" +
+                "                            url: \"https://gridgetest-server.shop/app/payment/validate\", \n" +
                 "                            beforeSend: function(xhr){ \n" +
                 "                               xhr.setRequestHeader(header, token); \n" +
                 "                            }, \n" +
