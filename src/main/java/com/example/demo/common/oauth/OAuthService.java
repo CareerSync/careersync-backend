@@ -1,6 +1,7 @@
 package com.example.demo.common.oauth;
 
 import com.example.demo.common.Constant;
+import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.UserService;
 import com.example.demo.src.user.model.*;
@@ -23,7 +24,7 @@ public class OAuthService {
     private final JwtService jwtService;
 
 
-    public void accessRequest(Constant.SocialLoginType socialLoginType) throws IOException {
+    public void accessRequest(SocialLoginType socialLoginType) throws IOException {
         String redirectURL;
         switch (socialLoginType){ //각 소셜 로그인을 요청하면 소셜로그인 페이지로 리다이렉트 해주는 프로세스이다.
             case GOOGLE:{
@@ -39,7 +40,7 @@ public class OAuthService {
     }
 
 
-    public GetSocialOAuthRes oAuthLoginOrJoin(Constant.SocialLoginType socialLoginType, String code) throws IOException {
+    public GetSocialOAuthRes oAuthLoginOrJoin(SocialLoginType socialLoginType, String code) throws IOException {
 
         switch (socialLoginType) {
             case GOOGLE: {

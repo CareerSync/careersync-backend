@@ -107,6 +107,24 @@ public class User extends BaseEntity {
         this.locationTerm = locationTerm;
     }
 
+    @Builder
+    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, LocalDate privacyDate, String profileImgUrl,
+                SocialLoginType socialLoginType, boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.isOAuth = isOAuth;
+        this.birthDate = birthDate;
+        this.privacyDate = privacyDate;
+        this.profileImgUrl = profileImgUrl;
+        this.socialLoginType = socialLoginType;
+        this.serviceTerm = serviceTerm;
+        this.dataTerm = dataTerm;
+        this.locationTerm = locationTerm;
+    }
+
+
     public void updateName(String name) {
         this.name = name;
     }

@@ -2,6 +2,8 @@ package com.example.demo.src.user;
 
 
 
+import com.example.demo.common.Constant;
+import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.demo.common.Constant.SocialLoginType.*;
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 import static org.hibernate.envers.RevisionType.*;
@@ -44,6 +47,15 @@ public class UserService {
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
+
+        // 소셜 로그인인지 구분해줘야함
+        boolean oAuth = postUserReq.isOAuth();
+
+        // 소셜 로그인을 사용하기로 메세지 넘기기
+        if (oAuth) {
+            throw new BaseException(INVALID_LOGIN_METHOD);
+        }
+
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
         if(checkUser.isPresent()){
@@ -58,8 +70,9 @@ public class UserService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
+        // 일반 로그인
         User saveUser = userRepository.save(postUserReq.toEntity());
-        return new PostUserRes(saveUser.getId());
+        return createOAuthUser(saveUser);
 
     }
 
