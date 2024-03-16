@@ -14,6 +14,7 @@ import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +72,15 @@ public class PaymentService {
 //        }
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; chartset=UTF-8");
+
+        ResponseCookie cookie = ResponseCookie.from("Lax", "Lax")
+                .path("/")
+                .sameSite("Lax")
+                .httpOnly(true)
+                .domain("gridgetest-server.shop")
+                .build();
+        response.addHeader("Set-Cookie",cookie.toString());
+
         PrintWriter out = response.getWriter();
         out.println("<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -147,6 +157,8 @@ public class PaymentService {
                 "</body>\n" +
                 "</html>");
         out.flush();
+
+
     }
 
     @Transactional(readOnly = true)
