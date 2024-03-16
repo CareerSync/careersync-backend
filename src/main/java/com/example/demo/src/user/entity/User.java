@@ -49,22 +49,22 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isOAuth;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDate birthDate;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDate privacyDate;
 
-    @Column(nullable = false)
+    @Column()
     private String profileImgUrl;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(columnDefinition = "TINYINT(1)")
     private boolean serviceTerm;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(columnDefinition = "TINYINT(1)")
     private boolean dataTerm;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(columnDefinition = "TINYINT(1)")
     private boolean locationTerm;
 
     @Enumerated(EnumType.STRING)
@@ -90,6 +90,17 @@ public class User extends BaseEntity {
         ACTIVE, DORMANT, BLOCKED;
     }
 
+    // 구글 로그인 전용 Builder
+    @Builder
+    public User(Long id, String email, String password, String name, boolean isOAuth, String profileImgUrl, SocialLoginType socialLoginType) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.isOAuth = isOAuth;
+        this.socialLoginType = socialLoginType;
+        this.profileImgUrl = profileImgUrl;
+    }
 
     @Builder
     public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, LocalDate privacyDate, String profileImgUrl,
@@ -136,6 +147,17 @@ public class User extends BaseEntity {
     // 관리자가 신고당한 유저의 계정 정지
     public void updateAccountState(AccountState accountState) {
         this.accountState = accountState;
+    }
+
+    public void updateBirthDate(LocalDate localDate) {
+        this.birthDate = localDate;
+    }
+
+    public void updatePrivacyTerm(boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
+        this.serviceTerm = serviceTerm;
+        this.dataTerm = dataTerm;
+        this.locationTerm = locationTerm;
+        this.privacyDate = LocalDate.now();
     }
 
     public void deleteUser() {
