@@ -77,8 +77,8 @@ public class PaymentService {
                 "<head>\n" +
                 "    <!-- jQuery -->\n" +
                 "    <meta http-equiv=\"Content-Security-Policy\" content=\"upgrade-insecure-requests\">\n" +
-//                "    <meta name=\"_csrf\" th:content=\"${_csrf.token}\">\n" +
-//                "    <meta name=\"_csrf_header\" th:content=\"${_csrf.headerName}\">\n" +
+                "    <meta name=\"_csrf\" id=\"_csrf\" content=\"${_csrf.token}\">\n" +
+                "    <meta name=\"_csrf_header\" id=\"_csrf_header\" content=\"${_csrf.headerName}\">\n" +
                 "    <script\n" +
                 "            type=\"text/javascript\"\n" +
                 "            src=\"https://code.jquery.com/jquery-1.12.4.min.js\"\n" +
@@ -90,8 +90,8 @@ public class PaymentService {
                 "    ></script>\n" +
                 "    <script>\n" +
                 "        var IMP = window.IMP;\n" +
-               // "        var header = $(\"meta[name='_csrf_header']\").attr('content');\n" +
-                //"        var token = $(\"meta[name='_csrf']\").attr('content');\n" +
+                "        var header = $(\"meta[name='_csrf_header']\").attr('content');\n" +
+                "        var token = $(\"meta[name='_csrf']\").attr('content');\n" +
                 "        IMP.init('imp57126857');\n" +
                 "\n" +
                 "        function requestPay() {\n" +
@@ -114,9 +114,9 @@ public class PaymentService {
                 "                    if (rsp.success) {\n" +
                 "                        $.ajax({\n" +
                 "                            url: \"/app/payment/validate\", \n" +
-                //"                            beforeSend: function(xhr){ \n" +
-                //"                           xhr.setRequestHeader(header, token); \n" +
-                //"                            }, \n" +
+                "                            beforeSend: function(xhr){ \n" +
+                "                               xhr.setRequestHeader(header, token); \n" +
+                "                            }, \n" +
                 "                            method: \"POST\",\n" +
                 "                            contentType: \"application/json\",\n" +
                 "                            dataType: \"json\",\n" +

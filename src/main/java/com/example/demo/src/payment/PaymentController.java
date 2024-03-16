@@ -41,7 +41,7 @@ public class PaymentController {
      * @return BaseResponse<PaymentRes>
      */
     @PostMapping("/validate")
-    public BaseResponse<PaymentRes> validateIamport(@RequestParam VerificationReq req) {
+    public BaseResponse<PaymentRes> validateIamport(@RequestBody VerificationReq req) {
         PaymentRes paymentRes = paymentService.validateIamport(req);
         return new BaseResponse<>(paymentRes, messageUtils.getMessage("SUCCESS"));
     }
