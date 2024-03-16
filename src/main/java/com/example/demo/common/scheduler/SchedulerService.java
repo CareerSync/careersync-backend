@@ -4,11 +4,13 @@ import com.example.demo.common.payment.IamportClientInitializer;
 import com.example.demo.src.payment.PaymentRepository;
 import com.example.demo.src.service.ItemRepository;
 import com.example.demo.src.service.entity.Item;
+import com.example.demo.src.subscription.SubscriptionRepository;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.UserService;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetUserRes;
 import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.request.AgainPaymentData;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
@@ -23,6 +25,7 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
@@ -35,6 +38,7 @@ public class SchedulerService {
 
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private IamportClient iamportClient;
 
 
@@ -102,5 +106,43 @@ public class SchedulerService {
         //결제 취소
         iamportClient.cancelPaymentByImpUid(cancelData);
     }
+
+    @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
+    public void nextPaymentForSubscription() {
+        log.info("구독 상품이 있는 사용자들에 대해서 결제 후, 다음 결제 날짜 업데이트");
+
+        LocalDate now = LocalDate.now();
+        LocalDate oneMonthAfterDate = now.plusMonths(1);
+
+        subscriptionRepository.findAllByState(ACTIVE)
+                .forEach((subscription) -> {
+                    User user = subscription.getUser();
+                    Item item = subscription.getItem();
+                    LocalDate nextPaymentDate = subscription.getNextPaymentDate();
+
+                    if (nextPaymentDate.equals(now)) {
+                        log.info("{} 회원님, 구독하신 상품에 대한 정기결제를 진행하겠습니다.", user.getName());
+                        Optional<com.example.demo.src.payment.entity.Payment> findPayment = paymentRepository.findByUserAndItem(user, item);
+
+                        com.example.demo.src.payment.entity.Payment payment = findPayment.get();
+                        String impUid = payment.getImpUid();
+                        IamportResponse<Payment> paymentIamportResponse = iamportClient.paymentByImpUid(impUid);
+
+                        AgainPaymentData againPaymentData = createAgainPaymentData(paymentIamportResponse);
+                        iamportClient.againPayment(againPaymentData);
+                        subscription.updateNextPaymentDate(oneMonthAfterDate);
+                    }
+                });
+    }
+
+    private AgainPaymentData createAgainPaymentData(IamportResponse<Payment> paymentIamportResponse) {
+        String customData = paymentIamportResponse.getResponse().getCustomData();
+        String merchantUid = paymentIamportResponse.getResponse().getMerchantUid();
+        BigDecimal amount = paymentIamportResponse.getResponse().getAmount();
+
+        return new AgainPaymentData(customData, merchantUid, amount);
+    }
+
+
 
 }
