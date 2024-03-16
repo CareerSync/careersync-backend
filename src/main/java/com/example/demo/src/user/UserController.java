@@ -157,8 +157,39 @@ public class UserController {
     }
 
     /**
+     * 유저 생일정보 변경 API
+     * [PATCH] /app/users/:userId/birthDate
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userId}/birthDate")
+    public BaseResponse<String> modifyBirthDate(@PathVariable("userId") Long userId, @RequestBody PatchUserBirthDateReq req){
+        Long jwtUserId = jwtService.getUserId();
+
+        userService.modifyBirthDate(jwtUserId, req);
+
+        String result = "유저 생일 정보 적용 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 유저 이용약관 수정 API
+     * [PATCH] /app/users/:userId/privacyTerm
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{userId}/privacyTerm")
+    public BaseResponse<String> modifyPrivacyTerm(@PathVariable("userId") Long userId, @RequestBody PatchUserPrivacyTermReq req){
+        Long jwtUserId = jwtService.getUserId();
+
+        userService.modifyPrivacy(jwtUserId, req);
+        String result = "유저 이용 약관 정보 적용 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
      * 유저정보삭제 API
-     * [PATCH] /app/users/:userId
+     * [DELETE] /app/users/:userId
      * @return BaseResponse<String>
      */
     @ResponseBody

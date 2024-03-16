@@ -68,6 +68,8 @@ public class OAuthService {
                 }else { // user가 DB에 없다면, 회원가입 진행
                     // 유저 정보 저장
                     PostUserRes postUserRes = userService.createOAuthUser(googleUser.toEntity());
+
+
                     GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(postUserRes.getJwt(), postUserRes.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
                     return getSocialOAuthRes;
                 }

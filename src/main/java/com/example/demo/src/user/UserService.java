@@ -2,7 +2,6 @@ package com.example.demo.src.user;
 
 
 
-import com.example.demo.common.Constant;
 import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
@@ -12,17 +11,13 @@ import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +28,6 @@ import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 import static com.example.demo.src.user.entity.User.AccountState.*;
-import static org.hibernate.envers.RevisionType.*;
 
 // Service Create, Update, Delete 의 로직 처리
 @Transactional
@@ -46,19 +40,21 @@ public class UserService {
     private final JwtService jwtService;
     private final AuditReader auditReader;
 
-
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
 
-        // 소셜 로그인인지 구분해줘야함
+        // 소셜 로그인인지 구분
         boolean oAuth = postUserReq.isOAuth();
+
+        log.info("oAuth : {}", oAuth);
 
         // 소셜 로그인을 사용하기로 메세지 넘기기
         if (oAuth) {
-            validateSocialLoginType(postUserReq.getSocialLoginType());
-
+//            validateSocialLoginType(postUserReq.getSocialLoginType());
+            log.info("wrong login request");
             // GOOGLE, KAKAO, NAVER, APPLE 중 하나라면 소셜 로그인 진행 후 회원가입 진행
-
+            //createOAuthUser(postUserReq);
+            throw new BaseException(INVALID_LOGIN_METHOD);
         }
 
         //중복 체크
@@ -89,6 +85,7 @@ public class UserService {
     }
 
     public PostUserRes createOAuthUser(User user) {
+
         User saveUser = userRepository.save(user);
 
         // JWT 발급
@@ -96,6 +93,9 @@ public class UserService {
         return new PostUserRes(saveUser.getId(), jwtToken);
 
     }
+
+
+
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) {
         User user = userRepository.findByEmailAndState(postLoginReq.getEmail(), ACTIVE)
@@ -131,6 +131,19 @@ public class UserService {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         user.updateName(patchUserReq.getName());
+    }
+
+    public void modifyBirthDate(Long userId, PatchUserBirthDateReq birthDateReq) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updateBirthDate(birthDateReq.getLocalDate());
+    }
+
+    public void modifyPrivacy(Long userId, PatchUserPrivacyTermReq privacyTermReq) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updatePrivacyTerm(privacyTermReq.isServiceTerm(), privacyTermReq.isDataTerm(),
+                privacyTermReq.isLocationTerm());
     }
 
     // DELETE
