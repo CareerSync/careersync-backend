@@ -1,5 +1,6 @@
 package com.example.demo.src.user.entity;
 
+import com.example.demo.common.Constant;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.post.entity.Post;
 import com.example.demo.src.report.entity.Report;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo.common.Constant.*;
 import static com.example.demo.common.entity.BaseEntity.State.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
@@ -69,6 +71,9 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 10)
     private AccountState accountState = AccountState.ACTIVE;
 
+    @Column(length = 10)
+    private SocialLoginType socialLoginType;
+
     // 양방향 매핑
     @NotAudited
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -84,6 +89,7 @@ public class User extends BaseEntity {
     public enum AccountState {
         ACTIVE, DORMANT, BLOCKED;
     }
+
 
     @Builder
     public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, LocalDate privacyDate, String profileImgUrl,
