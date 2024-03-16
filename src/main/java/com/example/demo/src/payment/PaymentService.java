@@ -109,9 +109,10 @@ public class PaymentService {
                 "      \t\t\t\t//rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.\n" +
                 "                    if (rsp.success) {\n" +
                 "                        $.ajax({\n" +
-                "                            url: \"https://gridgetest-server.shop/app/payment/validate\", \n" +
+                "                            url: \"/app/payment/validate\", \n" +
                 "                            method: \"POST\",\n" +
                 "                            contentType: \"application/json\",\n" +
+                "                            dataType: \"json\",\n" +
                 "                            data: JSON.stringify({\n" +
                 "                                impUid: rsp.imp_uid,            // 결제 고유번호\n" +
                 "                                merchantUid: rsp.merchant_uid,   // 주문번호\n" +
