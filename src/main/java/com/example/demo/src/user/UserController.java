@@ -147,8 +147,9 @@ public class UserController {
     public BaseResponse<String> modifyUserName(@PathVariable("userId") Long userId, @RequestBody PatchUserReq patchUserReq){
 
         Long jwtUserId = jwtService.getUserId();
+        log.info("jwtUserId: {}", jwtUserId);
 
-        userService.modifyUserName(userId, patchUserReq);
+        userService.modifyUserName(jwtUserId, patchUserReq);
 
         String result = "수정 완료!!";
         return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
@@ -165,7 +166,7 @@ public class UserController {
     public BaseResponse<String> deleteUser(@PathVariable("userId") Long userId){
         Long jwtUserId = jwtService.getUserId();
 
-        userService.deleteUser(userId);
+        userService.deleteUser(jwtUserId);
 
         String result = "삭제 완료!!";
         return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));

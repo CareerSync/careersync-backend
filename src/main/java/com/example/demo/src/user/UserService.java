@@ -55,6 +55,9 @@ public class UserService {
 
         // 소셜 로그인을 사용하기로 메세지 넘기기
         if (oAuth) {
+            validateSocialLoginType(postUserReq.getSocialLoginType());
+
+            // GOOGLE, KAKAO, NAVER, APPLE 중 하나라면 소셜 로그인 진행 후 회원가입 진행
 
         }
 
@@ -74,8 +77,15 @@ public class UserService {
 
         // 일반 로그인
         User saveUser = userRepository.save(postUserReq.toEntity());
-        return createOAuthUser(saveUser);
+        return new PostUserRes(saveUser.getId());
 
+    }
+
+    private void validateSocialLoginType(SocialLoginType socialLoginType) {
+        if (!(socialLoginType.equals(GOOGLE) || socialLoginType.equals(KAKAO) ||
+                socialLoginType.equals(NAVER) || socialLoginType.equals(APPLE))) {
+            throw new BaseException(INVALID_OAUTH_TYPE);
+        }
     }
 
     public PostUserRes createOAuthUser(User user) {
