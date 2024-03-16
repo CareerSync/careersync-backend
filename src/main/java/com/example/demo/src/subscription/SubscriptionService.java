@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static com.example.demo.common.entity.BaseEntity.State.*;
@@ -88,9 +89,14 @@ public class SubscriptionService {
 
     private PostSubscriptionRes saveSubscription(User user, Item item,
                                                  Subscription.SubscriptionState subscriptionState) {
+
+        LocalDate now = LocalDate.now();
+        LocalDate oneMonthAfterDate = now.plusMonths(1);
+
         Subscription subscription = Subscription.builder()
                 .user(user)
                 .item(item)
+                .nextPaymentDate(oneMonthAfterDate)
                 .subscriptionState(subscriptionState)
                 .build();
 

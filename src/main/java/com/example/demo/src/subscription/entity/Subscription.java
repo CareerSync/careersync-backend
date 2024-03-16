@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.time.LocalDate;
+
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static javax.persistence.FetchType.*;
 
@@ -35,6 +37,9 @@ public class Subscription extends BaseEntity {
     @JoinColumn(name = "serviceId")
     private Item item;
 
+    @Column(nullable = false)
+    private LocalDate nextPaymentDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private SubscriptionState subscriptionState;
@@ -44,11 +49,16 @@ public class Subscription extends BaseEntity {
     }
 
     @Builder
-    public Subscription(Long id, User user, Item item, SubscriptionState subscriptionState) {
+    public Subscription(Long id, User user, Item item, LocalDate nextPaymentDate, SubscriptionState subscriptionState) {
         this.id = id;
         this.user = user;
         this.item = item;
+        this.nextPaymentDate = nextPaymentDate;
         this.subscriptionState = subscriptionState;
+    }
+
+    public void updateNextPaymentDate(LocalDate date) {
+        this.nextPaymentDate = date;
     }
 
 }
