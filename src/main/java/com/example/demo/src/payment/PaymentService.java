@@ -121,6 +121,7 @@ public class PaymentService {
                 "                            }),\n" +
                 "                        }).done(function (data) {\n" +
                 "                            // 가맹점 서버 결제 API 성공시 로직\n" +
+                "                        alert(\"결제에 성공하였습니다. 에러 내용: \" + data.imp_uid);\n" +
                 "                        })\n" +
                 "                    } else {\n" +
                 "                        alert(\"결제에 실패하였습니다. 에러 내용: \" + rsp.error_msg);\n" +
@@ -169,6 +170,7 @@ public class PaymentService {
     // POST
     @Transactional(noRollbackFor = BaseException.class)
     public PaymentRes validateIamport(VerificationReq req) {
+        log.info("validateIamport start!");
 
         String impUid = req.getImpUid();
         String merchantUid = req.getMerchantUid();
@@ -179,12 +181,16 @@ public class PaymentService {
         Optional<User> findUser = userRepository.findByEmailAndState(buyerEmail, ACTIVE);
 
         if (!findUser.isPresent()) {
+            log.info("findUser not found");
+
             throw new BaseException(NOT_FIND_USER);
         }
 
         Optional<Item> findItem = itemRepository.findByNameAndState(name, ACTIVE);
 
         if (!findItem.isPresent()) {
+            log.info("findItem not found");
+
             throw new BaseException(NOT_FIND_ITEM);
         }
 
@@ -228,6 +234,7 @@ public class PaymentService {
         }
 
         // 결제 성공 기록 남기기
+        log.info("결제 성공!");
         return savePayment(user, item, impUid, merchantUid, SUCCESS);
 
     }
@@ -248,6 +255,7 @@ public class PaymentService {
     }
 
     public void cancelReservationWithFullRefund(String impUid){
+        log.info("cancelReservationWithFullRefund");
         IamportResponse<Payment> response = iamportClient.paymentByImpUid(impUid);
         //cancelData 생성
         CancelData cancelData = createCancelData(response, 0);
