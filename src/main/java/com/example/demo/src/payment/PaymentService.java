@@ -76,6 +76,7 @@ public class PaymentService {
                 "<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <!-- jQuery -->\n" +
+                "    <meta http-equiv=\"Content-Security-Policy\" content=\"upgrade-insecure-requests\">\n" +
                 "    <script\n" +
                 "            type=\"text/javascript\"\n" +
                 "            src=\"https://code.jquery.com/jquery-1.12.4.min.js\"\n" +
