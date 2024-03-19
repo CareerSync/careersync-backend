@@ -36,4 +36,16 @@ public class Item extends BaseEntity {
         this.price = price;
     }
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePrice(int price) {
+        this.price = price;
+    }
+
+    public void updateState(State state) {
+        this.state = state;
+    }
+
 }
