@@ -43,6 +43,7 @@ public enum BaseResponseStatus {
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),
     INVALID_POST(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 게시글입니다."),
+    INVALID_PAYMENT(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 결제 내역입니다."),
     INVALID_PAYMENT_USER(false, HttpStatus.NOT_FOUND.value(), "결제 내역에 존재하지 않는 유저입니다."),
     INVALID_PAYMENT_ITEM(false, HttpStatus.NOT_FOUND.value(), "결제 내역에 존재하지 않는 상품입니다."),
     FAILED_TO_LOGIN(false,HttpStatus.NOT_FOUND.value(),"없는 아이디거나 비밀번호가 틀렸습니다."),
