@@ -81,7 +81,7 @@ public class PaymentService {
                 .domain("gridgetest-server.shop")
                 .build();
 
-        response.addHeader("Set-Cookie",cookie.toString());
+        response.addHeader("Set-Cookie", cookie.toString());
 
         PrintWriter out = response.getWriter();
         out.println("<!DOCTYPE html>\n" +
@@ -100,6 +100,16 @@ public class PaymentService {
                 "            type=\"text/javascript\"\n" +
                 "            src=\"https://cdn.iamport.kr/js/iamport.payment-1.2.0.js\"\n" +
                 "    ></script>\n" +
+                "    <!-- common.js -->\n" +
+                "    <script type=\"text/javascript\">\n" +
+                "        var csrfToken = $(\"meta[name='_csrf']\").attr(\"content\");\n" +
+                "        $.ajaxPrefilter(function(options, originalOptions, jqXHR){\n" +
+                "            if (options['type'].toLowerCase() === \"post\") {\n" +
+                "                jqXHR.setRequestHeader('X-CSRF-TOKEN', csrfToken);\n" +
+                "            }\n" +
+                "        });\n" +
+                "    </script>\n" +
+                "    <!-- Your existing script -->\n" +
                 "    <script>\n" +
                 "        var IMP = window.IMP;\n" +
                 "        var header = $(\"meta[name='_csrf_header']\").attr('content');\n" +
@@ -127,10 +137,7 @@ public class PaymentService {
                 "      \t\t\t\t//rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.\n" +
                 "                    if (rsp.success) {\n" +
                 "                        $.ajax({\n" +
-                "                            url: \"/app/payment/validate\", \n"+
-                //"                            beforeSend: function(xhr){ \n" +
-                //"                               xhr.setRequestHeader(header, token); \n" +
-                //"                            }, \n" +
+                "                            url: \"/app/payment/validate\", \n" +
                 "                            method: \"POST\",\n" +
                 "                            contentType: \"application/json\",\n" +
                 "                            data: JSON.stringify({\n" +
@@ -142,8 +149,8 @@ public class PaymentService {
                 "                            }),\n" +
                 "                        }).done(function (data) {\n" +
                 "                            // 가맹점 서버 결제 API 성공시 로직\n" +
-                "                        alert(\"결제에 성공하였습니다. 에러 내용: \" + data.imp_uid);\n" +
-                "                        })\n" +
+                "                            alert(\"결제에 성공하였습니다. 에러 내용: \" + data.imp_uid);\n" +
+                "                        });\n" +
                 "                    } else {\n" +
                 "                        alert(\"결제에 실패하였습니다. 에러 내용: \" + rsp.error_msg);\n" +
                 "                    }\n" +
