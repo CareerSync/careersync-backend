@@ -23,7 +23,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi chatOpenApi() {
-        String[] paths = {"/**", "/swagger-ui/**"};
+        String[] paths = {"/**", "/swagger-ui/**", "https://gridgetest-server.shop"};
 
         return GroupedOpenApi.builder()
                 .group("demo 서비스 API v1")

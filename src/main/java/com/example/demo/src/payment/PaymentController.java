@@ -8,6 +8,7 @@ import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import retrofit2.http.GET;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +43,7 @@ public class PaymentController {
      */
     @PostMapping("/validate")
     public BaseResponse<PaymentRes> validateIamport(@RequestBody VerificationReq req) {
+        log.info("validateImport contoller");
         PaymentRes paymentRes = paymentService.validateIamport(req);
         return new BaseResponse<>(paymentRes, messageUtils.getMessage("SUCCESS"));
     }

@@ -113,7 +113,7 @@ public class PaymentService {
                 "                    merchant_uid: 'merchant_' + new Date().getTime(), //주문번호\n" +
                 "                    name: '당근100',\t\t//상품 명\n" +
                 "                    amount: 100,\t\t\t//금액\n" +
-                "         \t\t\t\tbuyer_email: \"shin@gmail.com\",\n" +
+                "         \t\t\t\tbuyer_email: \"shinsj4653@gmail.com\",\n" +
                 "      \t\t\t\tbuyer_name: \"홍길동\",\n" +
                 "      \t\t\t\tbuyer_tel: \"010-4242-4242\",\n" +
                 "      \t\t\t\tbuyer_addr: \"서울특별시 강남구 신사동\",\n" +
@@ -121,16 +121,17 @@ public class PaymentService {
                 "     \t\n" +
                 "                },\n" +
                 "                function (rsp) {\n" +
+                "                console.log(\"request pay success\"); \n" +
+                "                alert(\"request pay success\"); \n" +
                 "      \t\t\t\t//rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.\n" +
                 "                    if (rsp.success) {\n" +
                 "                        $.ajax({\n" +
-                "                            url: \"https://gridgetest-server.shop/app/payment/validate\", \n" +
-                "                            beforeSend: function(xhr){ \n" +
-                "                               xhr.setRequestHeader(header, token); \n" +
-                "                            }, \n" +
+                "                            url: \"/app/payment/validate\", \n"+
+                //"                            beforeSend: function(xhr){ \n" +
+                //"                               xhr.setRequestHeader(header, token); \n" +
+                //"                            }, \n" +
                 "                            method: \"POST\",\n" +
                 "                            contentType: \"application/json\",\n" +
-                "                            dataType: \"json\",\n" +
                 "                            data: JSON.stringify({\n" +
                 "                                impUid: rsp.imp_uid,            // 결제 고유번호\n" +
                 "                                merchantUid: rsp.merchant_uid,   // 주문번호\n" +
@@ -191,7 +192,7 @@ public class PaymentService {
     // POST
     @Transactional(noRollbackFor = BaseException.class)
     public PaymentRes validateIamport(VerificationReq req) {
-        log.info("validateIamport start!");
+        log.info("validateIamport service");
 
         String impUid = req.getImpUid();
         String merchantUid = req.getMerchantUid();
