@@ -77,6 +77,7 @@ public class PaymentService {
                 .path("/app/payment/startPayment")
                 .sameSite("None")
                 .secure(true)
+                .domain("http://localhost:9000")
                 .domain("gridgetest-server.shop")
                 .build();
 
@@ -159,8 +160,6 @@ public class PaymentService {
                 "</body>\n" +
                 "</html>");
         out.flush();
-
-
     }
 
     @Transactional(readOnly = true)
