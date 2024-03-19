@@ -12,6 +12,8 @@ import static com.example.demo.common.entity.BaseEntity.*;
 import static com.example.demo.src.payment.entity.Payment.*;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
+    Optional<Payment> findByIdAndState(Long id, State state);
+
     Optional<Payment> findByImpUidAndState(String impUid, State state);
     Optional<Payment> findByMerchantUidAndState(String merchantUid, State state);
 

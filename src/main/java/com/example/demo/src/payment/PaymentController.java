@@ -69,7 +69,7 @@ public class PaymentController {
      * @return BaseResponse<List<GetPayment>>
      */
     @GetMapping("")
-    public BaseResponse<List<GetPaymentRes>> cancelPayment(@RequestParam(name = "paymentState", required = false) PaymentState paymentState){
+    public BaseResponse<List<GetPaymentRes>> getPayments(@RequestParam(name = "paymentState", required = false) PaymentState paymentState){
 
         if (paymentState == null) {
             List<GetPaymentRes> payments = paymentService.getPayments();
@@ -80,5 +80,31 @@ public class PaymentController {
         return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
     }
 
+    /**
+     *  결제 내역 수정 API
+     * [PATCH] /app/payment/:paymentId
+     * RequestBody
+     * PatchPaymentReq
+     * - merchantUid: 주문번호
+     * @return BaseResponse<String>
+     */
+    @PatchMapping("/{paymentId}")
+    public BaseResponse<String> modifyPaymentMerchantUid(@PathVariable("paymentId") Long paymentId, @RequestBody PatchPaymentReq req){
+        paymentService.modifyPaymentMerchantUid(paymentId, req);
+        String result = "결제 내역 주문번호 수정 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     *  결제 내역 삭제 API
+     * [DELETE] /app/payment/:paymentId
+     * @return BaseResponse<String>
+     */
+    @DeleteMapping("/{paymentId}")
+    public BaseResponse<String> deletePayment(@PathVariable("paymentId") Long paymentId){
+        paymentService.deletePayment(paymentId);
+        String result = "결제 내역 삭제 완료";
+        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+    }
 
 }

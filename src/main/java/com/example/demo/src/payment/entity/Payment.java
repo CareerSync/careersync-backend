@@ -62,4 +62,12 @@ public class Payment extends BaseEntity {
         this.state = state;
     }
 
+    public void updateImpUid(String impUid) {
+        this.impUid = impUid;
+    }
+
+    public void updateMerchantUid(String merchantUid) {
+        this.merchantUid = merchantUid;
+    }
+
 }

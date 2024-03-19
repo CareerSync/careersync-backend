@@ -316,4 +316,23 @@ public class PaymentService {
         //부분 환불일 경우 checksum을 입력해 준다.
         return new CancelData(response.getResponse().getImpUid(), true, new BigDecimal(refundAmount));
     }
+
+    // PATCH
+    public void modifyPaymentMerchantUid(Long paymentId, PatchPaymentReq req) {
+
+        com.example.demo.src.payment.entity.Payment payment = paymentRepository.findByIdAndState(paymentId, ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+
+        String merchantUid = req.getMerchantUid();
+        payment.updateMerchantUid(merchantUid);
+    }
+
+    // DELETE
+    public void deletePayment(Long paymentId) {
+
+        com.example.demo.src.payment.entity.Payment payment = paymentRepository.findByIdAndState(paymentId, ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+
+        payment.updateState(INACTIVE);
+    }
 }
