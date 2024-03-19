@@ -1,6 +1,6 @@
-package com.example.demo.src.post.model;
+package com.example.demo.src.feed.model;
 
-import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.feed.entity.Feed;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +10,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetPostRes {
+public class GetFeedRes {
     private Long id;
     private String content;
 
-    public GetPostRes(Post post) {
-        this.id = post.getId();
-        this.content = post.getContent();
+    public GetFeedRes(Feed feed) {
+        this.id = feed.getId();
+        this.content = feed.getContent();
     }
 }

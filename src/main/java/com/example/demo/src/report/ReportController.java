@@ -1,12 +1,7 @@
 package com.example.demo.src.report;
 
 import com.example.demo.common.response.BaseResponse;
-import com.example.demo.src.post.model.PatchPostReq;
-import com.example.demo.src.post.model.PostPostReq;
-import com.example.demo.src.post.model.PostPostRes;
 import com.example.demo.src.report.model.*;
-import com.example.demo.src.user.model.GetUserLogRes;
-import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.src.user.model.PostUserLogTimeReq;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;

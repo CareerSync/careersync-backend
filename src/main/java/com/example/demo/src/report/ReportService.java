@@ -1,15 +1,12 @@
 package com.example.demo.src.report;
 
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.post.PostRepository;
-import com.example.demo.src.post.entity.Post;
-import com.example.demo.src.post.model.PatchPostReq;
+import com.example.demo.src.feed.FeedRepository;
+import com.example.demo.src.feed.entity.Feed;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.report.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
-import com.example.demo.src.user.model.GetUserLogRes;
-import com.example.demo.src.user.model.GetUserRes;
 import com.example.demo.src.user.model.PostUserLogTimeReq;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
@@ -29,7 +26,6 @@ import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
-import static org.hibernate.envers.RevisionType.*;
 
 @Transactional
 @RequiredArgsConstructor
@@ -38,7 +34,7 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
-    private final PostRepository postRepository;
+    private final FeedRepository feedRepository;
     private final AuditReader auditReader;
 
     // POST
@@ -48,16 +44,16 @@ public class ReportService {
         User user = userRepository.findByIdAndState(req.getUserId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
-        Post post = postRepository.findByIdAndState(req.getPostId(), ACTIVE).
+        Feed feed = feedRepository.findByIdAndState(req.getPostId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_POST));
 
         // 이미 신고한 내역 있으면 중복 신고 안되도록 처리
-        Optional<Report> checkReport = reportRepository.findByUserIdAndPostId(user.getId(), post.getId());
+        Optional<Report> checkReport = reportRepository.findByUserIdAndPostId(user.getId(), feed.getId());
         if(checkReport.isPresent()){
             throw new BaseException(POST_REPORT_EXISTS_USER_AND_POST);
         }
 
-        Report saveReport = reportRepository.save(req.toEntity(user, post));
+        Report saveReport = reportRepository.save(req.toEntity(user, feed));
         return new PostReportRes(saveReport.getId(), saveReport.getCategory());
 
     }
@@ -75,7 +71,7 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<GetReportUserRes> getReportedUsers() {
         List<GetReportUserRes> getReportedUsers = reportRepository.findAllByState(ACTIVE).stream()
-                .map(report -> new GetReportUserRes(report, report.getReportedUser(report.getPost())))
+                .map(report -> new GetReportUserRes(report, report.getReportedUser(report.getFeed())))
                 .collect(Collectors.toList());
 
         return getReportedUsers;

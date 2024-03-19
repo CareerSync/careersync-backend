@@ -1,17 +1,13 @@
 package com.example.demo.src.user.entity;
 
-import com.example.demo.common.Constant;
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.feed.entity.Feed;
 import com.example.demo.src.report.entity.Report;
-import com.example.demo.src.test.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -20,9 +16,7 @@ import java.util.List;
 
 import static com.example.demo.common.Constant.*;
 import static com.example.demo.common.entity.BaseEntity.State.*;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static org.hibernate.envers.RelationTargetAuditMode.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -78,7 +72,7 @@ public class User extends BaseEntity {
     @NotAudited
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    List<Post> postList = new ArrayList<>();
+    List<Feed> feedList = new ArrayList<>();
 
     // 양방향 매핑
     @NotAudited
@@ -165,9 +159,9 @@ public class User extends BaseEntity {
     }
 
     // 연관관계 편의 메서드
-    public void addPost(Post post) {
-        post.setUser(this);
-        postList.add(post);
+    public void addPost(Feed feed) {
+        feed.setUser(this);
+        feedList.add(feed);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.example.demo.src.post.model;
+package com.example.demo.src.feed.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchPostReq {
+public class PatchFeedReq {
     private String content;
 }

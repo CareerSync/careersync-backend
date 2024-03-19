@@ -1,11 +1,8 @@
-package com.example.demo.src.post;
+package com.example.demo.src.feed;
 
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.post.entity.Post;
-import com.example.demo.src.post.model.*;
-import com.example.demo.src.report.entity.Report;
-import com.example.demo.src.report.model.GetReportRes;
-import com.example.demo.src.test.entity.Memo;
+import com.example.demo.src.feed.entity.Feed;
+import com.example.demo.src.feed.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -26,58 +23,57 @@ import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
-import static org.hibernate.envers.RevisionType.*;
 
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class PostService {
+public class FeedService {
 
-    private final PostRepository postRepository;
+    private final FeedRepository feedRepository;
     private final UserRepository userRepository;
     private final AuditReader auditReader;
 
     // POST
-    public PostPostRes createPost(PostPostReq req) {
+    public PostFeedRes createFeed(PostFeedReq req) {
 
         User user = userRepository.findByIdAndState(req.getUserId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
-        Post savePost = postRepository.save(req.toEntity(user));
-        return new PostPostRes(savePost.getId(), savePost.getContent());
+        Feed saveFeed = feedRepository.save(req.toEntity(user));
+        return new PostFeedRes(saveFeed.getId(), saveFeed.getContent());
     }
     // GET
     @Transactional(readOnly = true)
-    public List<GetPostRes> getPosts() {
-        List<GetPostRes> getPostsResList = postRepository.findAllByState(ACTIVE).stream()
-                .map(GetPostRes::new)
+    public List<GetFeedRes> getFeeds() {
+        List<GetFeedRes> getPostsResList = feedRepository.findAllByState(ACTIVE).stream()
+                .map(GetFeedRes::new)
                 .collect(Collectors.toList());
 
         return getPostsResList;
     }
 
     @Transactional(readOnly = true)
-    public List<GetPostRes> getPostsByUserId(Long userId) {
+    public List<GetFeedRes> getFeedsByUserId(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
-        List<GetPostRes> getPostsResList =  user.getPostList().stream()
+        List<GetFeedRes> getPostsResList =  user.getFeedList().stream()
                 .filter(post -> post.getState() == ACTIVE)
-                .map(GetPostRes::new)
+                .map(GetFeedRes::new)
                 .collect(Collectors.toList());
 
         return getPostsResList;
     }
 
     @Transactional(readOnly = true)
-    public GetPostRes getPost(Long postId) {
-        Post post = postRepository.findByIdAndState(postId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
-        return new GetPostRes(post);
+    public GetFeedRes getFeed(Long postId) {
+        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
+        return new GetFeedRes(feed);
     }
 
     @Transactional(readOnly = true)
-    public List<GetPostLogRes> getPostHistoryByRevType(String revType) {
+    public List<GetFeedLogRes> getFeedHistoryByRevType(String revType) {
 
         if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
             throw new BaseException(REVTYPE_ERROR);
@@ -85,114 +81,114 @@ public class PostService {
 
         List<Long> revIds = getRevIds();
 
-        List<GetPostLogRes> postLogs = new ArrayList<>();
+        List<GetFeedLogRes> postLogs = new ArrayList<>();
 
         revIds.stream()
                 .forEach((id) -> {
-                    getPostLogResByType(postLogs, id, revType);
+                    getFeedLogResByType(postLogs, id, revType);
                 });
 
         return postLogs;
     }
 
     @Transactional(readOnly = true)
-    public List<GetPostLogRes> getPostHistory() {
+    public List<GetFeedLogRes> getFeedHistory() {
 
         List<Long> revIds = getRevIds();
 
-        List<GetPostLogRes> postLogs = new ArrayList<>();
+        List<GetFeedLogRes> postLogs = new ArrayList<>();
 
         revIds.stream()
                 .forEach((id) -> {
-                    getPostLogRes(postLogs, id);
+                    getFeedLogRes(postLogs, id);
                 });
 
         return postLogs;
     }
 
     @Transactional(readOnly = true)
-    public List<GetPostLogRes> getPostHistoryByTime(PostUserLogTimeReq req) {
+    public List<GetFeedLogRes> getFeedHistoryByTime(PostUserLogTimeReq req) {
 
         LocalDateTime startTime = req.getStartTime();
         LocalDateTime endTime = req.getEndTime();
 
         List<Long> revIds = getRevIds();
 
-        List<GetPostLogRes> postLogs = new ArrayList<>();
+        List<GetFeedLogRes> postLogs = new ArrayList<>();
 
         revIds.stream()
                 .forEach((id) -> {
-                    getPostLogResByTime(postLogs, id, startTime, endTime);
+                    getFeedLogResByTime(postLogs, id, startTime, endTime);
                 });
 
         return postLogs;
     }
 
-    private void getPostLogResByType(List<GetPostLogRes> postLogs, Long rev, String revType) {
+    private void getFeedLogResByType(List<GetFeedLogRes> postLogs, Long rev, String revType) {
 
         String rType = revType;
 
-        Revisions<Long, Post> revisions = postRepository.findRevisions(rev);
+        Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
 
-        for (Revision<Long, Post> revision : revisions.getContent()) {
+        for (Revision<Long, Feed> revision : revisions.getContent()) {
             if (String.valueOf(revision.getMetadata().getRevisionType()).equals(rType)) {
                 postLogs.add(makeGetPostLogRes(revision));
             }
         }
     }
 
-    private void getPostLogRes(List<GetPostLogRes> postLogs, Long rev) {
+    private void getFeedLogRes(List<GetFeedLogRes> postLogs, Long rev) {
 
-        Revisions<Long, Post> revisions = postRepository.findRevisions(rev);
-        for (Revision<Long, Post> revision : revisions.getContent()) {
+        Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
+        for (Revision<Long, Feed> revision : revisions.getContent()) {
             postLogs.add(makeGetPostLogRes(revision));
         }
     }
 
-    private void getPostLogResByTime(List<GetPostLogRes> postLogs, Long rev,
+    private void getFeedLogResByTime(List<GetFeedLogRes> postLogs, Long rev,
                                      LocalDateTime startTime, LocalDateTime endTime) {
 
-        Revisions<Long, Post> revisions = postRepository.findRevisions(rev);
-        for (Revision<Long, Post> revision : revisions.getContent()) {
+        Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
+        for (Revision<Long, Feed> revision : revisions.getContent()) {
             Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
             LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
 
             if (!localDateTime.isBefore(startTime) && !localDateTime.isAfter(endTime)) {
-                GetPostLogRes getPostLogRes = makeGetPostLogRes(revision);
-                postLogs.add(getPostLogRes);
+                GetFeedLogRes getFeedLogRes = makeGetPostLogRes(revision);
+                postLogs.add(getFeedLogRes);
             }
 
         }
     }
 
-    private GetPostLogRes makeGetPostLogRes(Revision<Long, Post> revision) {
+    private GetFeedLogRes makeGetPostLogRes(Revision<Long, Feed> revision) {
         Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
         String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
 
         Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
-        return new GetPostLogRes(revisionNumber, revisionType, localDateTime);
+        return new GetFeedLogRes(revisionNumber, revisionType, localDateTime);
     }
 
     private List<Long> getRevIds() {
         return auditReader.createQuery()
-                .forRevisionsOfEntity(Post.class, false, false)
+                .forRevisionsOfEntity(Feed.class, false, false)
                 .addProjection(AuditEntity.id())
                 .getResultList();
     }
 
     // PATCH
-    public void modifyPostContent(Long postId, PatchPostReq patchPostReq) {
-        Post post = postRepository.findByIdAndState(postId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
-        post.updateContent(patchPostReq.getContent());
+    public void modifyPostContent(Long postId, PatchFeedReq patchPostReq) {
+        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
+        feed.updateContent(patchPostReq.getContent());
     }
 
     // DELETE
-    public void deletePost(Long postId) {
-        Post post = postRepository.findByIdAndState(postId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
-        post.deletePost();
+    public void deleteFeed(Long postId) {
+        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
+        feed.deleteFeed();
     }
 
 }

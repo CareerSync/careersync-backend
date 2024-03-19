@@ -1,11 +1,8 @@
-package com.example.demo.src.post;
+package com.example.demo.src.feed;
 
 import com.example.demo.common.response.BaseResponse;
-import com.example.demo.src.post.model.*;
-import com.example.demo.src.user.model.GetUserLogRes;
-import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.src.feed.model.*;
 import com.example.demo.src.user.model.PostUserLogTimeReq;
-import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -17,117 +14,117 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/app/posts")
-public class PostController {
+@RequestMapping("/app/feeds")
+public class FeedController {
 
-    private final PostService postService;
+    private final FeedService feedService;
     private final JwtService jwtService;
     private final MessageUtils messageUtils;
 
     /**
      * 게시물 등록 API
-     * [POST] /app/posts
-     * @return BaseResponse<PostPostRes>
+     * [POST] /app/feeds
+     * @return BaseResponse<PostFeedRes>
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostPostRes> createPost(@RequestBody PostPostReq postPostReq) {
+    public BaseResponse<PostFeedRes> createFeed(@RequestBody PostFeedReq postFeedReq) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 등록 가능
 
-        PostPostRes postRes = postService.createPost(postPostReq);
+        PostFeedRes postRes = feedService.createFeed(postFeedReq);
         return new BaseResponse<>(postRes, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
      * 게시물 조회 API
-     * [GET] /app/posts
+     * [GET] /app/feeds
      * 특정 유저가 작성한 게시물 조회 API
-     * [GET] /app/posts? userId =
+     * [GET] /app/feeds? userId =
      * @return BaseResponse<List<GetPostRes>>
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<List<GetPostRes>> getPosts(@RequestParam(required = false) Long userId) {
+    public BaseResponse<List<GetFeedRes>> getPosts(@RequestParam(required = false) Long userId) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
 
         if (userId == null) {
-            List<GetPostRes> getPosts = postService.getPosts();
+            List<GetFeedRes> getPosts = feedService.getFeeds();
             return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
         }
 
-        List<GetPostRes> getPosts = postService.getPostsByUserId(userId);
+        List<GetFeedRes> getPosts = feedService.getFeedsByUserId(userId);
         return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
      * 게시물 1개 조회 API
-     * [GET] /app/posts/:postId
+     * [GET] /app/feeds/:feedId
      * @return BaseResponse<GetPostRes>
      */
     @ResponseBody
-    @GetMapping("/{postId}")
-    public BaseResponse<GetPostRes> getPost(@PathVariable("postId") Long postId) {
+    @GetMapping("/{feedId}")
+    public BaseResponse<GetFeedRes> getFeed(@PathVariable("feedId") Long feedId) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
 
-        GetPostRes getPostRes = postService.getPost(postId);
-        return new BaseResponse<>(getPostRes, messageUtils.getMessage("SUCCESS"));
+        GetFeedRes getFeedRes = feedService.getFeed(feedId);
+        return new BaseResponse<>(getFeedRes, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
      * 게시물 CUD 히스토리 전체 조회
-     * [GET] /app/posts/log/history
+     * [GET] /app/feeds/log/history
      *
      * 게시물 CUD 히스토리 선택 조회
-     * [GET] /app/posts/log/history? revType=
+     * [GET] /app/feeds/log/history? revType=
      * revType 종류
      * - Create: INSERT
      * - Update: UPDATE
      * - Delete: DELETE
-     * @return BaseResponse<List<GetPostLogRes>>
+     * @return BaseResponse<List<GetFeedLogRes>>
      */
     // Path-variable
     @ResponseBody
     @GetMapping("/log/history")
-    public BaseResponse<List<GetPostLogRes>> getPostHistory(@RequestParam(required = false) String revType) {
+    public BaseResponse<List<GetFeedLogRes>> getPostHistory(@RequestParam(required = false) String revType) {
 
         if (revType == null) {
-            List<GetPostLogRes> postHistoryByTime = postService.getPostHistory();
+            List<GetFeedLogRes> postHistoryByTime = feedService.getFeedHistory();
             return new BaseResponse<>(postHistoryByTime, messageUtils.getMessage("SUCCESS"));
         }
 
-        List<GetPostLogRes> getPostHistoryList = postService.getPostHistoryByRevType(revType);
+        List<GetFeedLogRes> getPostHistoryList = feedService.getFeedHistoryByRevType(revType);
         return new BaseResponse<>(getPostHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
      * 게시물 CUD 히스토리 시간 기준 조회
-     * [POST] /app/posts/history/time
-     @return BaseResponse<List<GetPostLogRes>>
+     * [POST] /app/feeds/history/time
+     @return BaseResponse<List<GetFeedLogRes>>
      */
     // Path-variable
     @ResponseBody
     @PostMapping("/log/history/time")
-    public BaseResponse<List<GetPostLogRes>> getPostHistoryByTime(@RequestBody PostUserLogTimeReq req) {
+    public BaseResponse<List<GetFeedLogRes>> getFeedHistoryByTime(@RequestBody PostUserLogTimeReq req) {
 
-        List<GetPostLogRes> getUserHistoryList = postService.getPostHistoryByTime(req);
+        List<GetFeedLogRes> getUserHistoryList = feedService.getFeedHistoryByTime(req);
         return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
      * 게시물 내용 수정 API
-     * [PATCH] /app/posts/:postId
+     * [PATCH] /app/feeds/:feedId
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PatchMapping("/{postId}")
-    public BaseResponse<String> modifyPostContent(@PathVariable("postId") Long postId, @RequestBody PatchPostReq patchPostReq) {
+    @PatchMapping("/{feedId}")
+    public BaseResponse<String> modifyFeedContent(@PathVariable("feedId") Long feedId, @RequestBody PatchFeedReq patchPostReq) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
 
-        postService.modifyPostContent(postId, patchPostReq);
+        feedService.modifyPostContent(feedId, patchPostReq);
 
         String result = "게시물 내용 수정 완료";
         return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
@@ -135,16 +132,16 @@ public class PostController {
 
     /**
      * 게시물 삭제 API
-     * [DELETE] /app/posts/:postId
+     * [DELETE] /app/feeds/:feedId
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @DeleteMapping("/{postId}")
-    public BaseResponse<String> deletePost(@PathVariable("postId") Long postId) {
+    @DeleteMapping("/{feedId}")
+    public BaseResponse<String> deleteFeed(@PathVariable("feedId") Long feedId) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 삭제 가능
 
-        postService.deletePost(postId);
+        feedService.deleteFeed(feedId);
 
         String result = "게시물 삭제 완료";
         return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));

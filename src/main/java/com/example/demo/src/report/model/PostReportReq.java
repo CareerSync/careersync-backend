@@ -1,6 +1,6 @@
 package com.example.demo.src.report.model;
 
-import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.feed.entity.Feed;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.user.entity.User;
 import lombok.AllArgsConstructor;
@@ -17,10 +17,10 @@ public class PostReportReq {
     private Long postId;
     private String category;
 
-    public Report toEntity(User user, Post post) {
+    public Report toEntity(User user, Feed feed) {
         return Report.builder()
                 .user(user)
-                .post(post)
+                .post(feed)
                 .category(category)
                 .build();
     }
