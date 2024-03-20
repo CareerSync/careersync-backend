@@ -327,12 +327,20 @@ public class PaymentService {
         payment.updateMerchantUid(merchantUid);
     }
 
+    public void modifyPaymentState(Long paymentId, State state) {
+
+        com.example.demo.src.payment.entity.Payment payment = paymentRepository.findByIdAndState(paymentId, ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+
+        payment.updateState(state);
+    }
+
     // DELETE
     public void deletePayment(Long paymentId) {
 
         com.example.demo.src.payment.entity.Payment payment = paymentRepository.findByIdAndState(paymentId, ACTIVE)
                 .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
 
-        payment.updateState(INACTIVE);
+        paymentRepository.delete(payment);
     }
 }

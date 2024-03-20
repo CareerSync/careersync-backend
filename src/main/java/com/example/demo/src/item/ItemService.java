@@ -1,5 +1,7 @@
 package com.example.demo.src.item;
 
+import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.item.model.GetItemRes;
@@ -65,13 +67,19 @@ public class ItemService {
         item.updatePrice(price);
     }
 
+    public void modifyItemState(Long itemId, State state) {
+        Item item = itemRepository.findByIdAndState(itemId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
+        item.updateState(state);
+    }
+
+
 
     // DELETE
     public void deleteItem(Long itemId) {
         Item item = itemRepository.findByIdAndState(itemId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
-
-        item.updateState(INACTIVE);
+        itemRepository.delete(item);
     }
 
 

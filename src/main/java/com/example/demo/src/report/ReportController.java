@@ -1,5 +1,7 @@
 package com.example.demo.src.report;
 
+import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.report.model.*;
 import com.example.demo.src.user.model.PostUserLogTimeReq;
@@ -31,7 +33,6 @@ public class ReportController {
     public BaseResponse<PostReportRes> createReport(@RequestBody PostReportReq postReportReq) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 신고 가능
-
         PostReportRes postRes = reportService.createReport(postReportReq);
         return new BaseResponse<>(postRes, messageUtils.getMessage("SUCCESS"));
     }
@@ -44,7 +45,6 @@ public class ReportController {
     @ResponseBody
     @GetMapping("")
     public BaseResponse<List<GetReportRes>> getReports() {
-        // Get Reports
         List<GetReportRes> getReportRes = reportService.getReports();
         return new BaseResponse<>(getReportRes, messageUtils.getMessage("SUCCESS"));
     }
@@ -124,9 +124,22 @@ public class ReportController {
     @PatchMapping("/{reportId}")
     public BaseResponse<String> modifyReportCategory(@PathVariable("reportId") Long reportId, @RequestBody PatchReportReq patchReportReq) {
 
-        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
-
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 신고 내역 수정 가능
         reportService.modifyReportCategory(reportId, patchReportReq);
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_REPORT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 신고내역 카테고리 수정 API
+     * [PATCH] /app/reports? state=
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{reportId}/state")
+    public BaseResponse<String> modifyReportState(@PathVariable("reportId") Long reportId, @RequestParam State state) {
+
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 신고 내역 수정 가능
+        reportService.modifyReportState(reportId, state);
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_REPORT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
@@ -139,8 +152,7 @@ public class ReportController {
     @DeleteMapping("/{reportId}")
     public BaseResponse<String> deleteReport(@PathVariable("reportId") Long reportId) {
 
-        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 삭제 가능
-
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 신고 내역 삭제 가능
         reportService.deleteReport(reportId);
         return new BaseResponse<>(messageUtils.getMessage("DELETE_REPORT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }

@@ -1,5 +1,7 @@
 package com.example.demo.src.subscription;
 
+import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.payment.PaymentRepository;
 import com.example.demo.src.payment.entity.Payment;
@@ -40,10 +42,10 @@ public class SubscriptionService {
 
     // POST
     @Transactional(noRollbackFor = BaseException.class)
-    public PostSubscriptionRes createSubscription(PostSubscriptionReq req) {
+    public PostSubscriptionRes createSubscription(Long userId, PostSubscriptionReq req) {
 
         // 존재하지 않는 유저 예외처리
-        Optional<User> findUser = userRepository.findByIdAndState(req.getUserId(), ACTIVE);
+        Optional<User> findUser = userRepository.findByIdAndState(userId, ACTIVE);
         if (!findUser.isPresent()) {
             throw new BaseException(NOT_FIND_USER);
         }
@@ -105,6 +107,7 @@ public class SubscriptionService {
     }
 
     // GET
+
     public List<GetSubscriptionRes> getSubscriptions() {
         List<GetSubscriptionRes> subscriptions = subscriptionRepository.findAllByState(ACTIVE).stream()
                 .map((subscription) -> {
@@ -116,6 +119,19 @@ public class SubscriptionService {
         return subscriptions;
     }
 
+    public GetSubscriptionRes getSubscriptionByUserId(Long userId) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+        Optional<Subscription> findSubscription = subscriptionRepository.findByUserAndState(user, ACTIVE);
+        if (findSubscription.isPresent()) {
+            Subscription subscription = findSubscription.get();
+            return new GetSubscriptionRes(subscription);
+        } else {
+            return null;
+        }
+    }
+
     // PATCH
     public void modifyNextSubscriptionDate(Long subscriptionId, PatchSubscriptionReq req) {
         Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
@@ -125,10 +141,17 @@ public class SubscriptionService {
         subscription.updateNextPaymentDate(nextPaymentDate);
     }
 
+    public void modifySubscriptionState(Long subscriptionId, State state) {
+        Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
+
+        subscription.updateState(state);
+    }
+
     // DELETE
     public void deleteSubscription(Long subscriptionId) {
         Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
                     .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
-        subscription.deleteSubscription();
+        subscriptionRepository.delete(subscription);
     }
 }

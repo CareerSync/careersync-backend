@@ -1,5 +1,7 @@
 package com.example.demo.src.feed;
 
+import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.feed.model.*;
 import com.example.demo.src.user.model.PostUserLogTimeReq;
@@ -30,9 +32,8 @@ public class FeedController {
     @PostMapping("")
     public BaseResponse<PostFeedRes> createFeed(@RequestBody PostFeedReq postFeedReq) {
 
-        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 등록 가능
-
-        PostFeedRes postRes = feedService.createFeed(postFeedReq);
+        Long userId = jwtService.getUserId();// 로그인이 정상적으로 이뤄져야 게시물 등록 가능
+        PostFeedRes postRes = feedService.createFeed(userId, postFeedReq);
         return new BaseResponse<>(postRes, messageUtils.getMessage("SUCCESS"));
     }
 
@@ -40,20 +41,13 @@ public class FeedController {
      * 게시물 조회 API
      * [GET] /app/feeds
      * 특정 유저가 작성한 게시물 조회 API
-     * [GET] /app/feeds? userId =
      * @return BaseResponse<List<GetPostRes>>
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<List<GetFeedRes>> getPosts(@RequestParam(required = false) Long userId) {
+    public BaseResponse<List<GetFeedRes>> getPosts() {
 
-        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
-
-        if (userId == null) {
-            List<GetFeedRes> getPosts = feedService.getFeeds();
-            return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
-        }
-
+        Long userId = jwtService.getUserId();// 로그인이 정상적으로 이뤄져야 게시물 조회 가능
         List<GetFeedRes> getPosts = feedService.getFeedsByUserId(userId);
         return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
     }
@@ -68,7 +62,6 @@ public class FeedController {
     public BaseResponse<GetFeedRes> getFeed(@PathVariable("feedId") Long feedId) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
-
         GetFeedRes getFeedRes = feedService.getFeed(feedId);
         return new BaseResponse<>(getFeedRes, messageUtils.getMessage("SUCCESS"));
     }
@@ -123,8 +116,21 @@ public class FeedController {
     public BaseResponse<String> modifyFeedContent(@PathVariable("feedId") Long feedId, @RequestBody PatchFeedReq patchPostReq) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
+        feedService.modifyFeedContent(feedId, patchPostReq);
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_FEED_SUCCESS"), messageUtils.getMessage("SUCCESS"));
+    }
 
-        feedService.modifyPostContent(feedId, patchPostReq);
+    /**
+     * 게시물 상태 수정 API
+     * [PATCH] /app/feeds? state=
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{feedId}/state")
+    public BaseResponse<String> modifyFeedState(@PathVariable("feedId") Long feedId, @RequestParam("state") State state) {
+
+        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
+        feedService.modifyFeedState(feedId, state);
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_FEED_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
@@ -138,7 +144,6 @@ public class FeedController {
     public BaseResponse<String> deleteFeed(@PathVariable("feedId") Long feedId) {
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 삭제 가능
-
         feedService.deleteFeed(feedId);
         return new BaseResponse<>(messageUtils.getMessage("DELETE_FEED_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }

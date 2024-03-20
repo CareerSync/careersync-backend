@@ -2,6 +2,7 @@ package com.example.demo.src.payment;
 
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.payment.model.*;
+import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
@@ -20,10 +21,11 @@ import static com.example.demo.src.payment.entity.Payment.*;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/app/payment")
+@RequestMapping("/app/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final JwtService jwtService;
     private final MessageUtils messageUtils;
 
     /**
@@ -43,7 +45,6 @@ public class PaymentController {
      */
     @PostMapping("/validate")
     public BaseResponse<PaymentRes> validateIamport(@RequestBody VerificationReq req) {
-        log.info("validateImport contoller");
         PaymentRes paymentRes = paymentService.validateIamport(req);
         return new BaseResponse<>(paymentRes, messageUtils.getMessage("SUCCESS"));
     }
@@ -55,6 +56,7 @@ public class PaymentController {
      */
     @PostMapping("/cancel")
     public BaseResponse<IamportResponse<Payment>> cancelPayment(@RequestBody CancelReq cancelReq){
+        jwtService.getUserId();
         IamportResponse<Payment> cancelResponse = paymentService.cancelReservation(cancelReq);
         return new BaseResponse<>(cancelResponse, messageUtils.getMessage("SUCCESS"));
     }
@@ -70,6 +72,8 @@ public class PaymentController {
      */
     @GetMapping("")
     public BaseResponse<List<GetPaymentRes>> getPayments(@RequestParam(name = "paymentState", required = false) PaymentState paymentState){
+
+        jwtService.getUserId();
 
         if (paymentState == null) {
             List<GetPaymentRes> payments = paymentService.getPayments();
@@ -90,9 +94,22 @@ public class PaymentController {
      */
     @PatchMapping("/{paymentId}")
     public BaseResponse<String> modifyPaymentMerchantUid(@PathVariable("paymentId") Long paymentId, @RequestBody PatchPaymentReq req){
+        jwtService.getUserId();
         paymentService.modifyPaymentMerchantUid(paymentId, req);
-        String result = "결제 내역 주문번호 수정 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_PAYMENT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     *  결제 내역 상태 수정 API
+     * [PATCH] /app/payment?state=
+     *
+     * @return BaseResponse<String>
+     */
+    @PatchMapping("/{paymentId}/state")
+    public BaseResponse<String> modifyPaymentState(@PathVariable("paymentId") Long paymentId, @RequestParam("state") State state){
+        jwtService.getUserId();
+        paymentService.modifyPaymentState(paymentId, state);
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_PAYMENT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -102,9 +119,9 @@ public class PaymentController {
      */
     @DeleteMapping("/{paymentId}")
     public BaseResponse<String> deletePayment(@PathVariable("paymentId") Long paymentId){
+        jwtService.getUserId();
         paymentService.deletePayment(paymentId);
-        String result = "결제 내역 삭제 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("DELETE_PAYMENT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
 }

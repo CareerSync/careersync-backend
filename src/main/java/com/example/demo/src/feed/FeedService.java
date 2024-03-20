@@ -1,5 +1,7 @@
 package com.example.demo.src.feed;
 
+import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.feed.entity.Feed;
 import com.example.demo.src.feed.model.*;
@@ -34,9 +36,9 @@ public class FeedService {
     private final AuditReader auditReader;
 
     // POST
-    public PostFeedRes createFeed(PostFeedReq req) {
+    public PostFeedRes createFeed(Long userId, PostFeedReq req) {
 
-        User user = userRepository.findByIdAndState(req.getUserId(), ACTIVE).
+        User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
         Feed saveFeed = feedRepository.save(req.toEntity(user));
@@ -81,14 +83,14 @@ public class FeedService {
 
         List<Long> revIds = getRevIds();
 
-        List<GetFeedLogRes> postLogs = new ArrayList<>();
+        List<GetFeedLogRes> feedLogs = new ArrayList<>();
 
         revIds.stream()
                 .forEach((id) -> {
-                    getFeedLogResByType(postLogs, id, revType);
+                    getFeedLogResByType(feedLogs, id, revType);
                 });
 
-        return postLogs;
+        return feedLogs;
     }
 
     @Transactional(readOnly = true)
@@ -96,14 +98,14 @@ public class FeedService {
 
         List<Long> revIds = getRevIds();
 
-        List<GetFeedLogRes> postLogs = new ArrayList<>();
+        List<GetFeedLogRes> feedLogs = new ArrayList<>();
 
         revIds.stream()
                 .forEach((id) -> {
-                    getFeedLogRes(postLogs, id);
+                    getFeedLogRes(feedLogs, id);
                 });
 
-        return postLogs;
+        return feedLogs;
     }
 
     @Transactional(readOnly = true)
@@ -114,17 +116,17 @@ public class FeedService {
 
         List<Long> revIds = getRevIds();
 
-        List<GetFeedLogRes> postLogs = new ArrayList<>();
+        List<GetFeedLogRes> feedLogs = new ArrayList<>();
 
         revIds.stream()
                 .forEach((id) -> {
-                    getFeedLogResByTime(postLogs, id, startTime, endTime);
+                    getFeedLogResByTime(feedLogs, id, startTime, endTime);
                 });
 
-        return postLogs;
+        return feedLogs;
     }
 
-    private void getFeedLogResByType(List<GetFeedLogRes> postLogs, Long rev, String revType) {
+    private void getFeedLogResByType(List<GetFeedLogRes> feedLogs, Long rev, String revType) {
 
         String rType = revType;
 
@@ -132,20 +134,20 @@ public class FeedService {
 
         for (Revision<Long, Feed> revision : revisions.getContent()) {
             if (String.valueOf(revision.getMetadata().getRevisionType()).equals(rType)) {
-                postLogs.add(makeGetPostLogRes(revision));
+                feedLogs.add(makeGetFeedLogRes(revision));
             }
         }
     }
 
-    private void getFeedLogRes(List<GetFeedLogRes> postLogs, Long rev) {
+    private void getFeedLogRes(List<GetFeedLogRes> feedLogs, Long rev) {
 
         Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
         for (Revision<Long, Feed> revision : revisions.getContent()) {
-            postLogs.add(makeGetPostLogRes(revision));
+            feedLogs.add(makeGetFeedLogRes(revision));
         }
     }
 
-    private void getFeedLogResByTime(List<GetFeedLogRes> postLogs, Long rev,
+    private void getFeedLogResByTime(List<GetFeedLogRes> feedLogs, Long rev,
                                      LocalDateTime startTime, LocalDateTime endTime) {
 
         Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
@@ -154,14 +156,14 @@ public class FeedService {
             LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
 
             if (!localDateTime.isBefore(startTime) && !localDateTime.isAfter(endTime)) {
-                GetFeedLogRes getFeedLogRes = makeGetPostLogRes(revision);
-                postLogs.add(getFeedLogRes);
+                GetFeedLogRes getFeedLogRes = makeGetFeedLogRes(revision);
+                feedLogs.add(getFeedLogRes);
             }
 
         }
     }
 
-    private GetFeedLogRes makeGetPostLogRes(Revision<Long, Feed> revision) {
+    private GetFeedLogRes makeGetFeedLogRes(Revision<Long, Feed> revision) {
         Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
         String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
 
@@ -178,17 +180,24 @@ public class FeedService {
     }
 
     // PATCH
-    public void modifyPostContent(Long postId, PatchFeedReq patchPostReq) {
+    public void modifyFeedContent(Long postId, PatchFeedReq patchPostReq) {
         Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
         feed.updateContent(patchPostReq.getContent());
     }
 
+    public void modifyFeedState(Long postId, State state) {
+        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
+        feed.updateState(state);
+    }
+
+
     // DELETE
     public void deleteFeed(Long postId) {
         Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
-        feed.deleteFeed();
+        feedRepository.delete(feed);
     }
 
 }

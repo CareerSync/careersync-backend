@@ -1,16 +1,20 @@
 package com.example.demo.src.item;
 
+import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.item.model.GetItemRes;
 import com.example.demo.src.item.model.PatchItemReq;
 import com.example.demo.src.item.model.PostItemReq;
 import com.example.demo.src.item.model.PostItemRes;
+import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.demo.common.entity.BaseEntity.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,6 +23,7 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final JwtService jwtService;
     private final MessageUtils messageUtils;
 
     /**
@@ -30,6 +35,7 @@ public class ItemController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostItemRes> createItem(@RequestBody PostItemReq req) {
+        jwtService.getUserId();
         PostItemRes itemRes = itemService.createItem(req);
         return new BaseResponse<>(itemRes, messageUtils.getMessage("SUCCESS"));
     }
@@ -73,9 +79,25 @@ public class ItemController {
     @ResponseBody
     @PatchMapping("/{itemId}")
     public BaseResponse<String> modifyItem(@PathVariable("itemId") Long itemId, @RequestBody PatchItemReq req) {
+        jwtService.getUserId();
         itemService.modifyItem(itemId, req);
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_ITEM_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
+
+    /**
+     * 상품 수정 API
+     * [PATCH] /app/items? state=
+     *
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/{itemId}/state")
+    public BaseResponse<String> modifyItemStatae(@PathVariable("itemId") Long itemId, @RequestParam("state") State state) {
+        jwtService.getUserId();
+        itemService.modifyItemState(itemId, state);
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_ITEM_SUCCESS"), messageUtils.getMessage("SUCCESS"));
+    }
+
 
     /**
      * 상품 삭제 API
@@ -86,6 +108,7 @@ public class ItemController {
     @ResponseBody
     @DeleteMapping("/{itemId}")
     public BaseResponse<String> deleteItem(@PathVariable("itemId") Long itemId) {
+        jwtService.getUserId();
         itemService.deleteItem(itemId);
         return new BaseResponse<>(messageUtils.getMessage("DELETE_ITEM_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }

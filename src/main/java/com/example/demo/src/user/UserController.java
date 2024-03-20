@@ -2,6 +2,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.common.Constant.SocialLoginType;
+import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.oauth.OAuthService;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.utils.JwtService;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 
+import static com.example.demo.common.entity.BaseEntity.*;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 
@@ -139,12 +141,15 @@ public class UserController {
 
     /**
      * 유저정보변경 API
-     * [PATCH] /app/users/:userId
+     * [PATCH] /app/users
+     * RequestBody: PatchUserReq
+     * - name: 이름
+     *
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PatchMapping("/{userId}")
-    public BaseResponse<String> modifyUserName(@PathVariable("userId") Long userId, @RequestBody PatchUserReq patchUserReq){
+    @PatchMapping()
+    public BaseResponse<String> modifyUserName(@RequestBody PatchUserReq patchUserReq){
 
         Long jwtUserId = jwtService.getUserId();
         log.info("jwtUserId: {}", jwtUserId);
@@ -156,12 +161,15 @@ public class UserController {
 
     /**
      * 유저 생일정보 변경 API
-     * [PATCH] /app/users/:userId/birthDate
+     * [PATCH] /app/users/birthDate
+     * RequestBody: PatchUserBirthDateReq
+     * - birthDate: 생일일자
+     *
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PatchMapping("/{userId}/birthDate")
-    public BaseResponse<String> modifyBirthDate(@PathVariable("userId") Long userId, @RequestBody PatchUserBirthDateReq req){
+    @PatchMapping("/birthDate")
+    public BaseResponse<String> modifyBirthDate(@RequestBody PatchUserBirthDateReq req){
         Long jwtUserId = jwtService.getUserId();
         userService.modifyBirthDate(jwtUserId, req);
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
@@ -169,15 +177,32 @@ public class UserController {
 
     /**
      * 유저 이용약관 수정 API
-     * [PATCH] /app/users/:userId/privacyTerm
+     * [PATCH] /app/users/privacyTerm
+     * RequestBody: PatchUserPrivacyTermReq
+     * - serviceTerm: 이용약관
+     * - dataTerm: 데이터 정책
+     * - locationTerm: 위치 기반 기능
+     *
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @PatchMapping("/{userId}/privacyTerm")
-    public BaseResponse<String> modifyPrivacyTerm(@PathVariable("userId") Long userId, @RequestBody PatchUserPrivacyTermReq req){
+    @PatchMapping("/privacyTerm")
+    public BaseResponse<String> modifyPrivacyTerm(@RequestBody PatchUserPrivacyTermReq req){
         Long jwtUserId = jwtService.getUserId();
-
         userService.modifyPrivacy(jwtUserId, req);
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 유저 상태 수정 API
+     * [PATCH] /app/users/state
+     * @return BaseResponse<String>
+     */
+    @ResponseBody
+    @PatchMapping("/state")
+    public BaseResponse<String> modifyState(@RequestParam("state") State state){
+        Long jwtUserId = jwtService.getUserId();
+        userService.modifyState(jwtUserId, state);
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
@@ -187,10 +212,9 @@ public class UserController {
      * @return BaseResponse<String>
      */
     @ResponseBody
-    @DeleteMapping("/{userId}")
-    public BaseResponse<String> deleteUser(@PathVariable("userId") Long userId){
+    @DeleteMapping()
+    public BaseResponse<String> deleteUser(){
         Long jwtUserId = jwtService.getUserId();
-
         userService.deleteUser(jwtUserId);
         return new BaseResponse<>(messageUtils.getMessage("DELETE_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }

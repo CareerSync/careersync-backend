@@ -2,7 +2,6 @@ package com.example.demo.src.user;
 
 
 
-import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -11,7 +10,6 @@ import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.example.demo.common.Constant.SocialLoginType.*;
+import static com.example.demo.common.entity.BaseEntity.*;
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
@@ -139,11 +137,17 @@ public class UserService {
                 privacyTermReq.isLocationTerm());
     }
 
+    public void modifyState(Long userId, State state) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updateState(state);
+    }
+
     // DELETE
     public void deleteUser(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-        user.deleteUser();
+        userRepository.delete(user);
     }
 
     // GET
@@ -191,14 +195,15 @@ public class UserService {
             throw new BaseException(REVTYPE_ERROR);
         }
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevIds();
 
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getUserLogResByType(userLogs, id, revType);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getUserLogResByType(userLogs, revObject.getId(), revType);
+        });
 
         return userLogs;
     }
@@ -206,14 +211,14 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<GetUserLogRes> getUserHistory() {
 
-        List<Long> revIds = getRevIds();
-
+        List<Object> revs = getRevIds();
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getUserLogRes(userLogs, id);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getUserLogRes(userLogs, revObject.getId());
+        });
 
         return userLogs;
     }
@@ -224,14 +229,15 @@ public class UserService {
         LocalDateTime startTime = req.getStartTime();
         LocalDateTime endTime = req.getEndTime();
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevIds();
 
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getUserLogResByTime(userLogs, id, startTime, endTime);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getUserLogResByTime(userLogs, revObject.getId(), startTime, endTime);
+        });
 
         return userLogs;
     }
@@ -249,9 +255,9 @@ public class UserService {
         }
     }
 
-    private void getUserLogRes(List<GetUserLogRes> userLogs, Long rev) {
+    private void getUserLogRes(List<GetUserLogRes> userLogs, Long revId) {
 
-        Revisions<Long, User> revisions = userRepository.findRevisions(rev);
+        Revisions<Long, User> revisions = userRepository.findRevisions(revId);
         for (Revision<Long, User> revision : revisions.getContent()) {
                 userLogs.add(makeGetUserLogRes(revision));
         }
@@ -282,10 +288,9 @@ public class UserService {
         return new GetUserLogRes(revisionNumber, revisionType, localDateTime);
     }
 
-    private List<Long> getRevIds() {
+    private List<Object> getRevIds() {
         return auditReader.createQuery()
                 .forRevisionsOfEntity(User.class, false, true)
-                .addProjection(AuditEntity.id())
                 .getResultList();
     }
 }

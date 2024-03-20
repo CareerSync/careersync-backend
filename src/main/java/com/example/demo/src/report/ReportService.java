@@ -1,5 +1,7 @@
 package com.example.demo.src.report;
 
+import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.feed.FeedRepository;
 import com.example.demo.src.feed.entity.Feed;
@@ -197,11 +199,17 @@ public class ReportService {
         report.updateCategory(patchReportReq.getCategory());
     }
 
+    public void modifyReportState(Long reportId, State state) {
+        Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
+        report.updateState(state);
+    }
+
     // DELETE
     public void deleteReport(Long reportId) {
         Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
-        report.deleteReport();
+        reportRepository.delete(report);
     }
 
 }
