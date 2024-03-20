@@ -150,9 +150,7 @@ public class UserController {
         log.info("jwtUserId: {}", jwtUserId);
 
         userService.modifyUserName(jwtUserId, patchUserReq);
-
-        String result = "수정 완료!!";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
 
     }
 
@@ -165,11 +163,8 @@ public class UserController {
     @PatchMapping("/{userId}/birthDate")
     public BaseResponse<String> modifyBirthDate(@PathVariable("userId") Long userId, @RequestBody PatchUserBirthDateReq req){
         Long jwtUserId = jwtService.getUserId();
-
         userService.modifyBirthDate(jwtUserId, req);
-
-        String result = "유저 생일 정보 적용 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -183,8 +178,7 @@ public class UserController {
         Long jwtUserId = jwtService.getUserId();
 
         userService.modifyPrivacy(jwtUserId, req);
-        String result = "유저 이용 약관 정보 적용 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -198,9 +192,7 @@ public class UserController {
         Long jwtUserId = jwtService.getUserId();
 
         userService.deleteUser(jwtUserId);
-
-        String result = "삭제 완료!!";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("DELETE_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**

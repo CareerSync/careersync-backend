@@ -12,5 +12,5 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchUserBirthDateReq {
-    private LocalDate localDate;
+    private LocalDate birthDate;
 }

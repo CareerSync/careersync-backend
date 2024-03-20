@@ -59,7 +59,7 @@ public class UserService {
 
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
-        if(checkUser.isPresent()){
+        if (checkUser.isPresent()) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
 
@@ -75,13 +75,6 @@ public class UserService {
         User saveUser = userRepository.save(postUserReq.toEntity());
         return new PostUserRes(saveUser.getId());
 
-    }
-
-    private void validateSocialLoginType(SocialLoginType socialLoginType) {
-        if (!(socialLoginType.equals(GOOGLE) || socialLoginType.equals(KAKAO) ||
-                socialLoginType.equals(NAVER) || socialLoginType.equals(APPLE))) {
-            throw new BaseException(INVALID_OAUTH_TYPE);
-        }
     }
 
     public PostUserRes createOAuthUser(User user) {
@@ -136,7 +129,7 @@ public class UserService {
     public void modifyBirthDate(Long userId, PatchUserBirthDateReq birthDateReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-        user.updateBirthDate(birthDateReq.getLocalDate());
+        user.updateBirthDate(birthDateReq.getBirthDate());
     }
 
     public void modifyPrivacy(Long userId, PatchUserPrivacyTermReq privacyTermReq) {
