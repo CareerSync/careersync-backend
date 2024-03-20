@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import static com.example.demo.common.entity.BaseEntity.State.*;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 import static com.example.demo.src.payment.entity.Payment.PaymentState.FAIL;
+import static com.example.demo.src.subscription.entity.Subscription.SubscriptionState.*;
+import static com.example.demo.src.subscription.entity.Subscription.SubscriptionState.SUCCESS;
 
 
 @Transactional
@@ -59,8 +61,8 @@ public class SubscriptionService {
         User user = findUser.get();
         Item item = findItem.get();
 
-        // 이미 구독 테이블에 있는 유저 혹은 상품 예외처리
-        Optional<Subscription> findSubscription = subscriptionRepository.findByUserAndItem(user, item);
+        // 이미 구독 테이블에 있는 성공 이력이면 예외처리
+        Optional<Subscription> findSubscription = subscriptionRepository.findByUserAndItemAndSubscriptionState(user, item, SUCCESS);
         if (findSubscription.isPresent()) {
             throw new BaseException(DUPLICATED_SUBSCRIPTION);
         }
@@ -72,21 +74,21 @@ public class SubscriptionService {
         }
 
         // 결제 내역에 없는 상품 예외처리
-        Optional<Payment> findPaymentItem  = paymentRepository.findByUser(user);
+        Optional<Payment> findPaymentItem  = paymentRepository.findByItem(item);
         if (!findPaymentItem.isPresent()) {
             throw new BaseException(INVALID_PAYMENT_ITEM);
         }
 
-        // 구독 실패 - 결제 실패 혹은 이미 환불된 결제에 대한 상품 구독하려 할때
-        Optional<Payment> findPaymentByUserAndItem = paymentRepository.findByUserAndItem(user, item);
-        Payment payment = findPaymentByUserAndItem.get();
-        if (payment.getPaymentState() == FAIL || payment.getState() == INACTIVE) {
+        // 구독 성공 - 결제 성공한 상품(SUCCESS)이면서, 환불 안한 상품(ACTIVE) 구독하려 할때
+        // 구독 실패 - 결제 실패한 상품 구독하려 할때, 혹은 이미 환불된 결제에 대한 상품 구독하려 할떄
+        Optional<Payment> findPayment = paymentRepository.findByUserAndItemAndStateAndPaymentState(user, item, ACTIVE, Payment.PaymentState.SUCCESS);
+        if (findPayment.isPresent()) {
+            PostSubscriptionRes postSubscriptionRes = saveSubscription(user, item, SUCCESS);
+            return postSubscriptionRes;
+        } else {
             saveSubscription(user, item, Subscription.SubscriptionState.FAIL);
             throw new BaseException(SUBSCRIPTION_ERROR);
         }
-
-        PostSubscriptionRes postSubscriptionRes = saveSubscription(user, item, Subscription.SubscriptionState.SUCCESS);
-        return postSubscriptionRes;
     }
 
     private PostSubscriptionRes saveSubscription(User user, Item item,

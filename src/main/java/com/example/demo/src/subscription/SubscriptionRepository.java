@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.example.demo.common.entity.BaseEntity.*;
+import static com.example.demo.src.subscription.entity.Subscription.*;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
     Optional<Subscription> findByIdAndState(Long id, State state);
     Optional<Subscription> findByUserAndState(User user, State state);
     Optional<Subscription> findByUserAndItem(User user, Item item);
+    Optional<Subscription> findByUserAndItemAndSubscriptionState(User user, Item item, SubscriptionState subscriptionState);
     List<Subscription> findAllByState(State state);
     List<Subscription> findAllByUserAndState(User user, State state);
 }
