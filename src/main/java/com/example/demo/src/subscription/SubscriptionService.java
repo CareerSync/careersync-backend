@@ -5,7 +5,9 @@ import com.example.demo.src.payment.PaymentRepository;
 import com.example.demo.src.payment.entity.Payment;
 import com.example.demo.src.item.ItemRepository;
 import com.example.demo.src.item.entity.Item;
+import com.example.demo.src.subscription.model.GetSubscriptionRes;
 import com.example.demo.src.subscription.entity.Subscription;
+import com.example.demo.src.subscription.model.PatchSubscriptionReq;
 import com.example.demo.src.subscription.model.PostSubscriptionReq;
 import com.example.demo.src.subscription.model.PostSubscriptionRes;
 import com.example.demo.src.user.UserRepository;
@@ -16,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.*;
 import static com.example.demo.common.response.BaseResponseStatus.*;
@@ -100,4 +104,31 @@ public class SubscriptionService {
         return new PostSubscriptionRes(saveSubscription.getId());
     }
 
+    // GET
+    public List<GetSubscriptionRes> getSubscriptions() {
+        List<GetSubscriptionRes> subscriptions = subscriptionRepository.findAllByState(ACTIVE).stream()
+                .map((subscription) -> {
+                    User user = subscription.getUser();
+                    Item item = subscription.getItem();
+                    return new GetSubscriptionRes(subscription, user, item);
+                })
+                .collect(Collectors.toList());
+        return subscriptions;
+    }
+
+    // PATCH
+    public void modifyNextSubscriptionDate(Long subscriptionId, PatchSubscriptionReq req) {
+        Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
+
+        LocalDate nextPaymentDate = req.getNextPaymentDate();
+        subscription.updateNextPaymentDate(nextPaymentDate);
+    }
+
+    // DELETE
+    public void deleteSubscription(Long subscriptionId) {
+        Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
+                    .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
+        subscription.deleteSubscription();
+    }
 }

@@ -13,6 +13,7 @@ import javax.persistence.*;
 
 import java.time.LocalDate;
 
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static javax.persistence.FetchType.*;
 
@@ -33,7 +34,7 @@ public class Subscription extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "serviceId")
+    @JoinColumn(name = "itemId")
     private Item item;
 
     @Column(nullable = false)
@@ -58,6 +59,10 @@ public class Subscription extends BaseEntity {
 
     public void updateNextPaymentDate(LocalDate date) {
         this.nextPaymentDate = date;
+    }
+
+    public void deleteSubscription() {
+        this.state = INACTIVE;
     }
 
 }

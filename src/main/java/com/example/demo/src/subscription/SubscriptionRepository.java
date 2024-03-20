@@ -11,6 +11,8 @@ import java.util.Optional;
 import static com.example.demo.common.entity.BaseEntity.*;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
+
+    Optional<Subscription> findByIdAndState(Long id, State state);
     Optional<Subscription> findByUserAndItem(User user, Item item);
     List<Subscription> findAllByState(State state);
 }
