@@ -10,7 +10,9 @@ import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import retrofit2.http.Path;
 
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class SubscriptionController {
 
     /**
      *  구독 추가 API
-     * [POST] /app/subscription
+     * [POST] /app/subscriptions
      * @return BaseResponse<PostSubscriptionRes>
      */
     @PostMapping("")
@@ -40,31 +42,31 @@ public class SubscriptionController {
 
     /**
      *  구독 내역 조회 API
-     * [GET] /app/subscription
+     * [GET] /app/subscriptions
      * @return BaseResponse<List<GetSubscriptionRes>>
      */
-    @GetMapping("/all")
+    @GetMapping("")
     public BaseResponse<List<GetSubscriptionRes>> getSubscriptions() {
-        jwtService.getUserId();
-        List<GetSubscriptionRes> subscriptions = subscriptionService.getSubscriptions();
+        Long userId = jwtService.getUserId();
+        List<GetSubscriptionRes> subscriptions = subscriptionService.getSubscriptions(userId);
         return new BaseResponse<>(subscriptions, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
-     *  구독 내역 조회 API
-     * [GET] /app/subscription
+     *  구독 내역 1개 조회 API
+     * [GET] /app/subscriptions/:subscriptionId
      * @return BaseResponse<GetSubscriptionRes>
      */
-    @GetMapping("/byUser")
-    public BaseResponse<GetSubscriptionRes> getSubscriptionByUserId() {
-        Long userId = jwtService.getUserId();
-        GetSubscriptionRes getSubscriptionRes = subscriptionService.getSubscriptionByUserId(userId);
-        return new BaseResponse<>(getSubscriptionRes, messageUtils.getMessage("SUCCESS"));
+    @GetMapping("/{subscriptionId}")
+    public BaseResponse<GetSubscriptionRes> getSubscription(@PathVariable("subscriptionId") Long subscriptionId) {
+        jwtService.getUserId();
+        GetSubscriptionRes subscription = subscriptionService.getSubscription(subscriptionId);
+        return new BaseResponse<>(subscription, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
      *  구독 내역 수정 API
-     * [PATCH] /app/subscription
+     * [PATCH] /app/subscriptions/:subscriptionId
      * ResponseBody: PatchSubscriptionReq
      * - nextPaymentDate: 다음 결제 일자
      *
@@ -79,7 +81,7 @@ public class SubscriptionController {
 
     /**
      *  구독 내역 상태 수정 API
-     * [PATCH] /app/subscription?state=
+     * [PATCH] /app/subscriptions/:subscriptionId ?state=
      *
      * @return BaseResponse<String>
      */
@@ -92,7 +94,7 @@ public class SubscriptionController {
 
     /**
      *  구독 내역 삭제 API
-     * [DELETE] /app/subscription
+     * [DELETE] /app/subscriptions
      *
      * @return BaseResponse<String>
      */

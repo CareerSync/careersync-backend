@@ -29,9 +29,8 @@ public class ReportController {
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostReportRes> createReport(@RequestBody PostReportReq postReportReq) {
-
-        jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 신고 가능
-        PostReportRes postRes = reportService.createReport(postReportReq);
+        Long userId = jwtService.getUserId();// 로그인이 정상적으로 이뤄져야 신고 가능
+        PostReportRes postRes = reportService.createReport(userId, postReportReq);
         return new BaseResponse<>(postRes, messageUtils.getMessage("SUCCESS"));
     }
 
@@ -43,7 +42,8 @@ public class ReportController {
     @ResponseBody
     @GetMapping("")
     public BaseResponse<List<GetReportRes>> getReports() {
-        List<GetReportRes> getReportRes = reportService.getReports();
+        Long userId = jwtService.getUserId();
+        List<GetReportRes> getReportRes = reportService.getReports(userId);
         return new BaseResponse<>(getReportRes, messageUtils.getMessage("SUCCESS"));
     }
 

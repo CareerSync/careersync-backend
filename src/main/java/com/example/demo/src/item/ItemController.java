@@ -49,6 +49,7 @@ public class ItemController {
     @ResponseBody
     @GetMapping("")
     public BaseResponse<List<GetItemRes>> getItems() {
+        jwtService.getUserId();
         List<GetItemRes> items = itemService.getItems();
         return new BaseResponse<>(items, messageUtils.getMessage("SUCCESS"));
     }
@@ -62,6 +63,7 @@ public class ItemController {
     @ResponseBody
     @GetMapping("/{itemId}")
     public BaseResponse<GetItemRes> getItem(@PathVariable("itemId") Long itemId) {
+        jwtService.getUserId();
         GetItemRes item = itemService.getItem(itemId);
         return new BaseResponse<>(item, messageUtils.getMessage("SUCCESS"));
     }
@@ -92,7 +94,7 @@ public class ItemController {
      */
     @ResponseBody
     @PatchMapping("/{itemId}/state")
-    public BaseResponse<String> modifyItemStatae(@PathVariable("itemId") Long itemId, @RequestParam("state") State state) {
+    public BaseResponse<String> modifyItemState(@PathVariable("itemId") Long itemId, @RequestParam("state") State state) {
         jwtService.getUserId();
         itemService.modifyItemState(itemId, state);
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_ITEM_SUCCESS"), messageUtils.getMessage("SUCCESS"));

@@ -24,5 +24,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByUserAndItem(User user, Item item);
     List<Payment> findAllByState(State State);
+    List<Payment> findAllByUserAndPaymentState(User user, PaymentState paymentState);
+    List<Payment> findAllByUser(User user);
 
 }

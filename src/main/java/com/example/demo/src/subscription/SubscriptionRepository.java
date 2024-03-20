@@ -17,4 +17,5 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Optional<Subscription> findByUserAndState(User user, State state);
     Optional<Subscription> findByUserAndItem(User user, Item item);
     List<Subscription> findAllByState(State state);
+    List<Subscription> findAllByUserAndState(User user, State state);
 }

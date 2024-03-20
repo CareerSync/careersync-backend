@@ -73,20 +73,36 @@ public class PaymentController {
     @GetMapping("")
     public BaseResponse<List<GetPaymentRes>> getPayments(@RequestParam(name = "paymentState", required = false) PaymentState paymentState){
 
-        jwtService.getUserId();
+        Long userId = jwtService.getUserId();
 
         if (paymentState == null) {
-            List<GetPaymentRes> payments = paymentService.getPayments();
+            List<GetPaymentRes> payments = paymentService.getPayments(userId);
             return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
         }
 
-        List<GetPaymentRes> payments = paymentService.getPaymentsByState(paymentState);
+        List<GetPaymentRes> payments = paymentService.getPaymentsByState(userId, paymentState);
         return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
+     *  결제 내역 1개 조회 API
+     * [GET] /app/payments/:paymentId
+     * RequestParam
+     *
+     * @return BaseResponse<GetPaymentRes>
+     */
+    @GetMapping("/{paymentId}")
+    public BaseResponse<GetPaymentRes> getPayment(@PathVariable("paymentId") Long paymentId){
+
+        jwtService.getUserId();
+        GetPaymentRes payment = paymentService.getPayment(paymentId);
+
+        return new BaseResponse<>(payment, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
      *  결제 내역 수정 API
-     * [PATCH] /app/payment/:paymentId
+     * [PATCH] /app/payments/:paymentId
      * RequestBody
      * PatchPaymentReq
      * - merchantUid: 주문번호
@@ -101,7 +117,7 @@ public class PaymentController {
 
     /**
      *  결제 내역 상태 수정 API
-     * [PATCH] /app/payment?state=
+     * [PATCH] /app/payments/:paymentId ?state=
      *
      * @return BaseResponse<String>
      */
@@ -114,7 +130,7 @@ public class PaymentController {
 
     /**
      *  결제 내역 삭제 API
-     * [DELETE] /app/payment/:paymentId
+     * [DELETE] /app/payments/:paymentId
      * @return BaseResponse<String>
      */
     @DeleteMapping("/{paymentId}")
