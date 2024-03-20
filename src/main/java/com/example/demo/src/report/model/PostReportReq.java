@@ -13,7 +13,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostReportReq {
-    private Long userId;
     private Long postId;
     private String category;
 
