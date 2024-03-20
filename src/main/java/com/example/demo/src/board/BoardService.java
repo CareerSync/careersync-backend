@@ -1,11 +1,10 @@
-package com.example.demo.src.feed;
+package com.example.demo.src.board;
 
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.admin.model.PostFeedLogTimeReq;
-import com.example.demo.src.admin.model.PostUserLogTimeReq;
-import com.example.demo.src.feed.entity.Feed;
-import com.example.demo.src.feed.model.*;
+import com.example.demo.src.admin.model.PostBoardLogTimeReq;
+import com.example.demo.src.board.entity.Board;
+import com.example.demo.src.board.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -28,53 +27,53 @@ import static com.example.demo.common.response.BaseResponseStatus.*;
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class FeedService {
+public class BoardService {
 
-    private final FeedRepository feedRepository;
+    private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final AuditReader auditReader;
 
     // POST
-    public PostFeedRes createFeed(Long userId, PostFeedReq req) {
+    public PostBoardRes createBoard(Long userId, PostBoardReq req) {
 
         User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
-        Feed saveFeed = feedRepository.save(req.toEntity(user));
-        return new PostFeedRes(saveFeed.getId(), saveFeed.getContent());
+        Board saveBoard = boardRepository.save(req.toEntity(user));
+        return new PostBoardRes(saveBoard.getId(), saveBoard.getContent());
     }
     // GET
     @Transactional(readOnly = true)
-    public List<GetFeedRes> getFeeds() {
-        List<GetFeedRes> getPostsResList = feedRepository.findAllByState(ACTIVE).stream()
-                .map(GetFeedRes::new)
+    public List<GetBoardRes> getBoards() {
+        List<GetBoardRes> getBoardsResList = boardRepository.findAllByState(ACTIVE).stream()
+                .map(GetBoardRes::new)
                 .collect(Collectors.toList());
 
-        return getPostsResList;
+        return getBoardsResList;
     }
 
     @Transactional(readOnly = true)
-    public List<GetFeedRes> getFeedsByUserId(Long userId) {
+    public List<GetBoardRes> getBoardsByUserId(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
-        List<GetFeedRes> getPostsResList =  user.getFeedList().stream()
+        List<GetBoardRes> getBoardsResList =  user.getBoardList().stream()
                 .filter(post -> post.getState() == ACTIVE)
-                .map(GetFeedRes::new)
+                .map(GetBoardRes::new)
                 .collect(Collectors.toList());
 
-        return getPostsResList;
+        return getBoardsResList;
     }
 
     @Transactional(readOnly = true)
-    public GetFeedRes getFeed(Long postId) {
-        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
-        return new GetFeedRes(feed);
+    public GetBoardRes getBoard(Long boardId) {
+        Board board = boardRepository.findByIdAndState(boardId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+        return new GetBoardRes(board);
     }
 
     @Transactional(readOnly = true)
-    public List<GetFeedLogRes> getFeedHistoryByRevType(String revType) {
+    public List<GetBoardLogRes> getBoardHistoryByRevType(String revType) {
 
         if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
             throw new BaseException(REVTYPE_ERROR);
@@ -82,122 +81,122 @@ public class FeedService {
 
         List<Object> revs = getRevs();
 
-        List<GetFeedLogRes> feedLogs = new ArrayList<>();
+        List<GetBoardLogRes> boardLogs = new ArrayList<>();
         revs.forEach(revision -> {
             Object[] revisionArray = (Object[]) revision;
             com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
-            getFeedLogResByType(feedLogs, revObject.getId(), revType);
+            getBoardLogResByType(boardLogs, revObject.getId(), revType);
         });
 
-        return feedLogs;
+        return boardLogs;
     }
 
     @Transactional(readOnly = true)
-    public List<GetFeedLogRes> getFeedHistory() {
+    public List<GetBoardLogRes> getBoardHistory() {
 
         List<Object> revs = getRevs();
 
-        List<GetFeedLogRes> feedLogs = new ArrayList<>();
+        List<GetBoardLogRes> boardLogs = new ArrayList<>();
 
         revs.forEach(revision -> {
             Object[] revisionArray = (Object[]) revision;
             com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
-            getFeedLogRes(feedLogs, revObject.getId());
+            getBoardLogRes(boardLogs, revObject.getId());
         });
 
-        return feedLogs;
+        return boardLogs;
     }
 
     @Transactional(readOnly = true)
-    public List<GetFeedLogRes> getFeedHistoryByTime(PostFeedLogTimeReq req) {
+    public List<GetBoardLogRes> getBoardHistoryByTime(PostBoardLogTimeReq req) {
 
         LocalDateTime startTime = req.getStartTime();
         LocalDateTime endTime = req.getEndTime();
 
         List<Object> revs = getRevs();
 
-        List<GetFeedLogRes> feedLogs = new ArrayList<>();
+        List<GetBoardLogRes> boardLogs = new ArrayList<>();
 
         revs.forEach(revision -> {
             Object[] revisionArray = (Object[]) revision;
             com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
-            getFeedLogResByTime(feedLogs, revObject.getId(), startTime, endTime);
+            getBoardLogResByTime(boardLogs, revObject.getId(), startTime, endTime);
         });
 
-        return feedLogs;
+        return boardLogs;
     }
 
-    private void getFeedLogResByType(List<GetFeedLogRes> feedLogs, Long rev, String revType) {
+    private void getBoardLogResByType(List<GetBoardLogRes> boardLogs, Long rev, String revType) {
 
         String rType = revType;
 
-        Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
+        Revisions<Long, Board> revisions = boardRepository.findRevisions(rev);
 
-        for (Revision<Long, Feed> revision : revisions.getContent()) {
+        for (Revision<Long, Board> revision : revisions.getContent()) {
             if (String.valueOf(revision.getMetadata().getRevisionType()).equals(rType)) {
-                feedLogs.add(makeGetFeedLogRes(revision));
+                boardLogs.add(makeGetBoardLogRes(revision));
             }
         }
     }
 
-    private void getFeedLogRes(List<GetFeedLogRes> feedLogs, Long rev) {
+    private void getBoardLogRes(List<GetBoardLogRes> boardLogs, Long rev) {
 
-        Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
-        for (Revision<Long, Feed> revision : revisions.getContent()) {
-            feedLogs.add(makeGetFeedLogRes(revision));
+        Revisions<Long, Board> revisions = boardRepository.findRevisions(rev);
+        for (Revision<Long, Board> revision : revisions.getContent()) {
+            boardLogs.add(makeGetBoardLogRes(revision));
         }
     }
 
-    private void getFeedLogResByTime(List<GetFeedLogRes> feedLogs, Long rev,
+    private void getBoardLogResByTime(List<GetBoardLogRes> boardLogs, Long rev,
                                      LocalDateTime startTime, LocalDateTime endTime) {
 
-        Revisions<Long, Feed> revisions = feedRepository.findRevisions(rev);
-        for (Revision<Long, Feed> revision : revisions.getContent()) {
+        Revisions<Long, Board> revisions = boardRepository.findRevisions(rev);
+        for (Revision<Long, Board> revision : revisions.getContent()) {
             Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
             LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
 
             if (!localDateTime.isBefore(startTime) && !localDateTime.isAfter(endTime)) {
-                GetFeedLogRes getFeedLogRes = makeGetFeedLogRes(revision);
-                feedLogs.add(getFeedLogRes);
+                GetBoardLogRes getBoardLogRes = makeGetBoardLogRes(revision);
+                boardLogs.add(getBoardLogRes);
             }
 
         }
     }
 
-    private GetFeedLogRes makeGetFeedLogRes(Revision<Long, Feed> revision) {
+    private GetBoardLogRes makeGetBoardLogRes(Revision<Long, Board> revision) {
         Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
         String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
 
         Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
         LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
-        return new GetFeedLogRes(revisionNumber, revisionType, localDateTime);
+        return new GetBoardLogRes(revisionNumber, revisionType, localDateTime);
     }
 
     private List<Object> getRevs() {
         return auditReader.createQuery()
-                .forRevisionsOfEntity(Feed.class, false, true)
+                .forRevisionsOfEntity(Board.class, false, true)
                 .getResultList();
     }
 
     // PATCH
-    public void modifyFeedContent(Long postId, PatchFeedReq patchPostReq) {
-        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
-        feed.updateContent(patchPostReq.getContent());
+    public void modifyBoardContent(Long boardId, PatchBoardReq patchPostReq) {
+        Board board = boardRepository.findByIdAndState(boardId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+        board.updateContent(patchPostReq.getContent());
     }
 
-    public void modifyFeedState(Long postId, State state) {
-        Feed feed = feedRepository.findById(postId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
-        feed.updateState(state);
+    public void modifyBoardState(Long boardId, State state) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+        board.updateState(state);
     }
 
 
     // DELETE
-    public void deleteFeed(Long postId) {
-        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
-        feedRepository.delete(feed);
+    public void deleteBoard(Long boardId) {
+        Board board = boardRepository.findByIdAndState(boardId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+        boardRepository.delete(board);
     }
 
 }

@@ -1,10 +1,9 @@
-package com.example.demo.src.feed.entity;
+package com.example.demo.src.board.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
-import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -19,11 +18,11 @@ import static javax.persistence.FetchType.*;
 @Entity
 @JsonAutoDetect(fieldVisibility = ANY)
 @Audited
-@Table(name = "TB_FEED")
-public class Feed extends BaseEntity {
+@Table(name = "TB_BOARD")
+public class Board extends BaseEntity {
 
     @Id
-    @Column(name = "feedId", nullable = false, updatable = false)
+    @Column(name = "boardId", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -40,7 +39,7 @@ public class Feed extends BaseEntity {
     }
 
     @Builder
-    public Feed(Long id, String content, User user) {
+    public Board(Long id, String content, User user) {
         this.id = id;
         this.content = content;
         this.user = user;
