@@ -2,18 +2,24 @@ package com.example.demo.src.payment;
 
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.payment.IamportClientInitializer;
+import com.example.demo.src.admin.model.PostPaymentLogTimeReq;
+import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import com.example.demo.src.payment.model.*;
 import com.example.demo.src.item.ItemRepository;
 import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
+import com.example.demo.src.payment.model.GetPaymentLogRes;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.envers.AuditReader;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.history.Revision;
+import org.springframework.data.history.Revisions;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +29,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,6 +53,7 @@ public class PaymentService {
     private final UserRepository userRepository;
     private final PaymentRepository paymentRepository;
     private final ItemRepository itemRepository;
+    private final AuditReader auditReader;
 
     @Value("${spring.imp.api-key}")
     private String apiKey;
@@ -192,6 +203,112 @@ public class PaymentService {
         } else {
             throw new BaseException(PAYMENT_TYPE_ERROR);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetPaymentLogRes> getPaymentHistoryByRevType(String revType) {
+
+        if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
+            throw new BaseException(REVTYPE_ERROR);
+        }
+
+        List<Object> revs = getRevs();
+
+        List<GetPaymentLogRes> paymentLogs = new ArrayList<>();
+
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getPaymentLogResByType(paymentLogs, revObject.getId(), revType);
+        });
+
+        return paymentLogs;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetPaymentLogRes> getPaymentHistory() {
+
+        List<Object> revs = getRevs();
+        List<GetPaymentLogRes> paymentLogs = new ArrayList<>();
+
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getPaymentLogRes(paymentLogs, revObject.getId());
+        });
+
+        return paymentLogs;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetPaymentLogRes> getPaymentHistoryByTime(PostPaymentLogTimeReq req) {
+
+        LocalDateTime startTime = req.getStartTime();
+        LocalDateTime endTime = req.getEndTime();
+
+        List<Object> revs = getRevs();
+
+        List<GetPaymentLogRes> paymentLogs = new ArrayList<>();
+
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getPaymentLogResByTime(paymentLogs, revObject.getId(), startTime, endTime);
+        });
+
+        return paymentLogs;
+    }
+
+    private void getPaymentLogResByType(List<GetPaymentLogRes> paymentLogs, Long rev, String revType) {
+
+        String rType = revType;
+
+        Revisions<Long, User> revisions = userRepository.findRevisions(rev);
+
+        for (Revision<Long, User> revision : revisions.getContent()) {
+            if (String.valueOf(revision.getMetadata().getRevisionType()).equals(rType)) {
+                paymentLogs.add(makeGetPaymentLogRes(revision));
+            }
+        }
+    }
+
+    private void getPaymentLogRes(List<GetPaymentLogRes> paymentLogs, Long revId) {
+
+        Revisions<Long, User> revisions = userRepository.findRevisions(revId);
+        for (Revision<Long, User> revision : revisions.getContent()) {
+            paymentLogs.add(makeGetPaymentLogRes(revision));
+        }
+    }
+
+    private void getPaymentLogResByTime(List<GetPaymentLogRes> paymentLogs, Long rev,
+                                     LocalDateTime startTime, LocalDateTime endTime) {
+
+        Revisions<Long, User> revisions = userRepository.findRevisions(rev);
+        for (Revision<Long, User> revision : revisions.getContent()) {
+            Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
+
+            if (!localDateTime.isBefore(startTime) && !localDateTime.isAfter(endTime)) {
+                GetPaymentLogRes getUserLogRes = makeGetPaymentLogRes(revision);
+                paymentLogs.add(getUserLogRes);
+            }
+
+        }
+    }
+
+    private GetPaymentLogRes makeGetPaymentLogRes(Revision<Long, User> revision) {
+        Long revisionNumber = revision.getMetadata().getRevisionNumber().get();
+        String revisionType = String.valueOf(revision.getMetadata().getRevisionType());
+
+        Instant requiredRevisionInstant = revision.getMetadata().getRequiredRevisionInstant();
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(requiredRevisionInstant, ZoneId.of("Asia/Seoul"));
+        return new GetPaymentLogRes(revisionNumber, revisionType, localDateTime);
+    }
+
+    private List<Object> getRevs() {
+        return auditReader.createQuery()
+                .forRevisionsOfEntity(com.example.demo.src.payment.entity.Payment.class, false, true)
+                .getResultList();
     }
 
 
