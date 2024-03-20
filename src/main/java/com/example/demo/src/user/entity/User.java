@@ -1,13 +1,11 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.feed.entity.Feed;
+import com.example.demo.src.board.entity.Board;
 import com.example.demo.src.report.entity.Report;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.envers.AuditMappedBy;
-import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -74,7 +72,7 @@ public class User extends BaseEntity {
     @NotAudited
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    List<Feed> feedList = new ArrayList<>();
+    List<Board> boardList = new ArrayList<>();
 
     // 양방향 매핑
     @NotAudited
@@ -128,9 +126,9 @@ public class User extends BaseEntity {
     }
 
     // 연관관계 편의 메서드
-    public void addPost(Feed feed) {
-        feed.setUser(this);
-        feedList.add(feed);
+    public void addPost(Board board) {
+        board.setUser(this);
+        boardList.add(board);
     }
 
     public void updateState(State state) {

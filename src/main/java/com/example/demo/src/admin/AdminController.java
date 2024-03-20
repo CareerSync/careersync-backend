@@ -1,11 +1,11 @@
 package com.example.demo.src.admin;
 
 import com.example.demo.common.response.BaseResponse;
-import com.example.demo.src.admin.model.PostFeedLogTimeReq;
 import com.example.demo.src.admin.model.PostPaymentLogTimeReq;
 import com.example.demo.src.admin.model.PostReportLogTimeReq;
-import com.example.demo.src.feed.FeedService;
-import com.example.demo.src.feed.model.GetFeedLogRes;
+import com.example.demo.src.board.BoardService;
+import com.example.demo.src.board.model.GetBoardLogRes;
+import com.example.demo.src.admin.model.PostBoardLogTimeReq;
 import com.example.demo.src.payment.PaymentService;
 import com.example.demo.src.payment.model.GetPaymentLogRes;
 import com.example.demo.src.report.ReportService;
@@ -28,7 +28,7 @@ public class AdminController {
 
     private final AdminService adminService;
     private final UserService userService;
-    private final FeedService feedService;
+    private final BoardService boardService;
     private final ReportService reportService;
     private final PaymentService paymentService;
     private final MessageUtils messageUtils;
@@ -88,41 +88,41 @@ public class AdminController {
 
     /**
      * 게시물 CUD 히스토리 전체 조회
-     * [GET] /app/admin/history/feeds
+     * [GET] /app/admin/history/boards
      *
      * 게시물 CUD 히스토리 선택 조회
-     * [GET] /app/admin/history/feeds? revType=
+     * [GET] /app/admin/history/boards? revType=
      * revType 종류
      * - Create: INSERT
      * - Update: UPDATE
      * - Delete: DELETE
-     * @return BaseResponse<List<GetFeedLogRes>>
+     * @return BaseResponse<List<GetBoardLogRes>>
      */
     // Path-variable
     @ResponseBody
-    @GetMapping("/history/feeds")
-    public BaseResponse<List<GetFeedLogRes>> getFeedHistory(@RequestParam(required = false) String revType) {
+    @GetMapping("/history/boards")
+    public BaseResponse<List<GetBoardLogRes>> getBoardHistory(@RequestParam(required = false) String revType) {
 
         if (revType == null) {
-            List<GetFeedLogRes> postHistoryByTime = feedService.getFeedHistory();
+            List<GetBoardLogRes> postHistoryByTime = boardService.getBoardHistory();
             return new BaseResponse<>(postHistoryByTime, messageUtils.getMessage("SUCCESS"));
         }
 
-        List<GetFeedLogRes> getPostHistoryList = feedService.getFeedHistoryByRevType(revType);
+        List<GetBoardLogRes> getPostHistoryList = boardService.getBoardHistoryByRevType(revType);
         return new BaseResponse<>(getPostHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
     /**
      * 게시물 CUD 히스토리 시간 기준 조회
-     * [POST] /app/admin/history/time/feeds
-     @return BaseResponse<List<GetFeedLogRes>>
+     * [POST] /app/admin/history/time/boards
+     @return BaseResponse<List<GetBoardLogRes>>
      */
     // Path-variable
     @ResponseBody
-    @PostMapping("/history/time/feeds")
-    public BaseResponse<List<GetFeedLogRes>> getFeedHistoryByTime(@RequestBody PostFeedLogTimeReq req) {
+    @PostMapping("/history/time/boards")
+    public BaseResponse<List<GetBoardLogRes>> getBoardHistoryByTime(@RequestBody PostBoardLogTimeReq req) {
 
-        List<GetFeedLogRes> getUserHistoryList = feedService.getFeedHistoryByTime(req);
+        List<GetBoardLogRes> getUserHistoryList = boardService.getBoardHistoryByTime(req);
         return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 

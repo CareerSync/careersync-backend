@@ -1,10 +1,9 @@
 package com.example.demo.src.report.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.feed.entity.Feed;
+import com.example.demo.src.board.entity.Board;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
-import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -34,19 +33,19 @@ public class Report extends BaseEntity {
 
     @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "feedId")
-    private Feed feed;
+    @JoinColumn(name = "boardId")
+    private Board board;
 
     @Builder
-    public Report(Long id, String category, User user, Feed feed){
+    public Report(Long id, String category, User user, Board board){
         this.id = id;
         this.category = category;
         this.user = user;
-        this.feed = feed;
+        this.board = board;
     }
 
-    public User getReportedUser(Feed feed) {
-        return feed.getUser();
+    public User getReportedUser(Board board) {
+        return board.getUser();
     }
 
     public void updateState(State state) {

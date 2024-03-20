@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ReportRepository extends JpaRepository<Report, Long>,
         RevisionRepository<Report, Long, Long> {
     Optional<Report> findByIdAndState(Long id, State state);
-    Optional<Report> findByUserIdAndFeedId(Long userId, Long feedId);
+    Optional<Report> findByUserIdAndBoardId(Long userId, Long boardId);
     List<Report> findAllByState(State state);
     List<Report> findAllByUserAndState(User user, State state);
 }

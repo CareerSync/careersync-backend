@@ -3,13 +3,12 @@ package com.example.demo.src.report;
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.admin.model.PostReportLogTimeReq;
-import com.example.demo.src.feed.FeedRepository;
-import com.example.demo.src.feed.entity.Feed;
+import com.example.demo.src.board.BoardRepository;
+import com.example.demo.src.board.entity.Board;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.report.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
-import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
 import org.springframework.data.history.Revision;
@@ -35,7 +34,7 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
-    private final FeedRepository feedRepository;
+    private final BoardRepository boardRepository;
     private final AuditReader auditReader;
 
     // POST
@@ -45,16 +44,16 @@ public class ReportService {
         User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
-        Feed feed = feedRepository.findByIdAndState(req.getPostId(), ACTIVE).
-                orElseThrow(() -> new BaseException(INVALID_POST));
+        Board board = boardRepository.findByIdAndState(req.getPostId(), ACTIVE).
+                orElseThrow(() -> new BaseException(INVALID_BOARD));
 
         // 이미 신고한 내역 있으면 중복 신고 안되도록 처리
-        Optional<Report> checkReport = reportRepository.findByUserIdAndFeedId(user.getId(), feed.getId());
+        Optional<Report> checkReport = reportRepository.findByUserIdAndBoardId(user.getId(), board.getId());
         if(checkReport.isPresent()){
-            throw new BaseException(POST_REPORT_EXISTS_USER_AND_POST);
+            throw new BaseException(POST_REPORT_EXISTS_USER_AND_BOARD);
         }
 
-        Report saveReport = reportRepository.save(req.toEntity(user, feed));
+        Report saveReport = reportRepository.save(req.toEntity(user, board));
         return new PostReportRes(saveReport.getId(), saveReport.getCategory());
 
     }
@@ -75,7 +74,7 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<GetReportUserRes> getReportedUsers() {
         List<GetReportUserRes> getReportedUsers = reportRepository.findAllByState(ACTIVE).stream()
-                .map(report -> new GetReportUserRes(report, report.getReportedUser(report.getFeed())))
+                .map(report -> new GetReportUserRes(report, report.getReportedUser(report.getBoard())))
                 .collect(Collectors.toList());
 
         return getReportedUsers;
