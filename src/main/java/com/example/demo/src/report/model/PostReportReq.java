@@ -20,7 +20,7 @@ public class PostReportReq {
     public Report toEntity(User user, Feed feed) {
         return Report.builder()
                 .user(user)
-                .post(feed)
+                .feed(feed)
                 .category(category)
                 .build();
     }
