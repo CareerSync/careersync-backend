@@ -148,7 +148,7 @@ public class PaymentService {
                 "      \t\t\t\t//rsp.imp_uid 값으로 결제 단건조회 API를 호출하여 결제결과를 판단합니다.\n" +
                 "                    if (rsp.success) {\n" +
                 "                        $.ajax({\n" +
-                "                            url: \"/app/payment/validate\", \n" +
+                "                            url: \"/app/payments/validate\", \n" +
                 "                            method: \"POST\",\n" +
                 "                            contentType: \"application/json\",\n" +
                 "                            data: JSON.stringify({\n" +
@@ -181,8 +181,11 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetPaymentRes> getPayments() {
-        List<GetPaymentRes> paymentResList = paymentRepository.findAll().stream()
+    public List<GetPaymentRes> getPayments(Long userId) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+        List<GetPaymentRes> paymentResList = paymentRepository.findAllByUser(user).stream()
                 .map(GetPaymentRes::new)
                 .collect(Collectors.toList());
 
@@ -190,14 +193,27 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetPaymentRes> getPaymentsByState(PaymentState paymentState) {
+    public GetPaymentRes getPayment(Long paymentId) {
+
+        com.example.demo.src.payment.entity.Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+
+        return new GetPaymentRes(payment);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetPaymentRes> getPaymentsByState(Long userId, PaymentState paymentState) {
+
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
         if (paymentState.equals(SUCCESS)) {
-            return paymentRepository.findAllByPaymentState(SUCCESS).stream()
+            return paymentRepository.findAllByUserAndPaymentState(user, SUCCESS).stream()
                     .map(GetPaymentRes::new)
                     .collect(Collectors.toList());
         }
         else if(paymentState.equals(FAIL)) {
-            return paymentRepository.findAllByPaymentState(FAIL).stream()
+            return paymentRepository.findAllByUserAndPaymentState(user, FAIL).stream()
                     .map(GetPaymentRes::new)
                     .collect(Collectors.toList());
         } else {
@@ -326,16 +342,12 @@ public class PaymentService {
         Optional<User> findUser = userRepository.findByEmailAndState(buyerEmail, ACTIVE);
 
         if (!findUser.isPresent()) {
-            log.info("findUser not found");
-
             throw new BaseException(NOT_FIND_USER);
         }
 
         Optional<Item> findItem = itemRepository.findByNameAndState(name, ACTIVE);
 
         if (!findItem.isPresent()) {
-            log.info("findItem not found");
-
             throw new BaseException(NOT_FIND_ITEM);
         }
 
@@ -446,7 +458,7 @@ public class PaymentService {
 
     public void modifyPaymentState(Long paymentId, State state) {
 
-        com.example.demo.src.payment.entity.Payment payment = paymentRepository.findByIdAndState(paymentId, ACTIVE)
+        com.example.demo.src.payment.entity.Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
 
         payment.updateState(state);

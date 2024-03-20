@@ -68,7 +68,7 @@ public class ItemService {
     }
 
     public void modifyItemState(Long itemId, State state) {
-        Item item = itemRepository.findByIdAndState(itemId, ACTIVE)
+        Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
         item.updateState(state);
     }

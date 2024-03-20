@@ -39,10 +39,10 @@ public class ReportService {
     private final AuditReader auditReader;
 
     // POST
-    public PostReportRes createReport(PostReportReq req) {
+    public PostReportRes createReport(Long userId, PostReportReq req) {
 
         // 유저와 게시글 -> 둘 다 ACTIVE한 상태여야 한다.
-        User user = userRepository.findByIdAndState(req.getUserId(), ACTIVE).
+        User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
         Feed feed = feedRepository.findByIdAndState(req.getPostId(), ACTIVE).
@@ -61,8 +61,11 @@ public class ReportService {
 
     // GET
     @Transactional(readOnly = true)
-    public List<GetReportRes> getReports() {
-        List<GetReportRes> getReportResList = reportRepository.findAllByState(ACTIVE).stream()
+    public List<GetReportRes> getReports(Long userId) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE).
+                orElseThrow(() -> new BaseException(INVALID_USER));
+
+        List<GetReportRes> getReportResList = reportRepository.findAllByUserAndState(user, ACTIVE).stream()
                 .map(GetReportRes::new)
                 .collect(Collectors.toList());
 
@@ -201,7 +204,7 @@ public class ReportService {
     }
 
     public void modifyReportState(Long reportId, State state) {
-        Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
+        Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
         report.updateState(state);
     }

@@ -187,7 +187,7 @@ public class FeedService {
     }
 
     public void modifyFeedState(Long postId, State state) {
-        Feed feed = feedRepository.findByIdAndState(postId, ACTIVE)
+        Feed feed = feedRepository.findById(postId)
                 .orElseThrow(() -> new BaseException(NOT_FIND_FEED));
         feed.updateState(state);
     }

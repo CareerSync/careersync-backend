@@ -108,10 +108,13 @@ public class SubscriptionService {
 
     // GET
 
-    public List<GetSubscriptionRes> getSubscriptions() {
-        List<GetSubscriptionRes> subscriptions = subscriptionRepository.findAllByState(ACTIVE).stream()
+    public List<GetSubscriptionRes> getSubscriptions(Long userId) {
+
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(INVALID_USER));
+
+        List<GetSubscriptionRes> subscriptions = subscriptionRepository.findAllByUserAndState(user, ACTIVE).stream()
                 .map((subscription) -> {
-                    User user = subscription.getUser();
                     Item item = subscription.getItem();
                     return new GetSubscriptionRes(subscription, user, item);
                 })
@@ -119,11 +122,8 @@ public class SubscriptionService {
         return subscriptions;
     }
 
-    public GetSubscriptionRes getSubscriptionByUserId(Long userId) {
-        User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-
-        Optional<Subscription> findSubscription = subscriptionRepository.findByUserAndState(user, ACTIVE);
+    public GetSubscriptionRes getSubscription(Long subscriptionId) {
+        Optional<Subscription> findSubscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE);
         if (findSubscription.isPresent()) {
             Subscription subscription = findSubscription.get();
             return new GetSubscriptionRes(subscription);
@@ -142,7 +142,7 @@ public class SubscriptionService {
     }
 
     public void modifySubscriptionState(Long subscriptionId, State state) {
-        Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
 
         subscription.updateState(state);
