@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @Transactional
@@ -54,6 +55,7 @@ public class ReportService {
         }
 
         Report saveReport = reportRepository.save(req.toEntity(user, board));
+        board.updateState(INACTIVE);
         return new PostReportRes(saveReport.getId(), saveReport.getCategory());
 
     }
