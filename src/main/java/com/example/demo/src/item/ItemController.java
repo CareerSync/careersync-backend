@@ -74,8 +74,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public BaseResponse<String> modifyItem(@PathVariable("itemId") Long itemId, @RequestBody PatchItemReq req) {
         itemService.modifyItem(itemId, req);
-        String result = "상품 정보 수정 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_ITEM_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -88,8 +87,7 @@ public class ItemController {
     @DeleteMapping("/{itemId}")
     public BaseResponse<String> deleteItem(@PathVariable("itemId") Long itemId) {
         itemService.deleteItem(itemId);
-        String result = "상품 삭제 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("DELETE_ITEM_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
 
