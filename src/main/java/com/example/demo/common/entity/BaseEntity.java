@@ -3,6 +3,8 @@ package com.example.demo.common.entity;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -16,15 +18,18 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 public class BaseEntity {
 
-    @CreationTimestamp
+    @CreatedDate
+    @NotAudited
     @Column(name = "createdAt", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
+    @LastModifiedDate
+    @NotAudited
     @Column(name = "updatedAt", nullable = false)
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
+    @Audited
     @Column(name = "state", nullable = false, length = 10)
     protected State state = State.ACTIVE;
 

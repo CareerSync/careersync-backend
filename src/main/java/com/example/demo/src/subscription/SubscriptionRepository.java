@@ -5,6 +5,7 @@ import com.example.demo.src.subscription.entity.Subscription;
 import com.example.demo.src.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +14,7 @@ import static com.example.demo.common.entity.BaseEntity.*;
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
     Optional<Subscription> findByIdAndState(Long id, State state);
+    Optional<Subscription> findByUserAndState(User user, State state);
     Optional<Subscription> findByUserAndItem(User user, Item item);
     List<Subscription> findAllByState(State state);
 }

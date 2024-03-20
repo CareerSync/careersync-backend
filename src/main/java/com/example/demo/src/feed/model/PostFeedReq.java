@@ -12,7 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostFeedReq {
-    private Long userId;
     private String content;
 
     public Feed toEntity(User user) {

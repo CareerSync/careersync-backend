@@ -10,6 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostSubscriptionReq {
-    private Long userId;
     private Long itemId;
 }
