@@ -68,19 +68,22 @@ public class PaymentService {
     }
 
     // GET
-    public void startPayment(HttpServletResponse response) throws IOException {
+    public void startPayment(Long userId, Long itemId, HttpServletResponse response) throws IOException {
 
         // 회원이 아니라면 에러반환
-//        Optional<User> findUser = userRepository.findById(req.getUserId());
-//        if (!findUser.isPresent()) {
-//            throw new BaseException(NOT_FIND_USER);
-//        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+        String userEmail = user.getEmail();
+        String userName = user.getName();
 //
 //        // 등록된 상품이 아니라면 에러반환
-//        Optional<Item> findItem = itemRepository.findById(req.getItemId());
-//        if (!findItem.isPresent()) {
-//            throw new BaseException(NOT_FIND_ITEM);
-//        }
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
+
+        String itemName = item.getName();
+        int price = item.getPrice();
+
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
 
@@ -133,10 +136,10 @@ public class PaymentService {
                 "                    pg: \"html5_inicis\",\t\t//KG이니시스 pg파라미터 값\n" +
                 "                    pay_method: \"card\",\t\t//결제 방법\n" +
                 "                    merchant_uid: 'merchant_' + new Date().getTime(), //주문번호\n" +
-                "                    name: '당근100',\t\t//상품 명\n" +
-                "                    amount: 100,\t\t\t//금액\n" +
-                "         \t\t\t\tbuyer_email: \"shinsj4653@gmail.com\",\n" +
-                "      \t\t\t\tbuyer_name: \"홍길동\",\n" +
+                "                    name: \"" + itemName + "\" ,\t\t//상품 명\n" +
+                "                    amount: \"" + price + "\" ,\t\t\t//금액\n" +
+                "         \t\t\t\tbuyer_email: \"" + userEmail + "\",\n" +
+                "      \t\t\t\tbuyer_name: \"" + userName + "\",\n" +
                 "      \t\t\t\tbuyer_tel: \"010-4242-4242\",\n" +
                 "      \t\t\t\tbuyer_addr: \"서울특별시 강남구 신사동\",\n" +
                 "      \t\t\t\tbuyer_postcode: \"01181\"\n" +

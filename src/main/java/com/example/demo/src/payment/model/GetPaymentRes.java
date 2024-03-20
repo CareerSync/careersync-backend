@@ -21,6 +21,7 @@ public class GetPaymentRes {
     private PaymentState paymentState;
     private GetUserRes user;
     private GetItemRes item;
+    private State state;
 
     public GetPaymentRes(Payment payment) {
         this.id = payment.getId();
@@ -29,5 +30,6 @@ public class GetPaymentRes {
         this.paymentState = payment.getPaymentState();
         this.user = new GetUserRes(payment.getUser());
         this.item = new GetItemRes(payment.getItem());
+        this.state = payment.getState();
     }
 }

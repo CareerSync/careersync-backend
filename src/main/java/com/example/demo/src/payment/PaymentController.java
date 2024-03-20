@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +31,12 @@ public class PaymentController {
 
     /**
      *  테스트 결제 시작 API
-     * [GET] /app/payment/startPayment
+     * [GET] /app/payment/startPayment/{:itemId}
      * @return html
      */
-    @GetMapping("/startPayment")
-    public void startPayment(HttpServletResponse response) throws IOException {
-        paymentService.startPayment(response);
+    @GetMapping("/startPayment/{userId}/{itemId}")
+    public void startPayment(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId, HttpServletResponse response) throws IOException {
+        paymentService.startPayment(userId, itemId, response);
     }
 
     /**
