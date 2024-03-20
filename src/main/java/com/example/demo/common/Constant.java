@@ -7,5 +7,7 @@ public class Constant {
         NAVER,
         APPLE
     }
+
+    public static String AUTH_TOKEN_HEADER = "X-ACCESS-TOKEN";
 }
 
