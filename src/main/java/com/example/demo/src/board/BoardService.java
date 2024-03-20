@@ -9,6 +9,8 @@ import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
@@ -57,8 +59,20 @@ public class BoardService {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
-        List<GetBoardRes> getBoardsResList =  user.getBoardList().stream()
-                .filter(post -> post.getState() == ACTIVE)
+        List<GetBoardRes> getBoardsResList = boardRepository.findAllByUserAndState(user, ACTIVE).stream()
+                .map(GetBoardRes::new)
+                .collect(Collectors.toList());
+
+        return getBoardsResList;
+    }
+
+    @Transactional(readOnly = true)
+    public List<GetBoardRes> getBoardsByUserIdWithPaging(Long userId, Integer pageIndex, Integer size) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+        Pageable pageable = PageRequest.of(pageIndex, size);
+        List<GetBoardRes> getBoardsResList = boardRepository.findAllByUserAndState(user, ACTIVE, pageable).stream()
                 .map(GetBoardRes::new)
                 .collect(Collectors.toList());
 

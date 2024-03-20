@@ -43,11 +43,19 @@ public class BoardController {
      */
     @ResponseBody
     @GetMapping("")
-    public BaseResponse<List<GetBoardRes>> getBoards() {
+    public BaseResponse<List<GetBoardRes>> getBoards(@RequestParam(value = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
+                                                     @RequestParam(value = "size", required = false) Integer size) {
 
         Long userId = jwtService.getUserId();// 로그인이 정상적으로 이뤄져야 게시물 조회 가능
-        List<GetBoardRes> getPosts = boardService.getBoardsByUserId(userId);
-        return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
+
+        if (size == null) { // 유저가 작성한 게시물 모두 가져오기
+            List<GetBoardRes> getPosts = boardService.getBoardsByUserId(userId);
+            return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
+        } else { // 명시한 size 만큼 페이징 처리 후 가져오기
+            List<GetBoardRes> getPosts = boardService.getBoardsByUserIdWithPaging(userId, pageIndex, size);
+            return new BaseResponse<>(getPosts, messageUtils.getMessage("SUCCESS"));
+        }
+
     }
 
     /**
