@@ -1,18 +1,17 @@
 package com.example.demo.src.report;
 
-import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.admin.model.PostReportLogTimeReq;
 import com.example.demo.src.feed.FeedRepository;
 import com.example.demo.src.feed.entity.Feed;
 import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.report.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
-import com.example.demo.src.user.model.PostUserLogTimeReq;
+import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
@@ -94,52 +93,55 @@ public class ReportService {
             throw new BaseException(REVTYPE_ERROR);
         }
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
-        List<GetReportLogRes> userLogs = new ArrayList<>();
+        List<GetReportLogRes> reportLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getReportLogResByType(userLogs, id, revType);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getReportLogResByType(reportLogs, revObject.getId(), revType);
+        });
 
-        return userLogs;
+        return reportLogs;
     }
 
     @Transactional(readOnly = true)
     public List<GetReportLogRes> getReportHistory() {
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetReportLogRes> reportLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getReportLogRes(reportLogs, id);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getReportLogRes(reportLogs, revObject.getId());
+        });
 
         return reportLogs;
     }
 
     @Transactional(readOnly = true)
-    public List<GetReportLogRes> getReportHistoryByTime(PostUserLogTimeReq req) {
+    public List<GetReportLogRes> getReportHistoryByTime(PostReportLogTimeReq req) {
 
         LocalDateTime startTime = req.getStartTime();
         LocalDateTime endTime = req.getEndTime();
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetReportLogRes> reportLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getReportLogResByTime(reportLogs, id, startTime, endTime);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getReportLogResByTime(reportLogs, revObject.getId(), startTime, endTime);
+        });
 
         return reportLogs;
     }
 
-    private void getReportLogResByType(List<GetReportLogRes> userLogs, Long rev, String revType) {
+    private void getReportLogResByType(List<GetReportLogRes> reportLogs, Long rev, String revType) {
 
         String rType = revType;
 
@@ -147,7 +149,7 @@ public class ReportService {
 
         for (Revision<Long, Report> revision : revisions.getContent()) {
             if (String.valueOf(revision.getMetadata().getRevisionType()).equals(rType)) {
-                userLogs.add(makeGetReportLogRes(revision));
+                reportLogs.add(makeGetReportLogRes(revision));
             }
         }
     }
@@ -185,10 +187,9 @@ public class ReportService {
         return new GetReportLogRes(revisionNumber, revisionType, localDateTime);
     }
 
-    private List<Long> getRevIds() {
+    private List<Object> getRevs() {
         return auditReader.createQuery()
                 .forRevisionsOfEntity(Report.class, false, true)
-                .addProjection(AuditEntity.id())
                 .getResultList();
     }
 

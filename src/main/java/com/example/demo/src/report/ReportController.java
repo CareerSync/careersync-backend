@@ -1,10 +1,8 @@
 package com.example.demo.src.report;
 
-import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.report.model.*;
-import com.example.demo.src.user.model.PostUserLogTimeReq;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -73,46 +71,6 @@ public class ReportController {
         // Get Reports
         List<GetReportUserRes> getReportedUserRes = reportService.getReportedUsers();
         return new BaseResponse<>(getReportedUserRes, messageUtils.getMessage("SUCCESS"));
-    }
-
-    /**
-     * 신고 CUD 히스토리 전체 조회
-     * [GET] /app/reports/history
-     *
-     * 신고 CUD 히스토리 선택 조회
-     * [GET] /app/reports/history? revType=
-     * revType 종류
-     * - Create: INSERT
-     * - Update: UPDATE
-     * - Delete: DELETE
-     * @return BaseResponse<List<GetReportLogRes>>
-     */
-    // Path-variable
-    @ResponseBody
-    @GetMapping("/log/history")
-    public BaseResponse<List<GetReportLogRes>> getReportHistory(@RequestParam(required = false) String revType) {
-
-        if (revType == null) {
-            List<GetReportLogRes> getReportHistoryList = reportService.getReportHistory();
-            return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
-        }
-
-        List<GetReportLogRes> getReportHistoryList = reportService.getReportHistoryByRevType(revType);
-        return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
-    }
-
-    /**
-     * 신고 CUD 히스토리 시간 기준 조회
-     * [POST] /app/reports/history/time
-     @return BaseResponse<List<GetReportLogRes>>
-     */
-    // Path-variable
-    @ResponseBody
-    @PostMapping("/log/history/time")
-    public BaseResponse<List<GetReportLogRes>> getUserHistoryByTime(@RequestBody PostUserLogTimeReq req) {
-
-        List<GetReportLogRes> getReportHistoryList = reportService.getReportHistoryByTime(req);
-        return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
     /**

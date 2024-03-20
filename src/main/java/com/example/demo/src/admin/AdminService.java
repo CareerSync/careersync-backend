@@ -35,7 +35,7 @@ public class AdminService {
     private final ReportRepository reportRepository;
 
     public void blockReportedUsers() {
-        reportService.getReportedUsers().stream()
+        reportService.getReportedUsers()
                 .forEach((reportedUser) -> {
                     // 1. 신고 당한 유저들 상태 : ACTIVE -> BLOCKED
                     // 2. 신고 내역들 상태 : ACTIVE -> INACTIVE

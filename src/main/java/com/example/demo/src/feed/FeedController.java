@@ -1,10 +1,8 @@
 package com.example.demo.src.feed;
 
-import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.feed.model.*;
-import com.example.demo.src.user.model.PostUserLogTimeReq;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
@@ -64,46 +62,6 @@ public class FeedController {
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 조회 가능
         GetFeedRes getFeedRes = feedService.getFeed(feedId);
         return new BaseResponse<>(getFeedRes, messageUtils.getMessage("SUCCESS"));
-    }
-
-    /**
-     * 게시물 CUD 히스토리 전체 조회
-     * [GET] /app/feeds/log/history
-     *
-     * 게시물 CUD 히스토리 선택 조회
-     * [GET] /app/feeds/log/history? revType=
-     * revType 종류
-     * - Create: INSERT
-     * - Update: UPDATE
-     * - Delete: DELETE
-     * @return BaseResponse<List<GetFeedLogRes>>
-     */
-    // Path-variable
-    @ResponseBody
-    @GetMapping("/log/history")
-    public BaseResponse<List<GetFeedLogRes>> getPostHistory(@RequestParam(required = false) String revType) {
-
-        if (revType == null) {
-            List<GetFeedLogRes> postHistoryByTime = feedService.getFeedHistory();
-            return new BaseResponse<>(postHistoryByTime, messageUtils.getMessage("SUCCESS"));
-        }
-
-        List<GetFeedLogRes> getPostHistoryList = feedService.getFeedHistoryByRevType(revType);
-        return new BaseResponse<>(getPostHistoryList, messageUtils.getMessage("SUCCESS"));
-    }
-
-    /**
-     * 게시물 CUD 히스토리 시간 기준 조회
-     * [POST] /app/feeds/history/time
-     @return BaseResponse<List<GetFeedLogRes>>
-     */
-    // Path-variable
-    @ResponseBody
-    @PostMapping("/log/history/time")
-    public BaseResponse<List<GetFeedLogRes>> getFeedHistoryByTime(@RequestBody PostUserLogTimeReq req) {
-
-        List<GetFeedLogRes> getUserHistoryList = feedService.getFeedHistoryByTime(req);
-        return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
     /**

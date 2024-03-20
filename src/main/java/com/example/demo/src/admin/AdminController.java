@@ -1,14 +1,16 @@
 package com.example.demo.src.admin;
 
 import com.example.demo.common.response.BaseResponse;
+import com.example.demo.src.admin.model.PostFeedLogTimeReq;
+import com.example.demo.src.admin.model.PostReportLogTimeReq;
 import com.example.demo.src.feed.FeedService;
+import com.example.demo.src.feed.model.GetFeedLogRes;
 import com.example.demo.src.payment.PaymentService;
 import com.example.demo.src.report.ReportService;
-import com.example.demo.src.report.model.PostReportReq;
-import com.example.demo.src.report.model.PostReportRes;
+import com.example.demo.src.report.model.GetReportLogRes;
 import com.example.demo.src.user.UserService;
 import com.example.demo.src.user.model.GetUserLogRes;
-import com.example.demo.src.user.model.PostUserLogTimeReq;
+import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,6 +82,86 @@ public class AdminController {
 
         List<GetUserLogRes> getUserHistoryList = userService.getUserHistoryByTime(req);
         return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 게시물 CUD 히스토리 전체 조회
+     * [GET] /app/feeds/log/history
+     *
+     * 게시물 CUD 히스토리 선택 조회
+     * [GET] /app/history/feeds? revType=
+     * revType 종류
+     * - Create: INSERT
+     * - Update: UPDATE
+     * - Delete: DELETE
+     * @return BaseResponse<List<GetFeedLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/history/feeds")
+    public BaseResponse<List<GetFeedLogRes>> getFeedHistory(@RequestParam(required = false) String revType) {
+
+        if (revType == null) {
+            List<GetFeedLogRes> postHistoryByTime = feedService.getFeedHistory();
+            return new BaseResponse<>(postHistoryByTime, messageUtils.getMessage("SUCCESS"));
+        }
+
+        List<GetFeedLogRes> getPostHistoryList = feedService.getFeedHistoryByRevType(revType);
+        return new BaseResponse<>(getPostHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 게시물 CUD 히스토리 시간 기준 조회
+     * [POST] /app/history/time/feeds
+     @return BaseResponse<List<GetFeedLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @PostMapping("/history/time/feeds")
+    public BaseResponse<List<GetFeedLogRes>> getFeedHistoryByTime(@RequestBody PostFeedLogTimeReq req) {
+
+        List<GetFeedLogRes> getUserHistoryList = feedService.getFeedHistoryByTime(req);
+        return new BaseResponse<>(getUserHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 신고 CUD 히스토리 전체 조회
+     * [GET] /app/reports/history
+     *
+     * 신고 CUD 히스토리 선택 조회
+     * [GET] /app/reports/history? revType=
+     * revType 종류
+     * - Create: INSERT
+     * - Update: UPDATE
+     * - Delete: DELETE
+     * @return BaseResponse<List<GetReportLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @GetMapping("/history/reports")
+    public BaseResponse<List<GetReportLogRes>> getReportHistory(@RequestParam(required = false) String revType) {
+
+        if (revType == null) {
+            List<GetReportLogRes> getReportHistoryList = reportService.getReportHistory();
+            return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
+        }
+
+        List<GetReportLogRes> getReportHistoryList = reportService.getReportHistoryByRevType(revType);
+        return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
+    }
+
+    /**
+     * 신고 CUD 히스토리 시간 기준 조회
+     * [POST] /app/reports/history/time
+     @return BaseResponse<List<GetReportLogRes>>
+     */
+    // Path-variable
+    @ResponseBody
+    @PostMapping("/history/time/reports")
+    public BaseResponse<List<GetReportLogRes>> getReportHistoryByTime(@RequestBody PostReportLogTimeReq req) {
+
+        List<GetReportLogRes> getReportHistoryList = reportService.getReportHistoryByTime(req);
+        return new BaseResponse<>(getReportHistoryList, messageUtils.getMessage("SUCCESS"));
     }
 
 }

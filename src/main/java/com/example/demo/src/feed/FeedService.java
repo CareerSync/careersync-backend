@@ -1,16 +1,15 @@
 package com.example.demo.src.feed;
 
-import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.admin.model.PostFeedLogTimeReq;
+import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import com.example.demo.src.feed.entity.Feed;
 import com.example.demo.src.feed.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
-import com.example.demo.src.user.model.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
@@ -81,14 +80,14 @@ public class FeedService {
             throw new BaseException(REVTYPE_ERROR);
         }
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetFeedLogRes> feedLogs = new ArrayList<>();
-
-        revIds.stream()
-                .forEach((id) -> {
-                    getFeedLogResByType(feedLogs, id, revType);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getFeedLogResByType(feedLogs, revObject.getId(), revType);
+        });
 
         return feedLogs;
     }
@@ -96,32 +95,34 @@ public class FeedService {
     @Transactional(readOnly = true)
     public List<GetFeedLogRes> getFeedHistory() {
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetFeedLogRes> feedLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getFeedLogRes(feedLogs, id);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getFeedLogRes(feedLogs, revObject.getId());
+        });
 
         return feedLogs;
     }
 
     @Transactional(readOnly = true)
-    public List<GetFeedLogRes> getFeedHistoryByTime(PostUserLogTimeReq req) {
+    public List<GetFeedLogRes> getFeedHistoryByTime(PostFeedLogTimeReq req) {
 
         LocalDateTime startTime = req.getStartTime();
         LocalDateTime endTime = req.getEndTime();
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetFeedLogRes> feedLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getFeedLogResByTime(feedLogs, id, startTime, endTime);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getFeedLogResByTime(feedLogs, revObject.getId(), startTime, endTime);
+        });
 
         return feedLogs;
     }
@@ -172,10 +173,9 @@ public class FeedService {
         return new GetFeedLogRes(revisionNumber, revisionType, localDateTime);
     }
 
-    private List<Long> getRevIds() {
+    private List<Object> getRevs() {
         return auditReader.createQuery()
-                .forRevisionsOfEntity(Feed.class, false, false)
-                .addProjection(AuditEntity.id())
+                .forRevisionsOfEntity(Feed.class, false, true)
                 .getResultList();
     }
 

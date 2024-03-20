@@ -1,4 +1,4 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.admin.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostUserLogTimeReq {
+public class PostReportLogTimeReq {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 }

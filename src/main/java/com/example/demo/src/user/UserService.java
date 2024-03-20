@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
@@ -195,7 +196,7 @@ public class UserService {
             throw new BaseException(REVTYPE_ERROR);
         }
 
-        List<Object> revs = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
@@ -211,7 +212,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<GetUserLogRes> getUserHistory() {
 
-        List<Object> revs = getRevIds();
+        List<Object> revs = getRevs();
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
         revs.forEach(revision -> {
@@ -229,7 +230,7 @@ public class UserService {
         LocalDateTime startTime = req.getStartTime();
         LocalDateTime endTime = req.getEndTime();
 
-        List<Object> revs = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
@@ -288,7 +289,7 @@ public class UserService {
         return new GetUserLogRes(revisionNumber, revisionType, localDateTime);
     }
 
-    private List<Object> getRevIds() {
+    private List<Object> getRevs() {
         return auditReader.createQuery()
                 .forRevisionsOfEntity(User.class, false, true)
                 .getResultList();
