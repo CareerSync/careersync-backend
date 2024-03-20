@@ -125,9 +125,7 @@ public class FeedController {
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
 
         feedService.modifyPostContent(feedId, patchPostReq);
-
-        String result = "게시물 내용 수정 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_FEED_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -142,9 +140,7 @@ public class FeedController {
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 삭제 가능
 
         feedService.deleteFeed(feedId);
-
-        String result = "게시물 삭제 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("DELETE_FEED_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
 
