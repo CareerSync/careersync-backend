@@ -1,4 +1,4 @@
-package com.example.demo.src.user.revision.entity;
+package com.example.demo.src.revision.entity;
 
 import lombok.Getter;
 import org.hibernate.envers.RevisionEntity;

@@ -8,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 
@@ -18,6 +21,7 @@ import static javax.persistence.FetchType.LAZY;
 @Getter
 @Entity
 @JsonAutoDetect(fieldVisibility = ANY)
+@Audited
 @Table(name = "TB_PAYMENT")
 public class Payment extends BaseEntity {
 
@@ -26,10 +30,12 @@ public class Payment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotAudited
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "userId")
     private User user;
 
+    @NotAudited
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "itemId")
     private Item item;

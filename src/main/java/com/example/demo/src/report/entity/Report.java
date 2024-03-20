@@ -4,6 +4,7 @@ import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.feed.entity.Feed;
 import com.example.demo.src.user.entity.User;
 import lombok.*;
+import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 

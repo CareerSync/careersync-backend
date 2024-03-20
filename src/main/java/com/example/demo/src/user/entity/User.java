@@ -6,6 +6,8 @@ import com.example.demo.src.report.entity.Report;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.envers.AuditMappedBy;
+import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -129,6 +131,10 @@ public class User extends BaseEntity {
     public void addPost(Feed feed) {
         feed.setUser(this);
         feedList.add(feed);
+    }
+
+    public void updateState(State state) {
+        this.state = state;
     }
 
 }

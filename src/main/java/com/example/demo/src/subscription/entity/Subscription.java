@@ -8,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 
@@ -59,6 +62,10 @@ public class Subscription extends BaseEntity {
 
     public void updateNextPaymentDate(LocalDate date) {
         this.nextPaymentDate = date;
+    }
+
+    public void updateState(State state) {
+        this.state = state;
     }
 
     public void deleteSubscription() {

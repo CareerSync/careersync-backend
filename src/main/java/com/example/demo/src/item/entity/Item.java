@@ -6,6 +6,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
@@ -15,6 +17,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 @Getter
 @Entity
 @JsonAutoDetect(fieldVisibility = ANY)
+@Audited
 @Table(name = "TB_ITEM")
 public class Item extends BaseEntity {
 

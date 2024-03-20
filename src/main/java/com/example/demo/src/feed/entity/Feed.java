@@ -4,6 +4,7 @@ import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
+import org.hibernate.envers.AuditTable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
@@ -51,6 +52,10 @@ public class Feed extends BaseEntity {
 
     public void updateContent(String content) {
         this.content = content;
+    }
+
+    public void updateState(State state) {
+        this.state = state;
     }
 
     public void deleteFeed() {
