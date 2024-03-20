@@ -33,7 +33,7 @@ public class Report extends BaseEntity {
 
     @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
+    @JoinColumn(name = "feedId")
     private Feed feed;
 
     @Builder

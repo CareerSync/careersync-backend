@@ -127,9 +127,7 @@ public class ReportController {
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
 
         reportService.modifyReportCategory(reportId, patchReportReq);
-
-        String result = "신고내역 카테고리 수정 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_REPORT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -144,9 +142,7 @@ public class ReportController {
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 삭제 가능
 
         reportService.deleteReport(reportId);
-
-        String result = "신고내역 삭제 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("DELETE_REPORT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
 }

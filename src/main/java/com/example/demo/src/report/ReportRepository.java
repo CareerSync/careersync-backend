@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface ReportRepository extends JpaRepository<Report, Long>,
         RevisionRepository<Report, Long, Long> {
     Optional<Report> findByIdAndState(Long id, State state);
-    Optional<Report> findByUserIdAndPostId(Long userId, Long postId);
+    Optional<Report> findByUserIdAndFeedId(Long userId, Long feedId);
     List<Report> findAllByState(State state);
 }

@@ -48,7 +48,7 @@ public class ReportService {
                 orElseThrow(() -> new BaseException(INVALID_POST));
 
         // 이미 신고한 내역 있으면 중복 신고 안되도록 처리
-        Optional<Report> checkReport = reportRepository.findByUserIdAndPostId(user.getId(), feed.getId());
+        Optional<Report> checkReport = reportRepository.findByUserIdAndFeedId(user.getId(), feed.getId());
         if(checkReport.isPresent()){
             throw new BaseException(POST_REPORT_EXISTS_USER_AND_POST);
         }
@@ -193,14 +193,14 @@ public class ReportService {
     // PATCH
     public void modifyReportCategory(Long reportId, PatchReportReq patchReportReq) {
         Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
         report.updateCategory(patchReportReq.getCategory());
     }
 
     // DELETE
     public void deleteReport(Long reportId) {
         Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_POST));
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
         report.deleteReport();
     }
 
