@@ -54,8 +54,7 @@ public class SubscriptionController {
     @PatchMapping("/{subscriptionId}")
     public BaseResponse<String> modifySubscriptionNextPaymentDate(@PathVariable("subscriptionId") Long subscriptionId, @RequestBody PatchSubscriptionReq req) {
         subscriptionService.modifyNextSubscriptionDate(subscriptionId, req);
-        String result = "구독 내역의 다음 결제 일자 수정 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("MODIFY_SUBSCRIPTION_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
     /**
@@ -67,8 +66,7 @@ public class SubscriptionController {
     @DeleteMapping("/{subscriptionId}")
     public BaseResponse<String> deleteSubscription(@PathVariable("subscriptionId") Long subscriptionId) {
         subscriptionService.deleteSubscription(subscriptionId);
-        String result = "구독 내역 삭제 완료";
-        return new BaseResponse<>(result, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(messageUtils.getMessage("DELETE_SUBSCRIPTION_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
 }
