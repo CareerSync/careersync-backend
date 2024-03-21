@@ -19,7 +19,7 @@ public class Revision implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @RevisionNumber
-    @Column(name = "REV")
+    @Column(name = "REV", columnDefinition = "BIGINT DEFAULT 0")
     private Long id;
 
     @RevisionTimestamp
