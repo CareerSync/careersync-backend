@@ -1,6 +1,5 @@
 package com.example.demo.src.board;
 
-import com.example.demo.common.config.FirebaseConfig;
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.file.FileHandler;

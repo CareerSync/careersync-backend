@@ -218,7 +218,7 @@ public class UserController {
             @RequestParam(name = "code") String code) throws IOException, BaseException{
         log.info(">> 소셜 로그인 API 서버로부터 받은 code : {}", code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
-        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLoginOrJoin(socialLoginType,code);
+        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLoginOrJoin(socialLoginType, code);
         return new BaseResponse<>(getSocialOAuthRes, messageUtils.getMessage("SUCCESS"));
     }
 
