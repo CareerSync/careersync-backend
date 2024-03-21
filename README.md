@@ -323,14 +323,14 @@ SpringBoot 프로젝트를 모두 개발하면 gradle 명령어로 프로젝트�
 ### Docker Build
 DockerFile를 이용하여 프로젝트를 빌드 할 수 있다.  
 현재 프로젝트는 dev와 prod 변수를 가지고 로컬 서버, 그리고 개발 서버 환경을 분리하고 있다.  
-EC2 서버에 올려둔 프로젝트는 application.yml 파일 내 설정 중, prod 환경의 설정을 따라야 하므로 다음과 같이 DockerFile을 구성해줬다.  
+EC2 서버에 올려둔 프로젝트는 application.yml 파일 내 설정 중, prod 환경의 설정을 따라야 하므로 다음과 같이 DockerFile을 구성해줬다. 
 ```code
 FROM openjdk:11-jdk-slim-buster
 COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 9000
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "/app.jar"]
 ```
-`-Dspring.profiles.active`값을 사용하여 어느 개발 환경을 따라갈 것 인지 세팅해줄 수 있다.
+`-Dspring.profiles.active`값을 사용하여 도커로 빌드된 프로젝트가 어느 개발 환경을 따라갈 것 인지 세팅해줄 수 있다.
 
 ### Error
 서버 Error를 마주했다면, 원인을 파악할 수 있는 다양한 방법들을 통해 문제 원인을 찾자.
