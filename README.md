@@ -127,7 +127,7 @@ api-server-spring-boot
           | Board.java // Board Entity
           | BoardImage.java // BoardImage Entity
         > model
-          | BoardFileVO.java // Board 등록을 위한 VO 클래스
+          | BoardFileVO.java // Board 등록을 위한 VO 클래스 - 게시물 정보와 게시물에 등록될 이미지 리스트 존재
           | BoardImageDto.java // MultipartFile 이미지 형태를 BoardImage로 변환하기 위한 Dto 
         | BoardController.java
         | BoardService.java
