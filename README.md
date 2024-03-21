@@ -61,18 +61,28 @@ api-server-spring-boot
         | RestTemplateConfig.java // HTTP get,post 요청을 날릴때 일정한 형식에 맞춰주는 template
         | SwaggerConfig.java // Swagger 관련 설정
         | WebConfig.java // Web 관련 설정(CORS 설정 포함)
+        | DataEnverConfig.java // Spring Data Envers 사용을 위한 auditReader 생성
+        | SecurityConfig.java // Swagger 및 Postman 으로 API 테스트 시, 403 error 방지하기 위한 Security 관련 설정
+        | ServletConfig.java // API Response 메세지의 다국어 지원 설정
       > entity
         | BaseEntity.java // create, update, state 등 Entity에 공통적으로 정의되는 변수를 정의한 BaseEntity
       > exceptions
         | BaseException.java // Controller, Service에서 Response 용으로 공통적으로 사용 될 익셉션 클래스
         | ExceptionAdvice.java // ExceptionHandler를 활용하여 정의해놓은 예외처리를 통합 관리하는 클래스
+      > file
+        | FileHandler.java // MultipartFIle 리스트를 BoardImage 리스트로 변환해주는 클래스
       > oauth
         | GoogleOauth.java // Google OAuth 처리 클래스
+        | KakaoOauth.java // Kakao OAuth 처리 클래스
         | OAuthService.java // OAuth 공통 처리 서비스 클래스
         | SocialOauth.java // OAuth 공통 메소드 정의 인터페이스
+      > payment
+        | IamportClientInitializer.java // 포트원 결제 요청 처리를 위한 클라이언트를 생성해주는 클래스
       > response
         | BaseResponse.java // Controller 에서 Response 용으로 공통적으로 사용되는 구조를 위한 모델 클래스
-        | BaseResponseStatus.java // Controller, Service에서 사용할 Response Status 관리 클래스 
+        | BaseResponseStatus.java // Controller, Service에서 사용할 Response Status 관리 클래스
+      > scheduler
+        | SchedulerService.java // 스케쥴러 로직 담당 클래스
       > secret
         | Secret.java // jwt 암호키 보관 클래스
       | Constant // 상수 보관 클래스
@@ -89,6 +99,11 @@ api-server-spring-boot
         | TestService.java // Memo API Service
         | MemoRepository.java // Memo Spring Data JPA
         | CommentRepository.java // Comment Spring Data JPA
+      > admin
+        > model
+          | PostUserLogTimeReq.java // CUD 히스토리 조회 시, 특정 시간 범위 지정을 위한 RequestBody
+        | AdminController.java // 신고당한 유저 차단, CUD 히스토리 조회 Controller
+        | AdminService.java // 신고당한 유저 차단 로직 담당
       > user
         > entity
           | User.java // User Entity
@@ -104,13 +119,31 @@ api-server-spring-boot
         | UserController.java
         | UserService.java
         | UserRepository.java
+      > board
+        > entity
+          | Board.java // Board Entity
+          | BoardImage.java // BoardImage Entity
+        > model
+          | BoardFileVO.java // Board 등록을 위한 VO 클래스
+          | BoardImageDto.java // MultipartFile 이미지 형태를 BoardImage로 변환하기 위한 Dto 
+        | BoardController.java
+        | BoardService.java
+        | BoardRepository.java
+        | BoardImageRepository.java
+      > report
+        > entity
+          | Report.java // Report Entity
+        | ReportController.java
+        | ReportService.java
+        | ReportRepository.java
+      
     > utils
       | JwtService.java // JWT 관련 클래스
       | SHA256.java // 암호화 알고리즘 클래스
       | ValidateRegex.java // 정규표현식 관련 클래스
     | DemoApplication // SpringBootApplication 서버 시작 지점
   > resources
-    | application.yml // Database 연동을 위한 설정 값 세팅 및 Port 정의 파일
+    | application.yml // Database 연동을 위한 설정 값 세팅 및 Port 정의 파일 - dev, prod로 관리
     | logback-spring.xml // logback 설정 xml 파일
 build.gradle // gradle 빌드시에 필요한 dependency 설정하는 곳
 .gitignore // git 에 포함되지 않아야 하는 폴더, 파일들을 작성 해놓는 곳
@@ -142,7 +175,8 @@ Java 라이브러리로 반복되는 getter, setter, toString 등의 메서드 �
 
 `application.yml`
 
-에서 **포트 번호를 정의**하고 **DataBase 연동**을 위한 값을 설정한다.
+에서 **포트 번호를 정의**하고 **DataBase 연동**을 위한 값을 설정한다.  
+또한, 공통 설정 값들은 common, 로컬 서버에서 필요한 값들은 dev, 그리고 개발 서버에서 필요한 값들은 prod로 profile값을 설정한다.
 
 
 ### src - main - java
@@ -213,6 +247,18 @@ Spring Data JPA에 포함된 기본 메소드를 사용할 수 있으며, 쿼리
 SpringBoot 프로젝트를 모두 개발하면 gradle 명령어로 프로젝트를 실행파일로 빌드 할 수 있다.  
 빌드한 파일을 실행할 서버로 옮겨서 프로세스로 실행함으로써 서버를 구동시킬 수 있다.  
 이 때, 서버환경에서 SpringBoot를 백그라운드 프로세스로 실행할 때 nohup 명령어를 사용한다.
+
+### Docker Build
+DockerFile를 이용하여 프로젝트를 빌드 할 수 있다.  
+현재 프로젝트는 dev와 prod 변수를 가지고 로컬 서버, 그리고 개발 서버 환경을 분리하고 있다.  
+EC2 서버에 올려둔 프로젝트는 application.yml 파일 내 설정 중, prod 환경의 설정을 따라야 하므로 다음과 같이 DockerFile을 구성해줬다.  
+```code
+FROM openjdk:11-jdk-slim-buster
+COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 9000
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "/app.jar"]
+```
+`-Dspring.profiles.active`값을 사용하여 어느 개발 환경을 따라갈 것 인지 세팅해줄 수 있다.
 
 ### Error
 서버 Error를 마주했다면, 원인을 파악할 수 있는 다양한 방법들을 통해 문제 원인을 찾자.
