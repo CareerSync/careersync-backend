@@ -17,9 +17,10 @@ import java.time.LocalDateTime;
 public class Revision implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REV_SEQ")
+    @SequenceGenerator(name = "REV_SEQ", sequenceName = "REV_SEQ")
     @RevisionNumber
-    @Column(name = "REV", columnDefinition = "BIGINT DEFAULT 0")
+    @Column(name = "REV")
     private Long id;
 
     @RevisionTimestamp
