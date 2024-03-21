@@ -5,6 +5,8 @@ import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.board.model.*;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.parameters.P;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
+@Tag(name = "board 도메인", description = "게시물 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/app/boards")
@@ -27,6 +30,7 @@ public class BoardController {
      * [POST] /app/boards
      * @return BaseResponse<PostBoardRes>
      */
+    @Operation(summary = "게시물 등록", description = "입력된 게시물 등록 요청에 따라 게시물을 등록합니다. 이미지 파일은 최소 1장, 최대 10장 업로드 가능합니다.")
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostBoardRes> createBoard(BoardFileVO boardFileVO) throws Exception {
@@ -42,6 +46,7 @@ public class BoardController {
      * 특정 유저가 작성한 게시물 조회 API
      * @return BaseResponse<List<GetBoardRes>>
      */
+    @Operation(summary = "유저의 게시물 조회", description = "로그인 한 유저의 게시물을 조회합니다. pageIndex와 size값을 명시하면 페이징 처리가 됩니다.")
     @ResponseBody
     @GetMapping("")
     public BaseResponse<List<GetBoardRes>> getBoards(@RequestParam(value = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
@@ -64,6 +69,7 @@ public class BoardController {
      * [GET] /app/boards/:boardId
      * @return BaseResponse<GetBoardRes>
      */
+    @Operation(summary = "게시물 1개 조회", description = "입력된 boardId값에 해당하는 게시물을 조회합니다.")
     @ResponseBody
     @GetMapping("/{boardId}")
     public BaseResponse<GetBoardRes> getBoard(@PathVariable("boardId") Long boardId) {
@@ -78,6 +84,7 @@ public class BoardController {
      * [PATCH] /app/boards/:boardId
      * @return BaseResponse<String>
      */
+    @Operation(summary = "게시물 내용 수정", description = "입력된 boardId값에 해당하는 게시물의 내용을 수정합니다.")
     @ResponseBody
     @PatchMapping("/{boardId}")
     public BaseResponse<String> modifyBoardContent(@PathVariable("boardId") Long boardId, @RequestBody PatchBoardReq patchPostReq) {
@@ -92,6 +99,7 @@ public class BoardController {
      * [PATCH] /app/boards? state=
      * @return BaseResponse<String>
      */
+    @Operation(summary = "게시물 상태 수정", description = "입력된 상태값에 따라 게시물의 상태를 수정합니다.")
     @ResponseBody
     @PatchMapping("/{boardId}/state")
     public BaseResponse<String> modifyBoardState(@PathVariable("boardId") Long boardId, @RequestParam("state") State state) {
@@ -106,6 +114,7 @@ public class BoardController {
      * [DELETE] /app/boards/:boardId
      * @return BaseResponse<String>
      */
+    @Operation(summary = "게시물 삭제", description = "입력된 boardId값에 해당하는 게시물을 삭제합니다.")
     @ResponseBody
     @DeleteMapping("/{boardId}")
     public BaseResponse<String> deleteBoard(@PathVariable("boardId") Long boardId) {

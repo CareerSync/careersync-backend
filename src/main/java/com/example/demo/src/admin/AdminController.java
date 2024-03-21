@@ -14,6 +14,8 @@ import com.example.demo.src.user.UserService;
 import com.example.demo.src.user.model.GetUserLogRes;
 import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import com.example.demo.utils.MessageUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
+@Tag(name = "admin 도메인", description = "관리자 API, 히스토리 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/app/admin")
@@ -38,6 +41,7 @@ public class AdminController {
      * [GET] /app/admin/blockReportedUsers
      * @return BaseResponse<String>
      */
+    @Operation(summary = "신고당한 회원 차단", description = "신고당한 유저들의 상태값을 차단(BLOCKED)으로 수정합니다.")
     @ResponseBody
     @GetMapping("/blockReportedUsers")
     public BaseResponse<String> blockReportedUsers() {
@@ -59,6 +63,7 @@ public class AdminController {
      * @return BaseResponse<List<GetUserLogRes>>
      */
     // Path-variable
+    @Operation(summary = "회원 CUD 히스토리 조회", description = "회원 CUD 로그를 조회합니다. revType이 INSERT면 Create, UPDATE면 Update, DELETE면 Delete에 해당하는 로그를, 만약 없을 경우 모든 로그를 조회합니다.")
     @ResponseBody
     @GetMapping("/history/users")
     public BaseResponse<List<GetUserLogRes>> getUserHistory(@RequestParam(required = false) String revType) {
@@ -78,6 +83,7 @@ public class AdminController {
      @return BaseResponse<List<GetUserLogRes>>
      */
     // Path-variable
+    @Operation(summary = "회원 CUD 히스토리 - 시작, 종료시간으로 조회", description = "입력된 시작시간과 종료시간 사이의 회원 CUD 로그를 조회합니다.")
     @ResponseBody
     @PostMapping("/history/time/users")
     public BaseResponse<List<GetUserLogRes>> getUserHistoryByTime(@RequestBody PostUserLogTimeReq req) {
@@ -99,6 +105,7 @@ public class AdminController {
      * @return BaseResponse<List<GetBoardLogRes>>
      */
     // Path-variable
+    @Operation(summary = "게시물 CUD 히스토리 조회", description = "게시물 CUD 로그를 조회합니다. revType이 INSERT면 Create, UPDATE면 Update, DELETE면 Delete에 해당하는 로그를, 만약 없을 경우 모든 로그를 조회합니다.")
     @ResponseBody
     @GetMapping("/history/boards")
     public BaseResponse<List<GetBoardLogRes>> getBoardHistory(@RequestParam(required = false) String revType) {
@@ -118,6 +125,7 @@ public class AdminController {
      @return BaseResponse<List<GetBoardLogRes>>
      */
     // Path-variable
+    @Operation(summary = "게시물 CUD 히스토리 - 시작, 종료시간으로 조회", description = "입력된 시작시간과 종료시간 사이의 게시물 CUD 로그를 조회합니다.")
     @ResponseBody
     @PostMapping("/history/time/boards")
     public BaseResponse<List<GetBoardLogRes>> getBoardHistoryByTime(@RequestBody PostBoardLogTimeReq req) {
@@ -139,6 +147,7 @@ public class AdminController {
      * @return BaseResponse<List<GetReportLogRes>>
      */
     // Path-variable
+    @Operation(summary = "신고 CUD 히스토리 조회", description = "신고 CUD 로그를 조회합니다. revType이 INSERT면 Create, UPDATE면 Update, DELETE면 Delete에 해당하는 로그를, 만약 없을 경우 모든 로그를 조회합니다.")
     @ResponseBody
     @GetMapping("/history/reports")
     public BaseResponse<List<GetReportLogRes>> getReportHistory(@RequestParam(required = false) String revType) {
@@ -158,6 +167,7 @@ public class AdminController {
      @return BaseResponse<List<GetReportLogRes>>
      */
     // Path-variable
+    @Operation(summary = "신고 CUD 히스토리 - 시작, 종료시간으로 조회", description = "입력된 시작시간과 종료시간 사이의 신고 CUD 로그를 조회합니다.")
     @ResponseBody
     @PostMapping("/history/time/reports")
     public BaseResponse<List<GetReportLogRes>> getReportHistoryByTime(@RequestBody PostReportLogTimeReq req) {
@@ -179,6 +189,7 @@ public class AdminController {
      * @return BaseResponse<List<GetPaymentLogRes>>
      */
     // Path-variable
+    @Operation(summary = "결제 CUD 히스토리 조회", description = "결제 CUD 로그를 조회합니다. revType이 INSERT면 Create, UPDATE면 Update, DELETE면 Delete에 해당하는 로그를, 만약 없을 경우 모든 로그를 조회합니다.")
     @ResponseBody
     @GetMapping("/history/payments")
     public BaseResponse<List<GetPaymentLogRes>> getPaymentHistory(@RequestParam(required = false) String revType) {
@@ -193,11 +204,12 @@ public class AdminController {
     }
 
     /**
-     * 신고 CUD 히스토리 시간 기준 조회
+     * 결제 CUD 히스토리 시간 기준 조회
      * [POST] /app/admin/history/payments/time
      @return BaseResponse<List<GetPaymentLogRes>>
      */
     // Path-variable
+    @Operation(summary = "결제 CUD 히스토리 - 시작, 종료시간으로 조회", description = "입력된 시작시간과 종료시간 사이의 결제 CUD 로그를 조회합니다.")
     @ResponseBody
     @PostMapping("/history/time/payments")
     public BaseResponse<List<GetPaymentLogRes>> getPaymentHistoryByTime(@RequestBody PostPaymentLogTimeReq req) {
