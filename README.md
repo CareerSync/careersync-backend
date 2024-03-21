@@ -48,6 +48,9 @@ Spring Data JPA는 JpaRepository를 상속받는 인터페이스만 구현해주
 JpaRepository 인터페이스는 기본적인 CRUD 및 필요한 메서드를 제공해준다.  
 자세한 코드는 `test 도메인`을 참고하자.
 
+## ✨ERD
+![gridgetest-server-erd](https://github.com/shinsj4653/2024-Server-Gridge-Test/assets/49470452/7ab71972-7a3c-47f6-a92b-64eeb48c684c)  
+
 
 ## ✨Structure
 앞에 (*)이 붙어있는 파일(or 폴더)은 추가적인 과정 이후에 생성된다.
