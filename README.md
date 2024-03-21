@@ -255,6 +255,9 @@ Spring Data JPA에 포함된 기본 메소드를 사용할 수 있으며, 쿼리
 - 로컬 서버 Swagger 주소 : http://localhost:9000/swagger-ui/index.html
 - 개발 서버 Swagger 주소 : https://gridetest-server.shop/swagger-ui/index.html
 ```
+API 테스트 시, 각 서버 환경에 맞는 도메인을 선택해야 CORS 에러가 발생하지 않는다.  
+또한, 회원 생성 후 로그인을 했을 때 반환받는 jwt 토큰을 `Authorize` 탭을 누른 뒤 입력해줘야 나머지 API 들을 정상 실행 가능하다.
+
 #### 1. https 환경에서 POST request 403 error
 로컬 환경에서는 Swagger를 이용한 CRUD 요청이 모두 정상적으로 이뤄졌지만, 개발 서버 환경은 https여서 POST 요청에 대해 403 에러가 발생하였다.  
 이를 해결하기 위해, in-memory user를 추가해줬고 해당 유저 계정으로 로그인 시, 어느 authentication도 거치지 않도록 수정해줌으로써 403 에러를 방지해줬다.  
@@ -271,7 +274,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     return http.build();
 }
 ```
-다음 계정으로 Swagger 접속 시, 정상적으로 POST 요청이 이뤄진다. 
+다음 계정으로 Swagger 접속 시, 정상적으로 POST 요청이 이뤄진다.
 
 #### 2. Spring Security CSRF Protection
 기본적으로 Spring Security는 CSRF 보호를 시행한다. 즉, 요청 헤더에 CSRF 토큰이 존재하지 않는다면 403 에러를 반환하는 문제가 발생한다.  
