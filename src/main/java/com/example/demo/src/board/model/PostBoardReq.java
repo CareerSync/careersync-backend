@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostBoardReq {
     private String content;
+    private boolean isVideo;
 
     public Board toEntity(User user) {
         return Board.builder()
