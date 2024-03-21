@@ -101,9 +101,12 @@ api-server-spring-boot
         | CommentRepository.java // Comment Spring Data JPA
       > admin
         > model
-          | PostUserLogTimeReq.java // CUD 히스토리 조회 시, 특정 시간 범위 지정을 위한 RequestBody
+          | PostUserLogTimeReq.java // CUD 히스토리 조회 시, 특정 시간 범위 지정을 위한 Request
         | AdminController.java // 신고당한 유저 차단, CUD 히스토리 조회 Controller
         | AdminService.java // 신고당한 유저 차단 로직 담당
+      > revision
+        > entity
+          | Revision.java // 기존 Revision 테이블 설정 변경을 위한 클래스
       > user
         > entity
           | User.java // User Entity
@@ -136,7 +139,27 @@ api-server-spring-boot
         | ReportController.java
         | ReportService.java
         | ReportRepository.java
-      
+      > item
+        > entity
+          | Item.java // Item Entity
+        | ItemController.java
+        | ItemService.java
+        | ItemRepository.java
+      > payment
+        > entity
+          | Payment.java // Payment Entity
+        > model
+          | CancelReq.java // 결제 취소를 위한 Request
+          | VerificationReq.java // 결제 내역 검증을 위한 Request
+        | PaymentController.java
+        | PaymentService.java
+        | PaymentRepository.java
+      > subscription
+        > entity
+          | Subscription.java // Subscription Entity
+        | SubscriptionController.java
+        | SubscriptionService.java
+        | SubscriptionRepository.java
     > utils
       | JwtService.java // JWT 관련 클래스
       | SHA256.java // 암호화 알고리즘 클래스
