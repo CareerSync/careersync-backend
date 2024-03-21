@@ -70,7 +70,7 @@ api-server-spring-boot
         | BaseException.java // Controller, Service에서 Response 용으로 공통적으로 사용 될 익셉션 클래스
         | ExceptionAdvice.java // ExceptionHandler를 활용하여 정의해놓은 예외처리를 통합 관리하는 클래스
       > file
-        | FileHandler.java // MultipartFIle 리스트를 BoardImage 리스트로 변환해주는 클래스
+        | FileHandler.java // MultipartFile 리스트를 BoardImage 리스트로 변환해주는 클래스
       > oauth
         | GoogleOauth.java // Google OAuth 처리 클래스
         | KakaoOauth.java // Kakao OAuth 처리 클래스
