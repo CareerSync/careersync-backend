@@ -250,7 +250,50 @@ Response할 때, 공통 부분은 묶고 다른 부분은 제네릭을 통해 �
 Spring Data JPA를 사용하여 DB에 작업을 내리는 메소드로 구성되어 있다.  
 Spring Data JPA에 포함된 기본 메소드를 사용할 수 있으며, 쿼리메소드 기능을 통해 메소드를 추가할 수 있다.
 
+### Swagger
+```
+- 로컬 서버 Swagger 주소 : http://localhost:9000/swagger-ui/index.html
+- 개발 서버 Swagger 주소 : https://gridetest-server.shop/swagger-ui/index.html
+```
+#### 1. https 환경에서 POST request 403 error
+로컬 환경에서는 Swagger를 이용한 CRUD 요청이 모두 정상적으로 이뤄졌지만, 개발 서버 환경은 https여서 POST 요청에 대해 403 에러가 발생하였다.  
+이를 해결하기 위해, in-memory user를 추가해줬고 해당 유저 계정으로 로그인 시, 어느 authentication도 거치지 않도록 수정해줌으로써 403 에러를 방지해줬다.  
+```
+- Username: user
+- Password: userPass
+```
+```java
+// SecurityConfig.java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
+      .permitAll());
+    return http.build();
+}
+```
+다음 계정으로 Swagger 접속 시, 정상적으로 POST 요청이 이뤄진다. 
 
+#### 2. Spring Security CSRF Protection
+기본적으로 Spring Security는 CSRF 보호를 시행한다. 즉, 요청 헤더에 CSRF 토큰이 존재하지 않는다면 403 에러를 반환하는 문제가 발생한다.  
+이는 CSRF 보호를 없애주면 해결할 수 있다.  
+```java
+// SecurityConfig.java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
+      .permitAll())
+      .csrf(AbstractHttpConfigurer::disable);
+    return http.build();
+}
+```
+
+### Postman
+Swagger와 마찬가지로 API 실행 시 `Authorizaiton - Basic Auth` 탭으로 들어간다음, 다음 설정을 입력해줘야한다. 
+```
+- Username: user
+- Password: userPass
+```
+Basic Auth 설정 완료 후, 403 에러 없이 정상적으로 API를 작동시킬 수 있다.
 
 ## ✨Usage
 ### API 만들기 예제
