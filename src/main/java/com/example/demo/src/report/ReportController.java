@@ -43,7 +43,7 @@ public class ReportController {
      * [GET] /app/reports
      * @return BaseResponse<List<GetReportRes>>
      */
-    @Operation(summary = "신고 내역 조회", description = "로그인한 유저의 신고 내역을 조회합니다.")
+    @Operation(summary = "신고 내역 조회", description = "로그인한 회원의 신고 내역을 조회합니다.")
     @ResponseBody
     @GetMapping("")
     public BaseResponse<List<GetReportRes>> getReports() {
