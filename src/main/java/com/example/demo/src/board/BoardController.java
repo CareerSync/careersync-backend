@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@Tag(name = "board 도메인", description = "게시물 API") // swagger 접속: http://localhost:9000/swagger-ui/index.html
+@Tag(name = "board 도메인", description = "게시물 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/app/boards")
