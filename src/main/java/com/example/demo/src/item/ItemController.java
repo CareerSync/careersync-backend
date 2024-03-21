@@ -8,6 +8,8 @@ import com.example.demo.src.item.model.PostItemReq;
 import com.example.demo.src.item.model.PostItemRes;
 import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import java.util.List;
 import static com.example.demo.common.entity.BaseEntity.*;
 
 @Slf4j
+@Tag(name = "item 도메인", description = "구독 상품 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/app/items")
@@ -32,6 +35,7 @@ public class ItemController {
      *
      * @return BaseResponse<PostItemRes>
      */
+    @Operation(summary = "상품 등록", description = "입력된 상품 등록 요청에 따라 상품을 등록합니다.")
     @ResponseBody
     @PostMapping("")
     public BaseResponse<PostItemRes> createItem(@RequestBody PostItemReq req) {
@@ -46,6 +50,7 @@ public class ItemController {
      *
      * @return BaseResponse<List<GetItemRes>>
      */
+    @Operation(summary = "상품 조회", description = "등록된 모든 상품을 조회합니다.")
     @ResponseBody
     @GetMapping("")
     public BaseResponse<List<GetItemRes>> getItems() {
@@ -60,6 +65,7 @@ public class ItemController {
      *
      * @return BaseResponse<GetItemRes>
      */
+    @Operation(summary = "상품 1개 조회", description = "입력된 itemId값에 해당하는 상품을 조회합니다.")
     @ResponseBody
     @GetMapping("/{itemId}")
     public BaseResponse<GetItemRes> getItem(@PathVariable("itemId") Long itemId) {
@@ -78,6 +84,7 @@ public class ItemController {
      *
      * @return BaseResponse<String>
      */
+    @Operation(summary = "상품 정보 수정", description = "기존 상품의 이름 혹은 가격을 수정합니다.")
     @ResponseBody
     @PatchMapping("/{itemId}")
     public BaseResponse<String> modifyItem(@PathVariable("itemId") Long itemId, @RequestBody PatchItemReq req) {
@@ -92,6 +99,7 @@ public class ItemController {
      *
      * @return BaseResponse<String>
      */
+    @Operation(summary = "상품 상태 수정", description = "입력된 상태값에 따라 기존 상품의 상태값을 수정합니다.")
     @ResponseBody
     @PatchMapping("/{itemId}/state")
     public BaseResponse<String> modifyItemState(@PathVariable("itemId") Long itemId, @RequestParam("state") State state) {
@@ -107,6 +115,7 @@ public class ItemController {
      *
      * @return BaseResponse<String>
      */
+    @Operation(summary = "상품 삭제", description = "입력된 itemId값에 해당하는 상품을 삭제합니다.")
     @ResponseBody
     @DeleteMapping("/{itemId}")
     public BaseResponse<String> deleteItem(@PathVariable("itemId") Long itemId) {
