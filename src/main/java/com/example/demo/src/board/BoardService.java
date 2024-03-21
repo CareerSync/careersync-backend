@@ -1,13 +1,19 @@
 package com.example.demo.src.board;
 
+import com.example.demo.common.config.FirebaseConfig;
 import com.example.demo.common.entity.BaseEntity.State;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.file.FileHandler;
+import com.example.demo.common.payment.IamportClientInitializer;
 import com.example.demo.src.admin.model.PostBoardLogTimeReq;
 import com.example.demo.src.board.entity.Board;
+import com.example.demo.src.board.entity.BoardImage;
 import com.example.demo.src.board.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
+import com.google.cloud.storage.Bucket;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +21,11 @@ import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,7 +35,7 @@ import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
-
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 @Service
@@ -33,15 +43,38 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final BoardImageRepository boardImageRepository;
     private final AuditReader auditReader;
+    private final FileHandler fileHandler;
 
     // POST
-    public PostBoardRes createBoard(Long userId, PostBoardReq req) {
+    public PostBoardRes createBoard(Long userId, PostBoardReq req, List<MultipartFile> images) throws Exception {
 
         User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
+        // 이미지 업로드 했는지 확인
+        if(images.isEmpty()) {
+            throw new BaseException(IMAGE_NOT_EXISTS_ERROR);
+        }
+
+        // 업로드 한 10장 넘어간다면 예외처리
+        if (images.size() > 10) {
+            throw new BaseException(IMAGE_OVERFLOW_ERROR);
+        }
+
         Board saveBoard = boardRepository.save(req.toEntity(user));
+        List<BoardImage> imageList = fileHandler.parseFileInfo(images);
+
+        // 이미지 파일 저장 후, List<BoardImage>로 변환해줄 FileHandler 사용
+        // 파일이 존재할 때에만 처리
+        if(!imageList.isEmpty()) {
+            for(BoardImage image : imageList) {
+                // 파일을 DB에 저장
+                saveBoard.addImage(boardImageRepository.save(image));
+            }
+        }
+
         return new PostBoardRes(saveBoard.getId(), saveBoard.getContent());
     }
     // GET

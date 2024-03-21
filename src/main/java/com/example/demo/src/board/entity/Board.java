@@ -38,9 +38,10 @@ public class Board extends BaseEntity {
     @JoinColumn(name = "userId")
     private User user;
 
+    @NotAudited
     @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    List<Board> boardImgList = new ArrayList<>();
+    List<BoardImage> boardImgList = new ArrayList<>();
 
     public void setUser(User user){
         this.user = user;
@@ -67,6 +68,17 @@ public class Board extends BaseEntity {
 
     public void deleteFeed() {
         this.state = INACTIVE;
+    }
+
+    // Board에서 파일 처리 위함
+    public void addImage(BoardImage image) {
+        this.boardImgList.add(image);
+
+        // 게시글에 파일이 저장되어있지 않은 경우
+        if(image.getBoard() != this) {
+            image.setBoard(this); // 파일 저장
+        }
+
     }
 
 }

@@ -7,6 +7,7 @@ import com.example.demo.utils.JwtService;
 import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,13 +29,13 @@ public class BoardController {
      */
     @ResponseBody
     @PostMapping("")
-    public BaseResponse<PostBoardRes> createBoard(@RequestBody PostBoardReq postBoardReq) {
+    public BaseResponse<PostBoardRes> createBoard(BoardFileVO boardFileVO) throws Exception {
 
         Long userId = jwtService.getUserId();// 로그인이 정상적으로 이뤄져야 게시물 등록 가능
-        PostBoardRes postRes = boardService.createBoard(userId, postBoardReq);
+        PostBoardReq postBoardReq = new PostBoardReq(boardFileVO.getContent(), boardFileVO.isVideo(), boardFileVO.isImageOne());
+        PostBoardRes postRes = boardService.createBoard(userId, postBoardReq, boardFileVO.getImages());
         return new BaseResponse<>(postRes, messageUtils.getMessage("SUCCESS"));
     }
-
     /**
      * 게시물 조회 API
      * [GET] /app/boards
