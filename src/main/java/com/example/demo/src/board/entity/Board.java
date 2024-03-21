@@ -3,11 +3,15 @@ package com.example.demo.src.board.entity;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.demo.common.entity.BaseEntity.State.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
@@ -33,6 +37,10 @@ public class Board extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "userId")
     private User user;
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    List<Board> boardImgList = new ArrayList<>();
 
     public void setUser(User user){
         this.user = user;
