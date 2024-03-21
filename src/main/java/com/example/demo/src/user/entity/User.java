@@ -49,7 +49,7 @@ public class User extends BaseEntity {
     @Column()
     private LocalDate privacyDate;
 
-    @Column()
+    @Column(columnDefinition = "TEXT")
     private String profileImgUrl;
 
     @Column(columnDefinition = "TINYINT(1)")

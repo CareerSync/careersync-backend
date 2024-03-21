@@ -33,13 +33,17 @@ public enum BaseResponseStatus {
     INVALID_LOGIN_METHOD(false,HttpStatus.BAD_REQUEST.value(),"소셜 로그인 방식을 사용해주세요."),
     USER_BLOCKED_ERROR(false,HttpStatus.BAD_REQUEST.value(),"차단당한 유저입니다."),
     USER_INACTIVE_ERROR(false,HttpStatus.BAD_REQUEST.value(),"탈퇴한 유저입니다."),
-    RESPONSE_ERROR(false, HttpStatus.NOT_FOUND.value(), "값을 불러오는데 실패하였습니다."),
-
     DUPLICATED_EMAIL(false, HttpStatus.BAD_REQUEST.value(), "중복된 이메일입니다."),
     DUPLICATED_ITEM(false, HttpStatus.BAD_REQUEST.value(), "중복된 상품입니다."),
     DUPLICATED_IMP_UID(false, HttpStatus.BAD_REQUEST.value(), "중복된 아임포트 고유번호입니다."),
     DUPLICATED_MERCHANT_UID(false, HttpStatus.BAD_REQUEST.value(), "중복된 거래 고유번호입니다."),
     DUPLICATED_SUBSCRIPTION(false, HttpStatus.BAD_REQUEST.value(), "중복된 유저 혹은 상품입니다."),
+    INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
+    SQL_ERROR(false, HttpStatus.BAD_REQUEST.value(), "SQL ERROR"),
+    BOARD_IMAGE_UPLOAD_ERROR(false, HttpStatus.BAD_REQUEST.value(), "게시물 이미지 업로드 실패"),
+    IMAGE_NOT_EXISTS_ERROR(false, HttpStatus.BAD_REQUEST.value(), "게시물 업로드 시, 최소 한장의 이미지가 필요합니다."),
+    IMAGE_OVERFLOW_ERROR(false, HttpStatus.BAD_REQUEST.value(), "게시물 업로드 시, 최대 열장의 이미지를 업로드 가능합니다."),
+
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),
     INVALID_BOARD(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 게시글입니다."),
@@ -48,15 +52,16 @@ public enum BaseResponseStatus {
     INVALID_PAYMENT_USER(false, HttpStatus.NOT_FOUND.value(), "결제 내역에 존재하지 않는 유저입니다."),
     INVALID_PAYMENT_ITEM(false, HttpStatus.NOT_FOUND.value(), "결제 내역에 존재하지 않는 상품입니다."),
     FAILED_TO_LOGIN(false,HttpStatus.NOT_FOUND.value(),"없는 아이디거나 비밀번호가 틀렸습니다."),
-    EMPTY_JWT(false, HttpStatus.UNAUTHORIZED.value(), "JWT를 입력해주세요."),
-    INVALID_JWT(false, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
-    INVALID_USER_JWT(false,HttpStatus.FORBIDDEN.value(),"권한이 없는 유저의 접근입니다."),
+    RESPONSE_ERROR(false, HttpStatus.NOT_FOUND.value(), "값을 불러오는데 실패하였습니다."),
     NOT_FIND_USER(false,HttpStatus.NOT_FOUND.value(),"일치하는 유저가 없습니다."),
     NOT_FIND_BOARD(false,HttpStatus.NOT_FOUND.value(),"일치하는 게시물이 없습니다."),
     NOT_FIND_REPORT(false, HttpStatus.NOT_FOUND.value(),"일치하는 신고 내역이 없습니다."),
     NOT_FIND_ITEM(false, HttpStatus.NOT_FOUND.value(),"일치하는 상품이 없습니다."),
-    INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
 
+    EMPTY_JWT(false, HttpStatus.UNAUTHORIZED.value(), "JWT를 입력해주세요."),
+    INVALID_JWT(false, HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
+
+    INVALID_USER_JWT(false,HttpStatus.FORBIDDEN.value(),"권한이 없는 유저의 접근입니다."),
 
     /**
      * 500 :  Database, Server 오류
