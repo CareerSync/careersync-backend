@@ -40,6 +40,7 @@ public enum BaseResponseStatus {
     DUPLICATED_SUBSCRIPTION(false, HttpStatus.BAD_REQUEST.value(), "중복된 유저 혹은 상품입니다."),
     INVALID_OAUTH_TYPE(false, HttpStatus.BAD_REQUEST.value(), "알 수 없는 소셜 로그인 형식입니다."),
     SQL_ERROR(false, HttpStatus.BAD_REQUEST.value(), "SQL ERROR"),
+    BOARD_IMAGE_UPLOAD_ERROR(false, HttpStatus.BAD_REQUEST.value(), "게시물 이미지 업로드 실패"),
 
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),
