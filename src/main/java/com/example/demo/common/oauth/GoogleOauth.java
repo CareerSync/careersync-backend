@@ -110,7 +110,7 @@ public class GoogleOauth implements SocialOauth {
     }
 
     public GoogleUser getUserInfo(ResponseEntity<String> userInfoRes) throws JsonProcessingException{
-        GoogleUser googleUser = objectMapper.readValue(userInfoRes.getBody(),GoogleUser.class);
+        GoogleUser googleUser = objectMapper.readValue(userInfoRes.getBody(), GoogleUser.class);
         return googleUser;
     }
 }

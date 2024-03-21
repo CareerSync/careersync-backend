@@ -4,7 +4,10 @@ public class Constant {
     public enum SocialLoginType{
         GOOGLE,
         KAKAO,
-        NAVER
+        NAVER,
+        APPLE
     }
+
+    public static String AUTH_TOKEN_HEADER = "X-ACCESS-TOKEN";
 }
 

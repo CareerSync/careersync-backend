@@ -8,7 +8,7 @@ REST API를 처리하는 SpringBoot 프로젝트
 
 ### Folder Structure
 - `src`: 메인 로직
-  `src`에는 도메인 별로 패키지를 구성하도록 했다. **도메인**이란 회원(User), 게시글(Post), 댓글(Comment), 주문(Order) 등 소프트웨어에 대한 요구사항 혹은 문제 영역이라고 생각하면 된다. 각자 설계할 APP을 분석하고 필요한 도메인을 도출하여 `src` 폴더를 구성하자.
+  `src`에는 도메인 별로 패키지를 구성하도록 했다. **도메인**이란 회원(User), 게시글(Feed), 댓글(Comment), 주문(Order) 등 소프트웨어에 대한 요구사항 혹은 문제 영역이라고 생각하면 된다. 각자 설계할 APP을 분석하고 필요한 도메인을 도출하여 `src` 폴더를 구성하자.
 - `common`: 메인 로직은 아니지만 `src` 에서 필요한 부차적인 파일들을 모아놓은 폴더
   - `config`: 설정 파일 관련 폴더
   - `entity`: 공통 Entity 관리 폴더
@@ -48,6 +48,9 @@ Spring Data JPA는 JpaRepository를 상속받는 인터페이스만 구현해주
 JpaRepository 인터페이스는 기본적인 CRUD 및 필요한 메서드를 제공해준다.  
 자세한 코드는 `test 도메인`을 참고하자.
 
+## ✨ERD
+![gridgetest-server-erd](https://github.com/shinsj4653/2024-Server-Gridge-Test/assets/49470452/7ab71972-7a3c-47f6-a92b-64eeb48c684c)  
+
 
 ## ✨Structure
 앞에 (*)이 붙어있는 파일(or 폴더)은 추가적인 과정 이후에 생성된다.
@@ -61,18 +64,28 @@ api-server-spring-boot
         | RestTemplateConfig.java // HTTP get,post 요청을 날릴때 일정한 형식에 맞춰주는 template
         | SwaggerConfig.java // Swagger 관련 설정
         | WebConfig.java // Web 관련 설정(CORS 설정 포함)
+        | DataEnverConfig.java // Spring Data Envers 사용을 위한 auditReader 생성
+        | SecurityConfig.java // Swagger 및 Postman 으로 API 테스트 시, 403 error 방지하기 위한 Security 관련 설정
+        | ServletConfig.java // API Response 메세지의 다국어 지원 설정
       > entity
         | BaseEntity.java // create, update, state 등 Entity에 공통적으로 정의되는 변수를 정의한 BaseEntity
       > exceptions
         | BaseException.java // Controller, Service에서 Response 용으로 공통적으로 사용 될 익셉션 클래스
         | ExceptionAdvice.java // ExceptionHandler를 활용하여 정의해놓은 예외처리를 통합 관리하는 클래스
+      > file
+        | FileHandler.java // MultipartFile 리스트를 BoardImage 리스트로 변환해주는 클래스
       > oauth
         | GoogleOauth.java // Google OAuth 처리 클래스
+        | KakaoOauth.java // Kakao OAuth 처리 클래스
         | OAuthService.java // OAuth 공통 처리 서비스 클래스
         | SocialOauth.java // OAuth 공통 메소드 정의 인터페이스
+      > payment
+        | IamportClientInitializer.java // 포트원 결제 요청 처리를 위한 클라이언트를 생성해주는 클래스
       > response
         | BaseResponse.java // Controller 에서 Response 용으로 공통적으로 사용되는 구조를 위한 모델 클래스
-        | BaseResponseStatus.java // Controller, Service에서 사용할 Response Status 관리 클래스 
+        | BaseResponseStatus.java // Controller, Service에서 사용할 Response Status 관리 클래스
+      > scheduler
+        | SchedulerService.java // 스케쥴러 로직 담당 클래스
       > secret
         | Secret.java // jwt 암호키 보관 클래스
       | Constant // 상수 보관 클래스
@@ -89,6 +102,14 @@ api-server-spring-boot
         | TestService.java // Memo API Service
         | MemoRepository.java // Memo Spring Data JPA
         | CommentRepository.java // Comment Spring Data JPA
+      > admin
+        > model
+          | PostUserLogTimeReq.java // CUD 히스토리 조회 시, 특정 시간 범위 지정을 위한 Request
+        | AdminController.java // 신고당한 유저 차단, CUD 히스토리 조회 Controller
+        | AdminService.java // 신고당한 유저 차단 로직 담당
+      > revision
+        > entity
+          | Revision.java // 기존 Revision 테이블 설정 변경을 위한 클래스
       > user
         > entity
           | User.java // User Entity
@@ -104,13 +125,51 @@ api-server-spring-boot
         | UserController.java
         | UserService.java
         | UserRepository.java
+      > board
+        > entity
+          | Board.java // Board Entity
+          | BoardImage.java // BoardImage Entity
+        > model
+          | BoardFileVO.java // Board 등록을 위한 VO 클래스 - 게시물 정보와 게시물에 등록될 이미지 리스트 존재
+          | BoardImageDto.java // MultipartFile 이미지 형태를 BoardImage로 변환하기 위한 Dto 
+        | BoardController.java
+        | BoardService.java
+        | BoardRepository.java
+        | BoardImageRepository.java
+      > report
+        > entity
+          | Report.java // Report Entity
+        | ReportController.java
+        | ReportService.java
+        | ReportRepository.java
+      > item
+        > entity
+          | Item.java // Item Entity
+        | ItemController.java
+        | ItemService.java
+        | ItemRepository.java
+      > payment
+        > entity
+          | Payment.java // Payment Entity
+        > model
+          | CancelReq.java // 결제 취소를 위한 Request
+          | VerificationReq.java // 결제 내역 검증을 위한 Request
+        | PaymentController.java
+        | PaymentService.java
+        | PaymentRepository.java
+      > subscription
+        > entity
+          | Subscription.java // Subscription Entity
+        | SubscriptionController.java
+        | SubscriptionService.java
+        | SubscriptionRepository.java
     > utils
       | JwtService.java // JWT 관련 클래스
       | SHA256.java // 암호화 알고리즘 클래스
       | ValidateRegex.java // 정규표현식 관련 클래스
     | DemoApplication // SpringBootApplication 서버 시작 지점
   > resources
-    | application.yml // Database 연동을 위한 설정 값 세팅 및 Port 정의 파일
+    | application.yml // Database 연동을 위한 설정 값 세팅 및 Port 정의 파일 - dev, prod로 관리
     | logback-spring.xml // logback 설정 xml 파일
 build.gradle // gradle 빌드시에 필요한 dependency 설정하는 곳
 .gitignore // git 에 포함되지 않아야 하는 폴더, 파일들을 작성 해놓는 곳
@@ -142,7 +201,8 @@ Java 라이브러리로 반복되는 getter, setter, toString 등의 메서드 �
 
 `application.yml`
 
-에서 **포트 번호를 정의**하고 **DataBase 연동**을 위한 값을 설정한다.
+에서 **포트 번호를 정의**하고 **DataBase 연동**을 위한 값을 설정한다.  
+또한, 공통 설정 값들은 common, 로컬 서버에서 필요한 값들은 dev, 그리고 개발 서버에서 필요한 값들은 prod로 profile값을 설정한다.
 
 
 ### src - main - java
@@ -193,7 +253,53 @@ Response할 때, 공통 부분은 묶고 다른 부분은 제네릭을 통해 �
 Spring Data JPA를 사용하여 DB에 작업을 내리는 메소드로 구성되어 있다.  
 Spring Data JPA에 포함된 기본 메소드를 사용할 수 있으며, 쿼리메소드 기능을 통해 메소드를 추가할 수 있다.
 
+### Swagger
+```
+- 로컬 서버 Swagger 주소 : http://localhost:9000/swagger-ui/index.html
+- 개발 서버 Swagger 주소 : https://gridetest-server.shop/swagger-ui/index.html
+```
+API 테스트 시, 각 서버 환경에 맞는 도메인을 선택해야 CORS 에러가 발생하지 않는다.  
+또한, 회원 생성 후 로그인을 했을 때 반환받는 jwt 토큰을 `Authorize` 탭을 누른 뒤 입력해줘야 나머지 API 들을 정상 실행 가능하다.
 
+#### 1. https 환경에서 POST request 403 error
+로컬 환경에서는 Swagger를 이용한 CRUD 요청이 모두 정상적으로 이뤄졌지만, 개발 서버 환경은 https여서 POST 요청에 대해 403 에러가 발생하였다.  
+이를 해결하기 위해, in-memory user를 추가해줬고 해당 유저 계정으로 로그인 시, 어느 authentication도 거치지 않도록 수정해줌으로써 403 에러를 방지해줬다.  
+```
+- Username: user
+- Password: userPass
+```
+```java
+// SecurityConfig.java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
+      .permitAll());
+    return http.build();
+}
+```
+다음 계정으로 Swagger 접속 시, 정상적으로 POST 요청이 이뤄진다.
+
+#### 2. Spring Security CSRF Protection
+기본적으로 Spring Security는 CSRF 보호를 시행한다. 즉, 요청 헤더에 CSRF 토큰이 존재하지 않는다면 403 에러를 반환하는 문제가 발생한다.  
+이는 CSRF 보호를 없애주면 해결할 수 있다.  
+```java
+// SecurityConfig.java
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
+      .permitAll())
+      .csrf(AbstractHttpConfigurer::disable);
+    return http.build();
+}
+```
+
+### Postman
+Swagger와 마찬가지로 API 실행 시 `Authorizaiton - Basic Auth` 탭으로 들어간다음, 다음 설정을 입력해줘야한다. 
+```
+- Username: user
+- Password: userPass
+```
+Basic Auth 설정 완료 후, 403 에러 없이 정상적으로 API를 작동시킬 수 있다.
 
 ## ✨Usage
 ### API 만들기 예제
@@ -213,6 +319,18 @@ Spring Data JPA에 포함된 기본 메소드를 사용할 수 있으며, 쿼리
 SpringBoot 프로젝트를 모두 개발하면 gradle 명령어로 프로젝트를 실행파일로 빌드 할 수 있다.  
 빌드한 파일을 실행할 서버로 옮겨서 프로세스로 실행함으로써 서버를 구동시킬 수 있다.  
 이 때, 서버환경에서 SpringBoot를 백그라운드 프로세스로 실행할 때 nohup 명령어를 사용한다.
+
+### Docker Build
+DockerFile를 이용하여 프로젝트를 빌드 할 수 있다.  
+현재 프로젝트는 dev와 prod 변수를 가지고 로컬 서버, 그리고 개발 서버 환경을 분리하고 있다.  
+EC2 서버에 올려둔 프로젝트는 application.yml 파일 내 설정 중, prod 환경의 설정을 따라야 하므로 다음과 같이 DockerFile을 구성해줬다.  
+```code
+FROM openjdk:11-jdk-slim-buster
+COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 9000
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "/app.jar"]
+```
+`-Dspring.profiles.active`값을 사용하여 어느 개발 환경을 따라갈 것 인지 세팅해줄 수 있다.
 
 ### Error
 서버 Error를 마주했다면, 원인을 파악할 수 있는 다양한 방법들을 통해 문제 원인을 찾자.

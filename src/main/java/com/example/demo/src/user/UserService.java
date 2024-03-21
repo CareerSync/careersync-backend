@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 
 
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
@@ -10,25 +11,22 @@ import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.RevisionType;
-import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.history.Revision;
 import org.springframework.data.history.Revisions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.example.demo.common.entity.BaseEntity.*;
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
-import static org.hibernate.envers.RevisionType.*;
+import static com.example.demo.src.user.entity.User.AccountState.*;
 
 // Service Create, Update, Delete 의 로직 처리
 @Transactional
@@ -41,12 +39,26 @@ public class UserService {
     private final JwtService jwtService;
     private final AuditReader auditReader;
 
-
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
+
+        // 소셜 로그인인지 구분
+        boolean oAuth = postUserReq.isOAuth();
+
+        log.info("oAuth : {}", oAuth);
+
+        // 소셜 로그인을 사용하기로 메세지 넘기기
+        if (oAuth) {
+//            validateSocialLoginType(postUserReq.getSocialLoginType());
+            log.info("wrong login request");
+            // GOOGLE, KAKAO, NAVER, APPLE 중 하나라면 소셜 로그인 진행 후 회원가입 진행
+            //createOAuthUser(postUserReq);
+            throw new BaseException(INVALID_LOGIN_METHOD);
+        }
+
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
-        if(checkUser.isPresent()){
+        if (checkUser.isPresent()) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
 
@@ -58,12 +70,14 @@ public class UserService {
             throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
         }
 
+        // 일반 로그인
         User saveUser = userRepository.save(postUserReq.toEntity());
         return new PostUserRes(saveUser.getId());
 
     }
 
     public PostUserRes createOAuthUser(User user) {
+
         User saveUser = userRepository.save(user);
 
         // JWT 발급
@@ -72,9 +86,20 @@ public class UserService {
 
     }
 
+
+
+
     public PostLoginRes logIn(PostLoginReq postLoginReq) {
         User user = userRepository.findByEmailAndState(postLoginReq.getEmail(), ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+        if (user.getAccountState().equals(BLOCKED)) {
+            throw new BaseException(USER_BLOCKED_ERROR);
+        }
+
+        if (user.getState().equals(INACTIVE)) {
+            throw new BaseException(USER_INACTIVE_ERROR);
+        }
 
         String encryptPwd;
         try {
@@ -86,7 +111,7 @@ public class UserService {
         if(user.getPassword().equals(encryptPwd)){
             Long userId = user.getId();
             String jwt = jwtService.createJwt(userId);
-            return new PostLoginRes(userId,jwt);
+            return new PostLoginRes(userId, jwt);
         } else{
             throw new BaseException(FAILED_TO_LOGIN);
         }
@@ -100,11 +125,30 @@ public class UserService {
         user.updateName(patchUserReq.getName());
     }
 
+    public void modifyBirthDate(Long userId, PatchUserBirthDateReq birthDateReq) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updateBirthDate(birthDateReq.getBirthDate());
+    }
+
+    public void modifyPrivacy(Long userId, PatchUserPrivacyTermReq privacyTermReq) {
+        User user = userRepository.findByIdAndState(userId, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updatePrivacyTerm(privacyTermReq.isServiceTerm(), privacyTermReq.isDataTerm(),
+                privacyTermReq.isLocationTerm());
+    }
+
+    public void modifyState(Long userId, State state) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        user.updateState(state);
+    }
+
     // DELETE
     public void deleteUser(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-        user.deleteUser();
+        userRepository.delete(user);
     }
 
     // GET
@@ -152,14 +196,15 @@ public class UserService {
             throw new BaseException(REVTYPE_ERROR);
         }
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getUserLogResByType(userLogs, id, revType);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getUserLogResByType(userLogs, revObject.getId(), revType);
+        });
 
         return userLogs;
     }
@@ -167,14 +212,14 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<GetUserLogRes> getUserHistory() {
 
-        List<Long> revIds = getRevIds();
-
+        List<Object> revs = getRevs();
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getUserLogRes(userLogs, id);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getUserLogRes(userLogs, revObject.getId());
+        });
 
         return userLogs;
     }
@@ -185,14 +230,15 @@ public class UserService {
         LocalDateTime startTime = req.getStartTime();
         LocalDateTime endTime = req.getEndTime();
 
-        List<Long> revIds = getRevIds();
+        List<Object> revs = getRevs();
 
         List<GetUserLogRes> userLogs = new ArrayList<>();
 
-        revIds.stream()
-                .forEach((id) -> {
-                    getUserLogResByTime(userLogs, id, startTime, endTime);
-                });
+        revs.forEach(revision -> {
+            Object[] revisionArray = (Object[]) revision;
+            com.example.demo.src.revision.entity.Revision revObject = (com.example.demo.src.revision.entity.Revision) revisionArray[1];
+            getUserLogResByTime(userLogs, revObject.getId(), startTime, endTime);
+        });
 
         return userLogs;
     }
@@ -210,9 +256,9 @@ public class UserService {
         }
     }
 
-    private void getUserLogRes(List<GetUserLogRes> userLogs, Long rev) {
+    private void getUserLogRes(List<GetUserLogRes> userLogs, Long revId) {
 
-        Revisions<Long, User> revisions = userRepository.findRevisions(rev);
+        Revisions<Long, User> revisions = userRepository.findRevisions(revId);
         for (Revision<Long, User> revision : revisions.getContent()) {
                 userLogs.add(makeGetUserLogRes(revision));
         }
@@ -243,10 +289,9 @@ public class UserService {
         return new GetUserLogRes(revisionNumber, revisionType, localDateTime);
     }
 
-    private List<Long> getRevIds() {
+    private List<Object> getRevs() {
         return auditReader.createQuery()
                 .forRevisionsOfEntity(User.class, false, true)
-                .addProjection(AuditEntity.id())
                 .getResultList();
     }
 }

@@ -1,10 +1,8 @@
 package com.example.demo.src.report.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.post.entity.Post;
-import com.example.demo.src.report.model.GetReportUserRes;
+import com.example.demo.src.board.entity.Board;
 import com.example.demo.src.user.entity.User;
-import com.example.demo.src.user.model.GetUserRes;
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
@@ -12,7 +10,6 @@ import org.hibernate.envers.NotAudited;
 import javax.persistence.*;
 
 import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
-import static org.hibernate.envers.RelationTargetAuditMode.NOT_AUDITED;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -36,19 +33,19 @@ public class Report extends BaseEntity {
 
     @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "postId")
-    private Post post;
+    @JoinColumn(name = "boardId")
+    private Board board;
 
     @Builder
-    public Report(Long id, String category, User user, Post post){
+    public Report(Long id, String category, User user, Board board){
         this.id = id;
         this.category = category;
         this.user = user;
-        this.post = post;
+        this.board = board;
     }
 
-    public User getReportedUser(Post post) {
-        return post.getUser();
+    public User getReportedUser(Board board) {
+        return board.getUser();
     }
 
     public void updateState(State state) {

@@ -36,11 +36,12 @@ public class TestController {
      * [GET] /test/log
      * @return String
      */
+    @Operation(summary = "테스트", description = "루트 주소 접속 시, 지정한 문자열을 반환합니다.")
     @ResponseBody
     @GetMapping("/log")
     public String logTest() {
         log.info("테스트");
-        return "Success Test";
+        return "Success CI/CD Test";
     }
 
     /**

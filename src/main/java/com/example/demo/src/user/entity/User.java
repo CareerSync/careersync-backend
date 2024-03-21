@@ -1,26 +1,22 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.post.entity.Post;
+import com.example.demo.src.board.entity.Board;
 import com.example.demo.src.report.entity.Report;
-import com.example.demo.src.test.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.demo.common.Constant.*;
 import static com.example.demo.common.entity.BaseEntity.State.*;
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static org.hibernate.envers.RelationTargetAuditMode.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -47,33 +43,36 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean isOAuth;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDate birthDate;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDate privacyDate;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT")
     private String profileImgUrl;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(columnDefinition = "TINYINT(1)")
     private boolean serviceTerm;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(columnDefinition = "TINYINT(1)")
     private boolean dataTerm;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(columnDefinition = "TINYINT(1)")
     private boolean locationTerm;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private AccountState accountState = AccountState.ACTIVE;
 
+    @Column(length = 10)
+    private SocialLoginType socialLoginType;
+
     // 양방향 매핑
     @NotAudited
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    List<Post> postList = new ArrayList<>();
+    List<Board> boardList = new ArrayList<>();
 
     // 양방향 매핑
     @NotAudited
@@ -85,21 +84,18 @@ public class User extends BaseEntity {
         ACTIVE, DORMANT, BLOCKED;
     }
 
+    // 구글 로그인 전용 Builder
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, LocalDate birthDate, LocalDate privacyDate, String profileImgUrl,
-                boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
+    public User(Long id, String email, String password, String name, boolean isOAuth, String profileImgUrl, SocialLoginType socialLoginType) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
         this.isOAuth = isOAuth;
-        this.birthDate = birthDate;
-        this.privacyDate = privacyDate;
+        this.socialLoginType = socialLoginType;
         this.profileImgUrl = profileImgUrl;
-        this.serviceTerm = serviceTerm;
-        this.dataTerm = dataTerm;
-        this.locationTerm = locationTerm;
     }
+
 
     public void updateName(String name) {
         this.name = name;
@@ -114,14 +110,29 @@ public class User extends BaseEntity {
         this.accountState = accountState;
     }
 
+    public void updateBirthDate(LocalDate localDate) {
+        this.birthDate = localDate;
+    }
+
+    public void updatePrivacyTerm(boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
+        this.serviceTerm = serviceTerm;
+        this.dataTerm = dataTerm;
+        this.locationTerm = locationTerm;
+        this.privacyDate = LocalDate.now();
+    }
+
     public void deleteUser() {
         this.state = INACTIVE;
     }
 
     // 연관관계 편의 메서드
-    public void addPost(Post post) {
-        post.setUser(this);
-        postList.add(post);
+    public void addPost(Board board) {
+        board.setUser(this);
+        boardList.add(board);
+    }
+
+    public void updateState(State state) {
+        this.state = state;
     }
 
 }
