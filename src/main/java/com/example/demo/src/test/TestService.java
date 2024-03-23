@@ -30,7 +30,7 @@ public class TestService {
     public void createMemo(MemoDto memoDto) throws BaseException {
         //중복
         if(checkMemo(memoDto.getMemo()) >= 1){
-            throw new BaseException(POST_TEST_EXISTS_MEMO, messageUtils);
+            throw new BaseException(POST_TEST_EXISTS_MEMO, messageUtils.getMessage("POST_TEST_EXISTS_MEMO"));
         }
         memoRepository.save(memoDto.toEntity());
     }
@@ -58,7 +58,7 @@ public class TestService {
     public void modifyMemo(Long memoId, MemoDto memoDto) throws BaseException {
         //중복
         if(checkMemo(memoDto.getMemo()) >= 1){
-            throw new BaseException(POST_TEST_EXISTS_MEMO);
+            throw new BaseException(POST_TEST_EXISTS_MEMO, messageUtils.getMessage("POST_TEST_EXISTS_MEMO"));
         }
         Memo memo = memoRepository.findByIdAndState(memoId, ACTIVE)
                 .orElseThrow(() -> new BaseException(MODIFY_FAIL_MEMO));
@@ -69,7 +69,7 @@ public class TestService {
 
     public void createComment(PostCommentDto postCommentDto){
         Memo memo = memoRepository.findByIdAndState(postCommentDto.getMemoId(), ACTIVE).
-                orElseThrow(() -> new BaseException(INVALID_MEMO));
+                orElseThrow(() -> new BaseException(INVALID_MEMO, messageUtils.getMessage("INVALID_MEMO")));
         commentRepository.save(postCommentDto.toEntity(memo));
     }
 }
