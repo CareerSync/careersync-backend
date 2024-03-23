@@ -8,6 +8,7 @@ import com.example.demo.src.item.model.GetItemRes;
 import com.example.demo.src.item.model.PatchItemReq;
 import com.example.demo.src.item.model.PostItemReq;
 import com.example.demo.src.item.model.PostItemRes;
+import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +26,14 @@ import static com.example.demo.common.response.BaseResponseStatus.*;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final MessageUtils messageUtils;
 
     // POST
     public PostItemRes createItem(PostItemReq req) {
         Optional<Item> findItem = itemRepository.findByNameAndState(req.getName(), ACTIVE);
 
         if (findItem.isPresent()) {
-            throw new BaseException(DUPLICATED_ITEM);
+            throw new BaseException(DUPLICATED_ITEM, messageUtils.getMessage("DUPLICATED_ITEM"));
         }
 
         Item item = itemRepository.save(req.toEntity());
@@ -50,7 +52,7 @@ public class ItemService {
 
     public GetItemRes getItem(Long itemId) {
         Item item = itemRepository.findByIdAndState(itemId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
+                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM, messageUtils.getMessage("NOT_FIND_ITEM")));
 
         return new GetItemRes(item);
     }
@@ -58,7 +60,7 @@ public class ItemService {
     // PATCH
     public void modifyItem(Long itemId, PatchItemReq req) {
         Item item = itemRepository.findByIdAndState(itemId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
+                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM, messageUtils.getMessage("NOT_FIND_ITEM")));
 
         String name = req.getName();
         int price = req.getPrice();
@@ -69,7 +71,7 @@ public class ItemService {
 
     public void modifyItemState(Long itemId, State state) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
+                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM, messageUtils.getMessage("NOT_FIND_ITEM")));
         item.updateState(state);
     }
 
@@ -78,7 +80,7 @@ public class ItemService {
     // DELETE
     public void deleteItem(Long itemId) {
         Item item = itemRepository.findByIdAndState(itemId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
+                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM, messageUtils.getMessage("NOT_FIND_ITEM")));
         itemRepository.delete(item);
     }
 

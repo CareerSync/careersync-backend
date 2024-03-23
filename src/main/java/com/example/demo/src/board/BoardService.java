@@ -10,6 +10,7 @@ import com.example.demo.src.board.entity.BoardImage;
 import com.example.demo.src.board.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
+import com.example.demo.utils.MessageUtils;
 import com.google.cloud.storage.Bucket;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,21 +46,22 @@ public class BoardService {
     private final BoardImageRepository boardImageRepository;
     private final AuditReader auditReader;
     private final FileHandler fileHandler;
+    private final MessageUtils messageUtils;
 
     // POST
     public PostBoardRes createBoard(Long userId, PostBoardReq req, List<MultipartFile> images) throws Exception {
 
         User user = userRepository.findByIdAndState(userId, ACTIVE).
-                orElseThrow(() -> new BaseException(INVALID_USER));
+                orElseThrow(() -> new BaseException(INVALID_USER, messageUtils.getMessage("INVALID_USER")));
 
         // 이미지 업로드 했는지 확인
         if(images.isEmpty()) {
-            throw new BaseException(IMAGE_NOT_EXISTS_ERROR);
+            throw new BaseException(IMAGE_NOT_EXISTS_ERROR, messageUtils.getMessage("IMAGE_NOT_EXISTS_ERROR"));
         }
 
         // 업로드 한 10장 넘어간다면 예외처리
         if (images.size() > 10) {
-            throw new BaseException(IMAGE_OVERFLOW_ERROR);
+            throw new BaseException(IMAGE_OVERFLOW_ERROR, messageUtils.getMessage("IMAGE_OVERFLOW_ERROR"));
         }
 
         Board saveBoard = boardRepository.save(req.toEntity(user));
@@ -89,7 +91,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<GetBoardRes> getBoardsByUserId(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
 
         List<GetBoardRes> getBoardsResList = boardRepository.findAllByUserAndState(user, ACTIVE).stream()
                 .map(GetBoardRes::new)
@@ -101,7 +103,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<GetBoardRes> getBoardsByUserIdWithPaging(Long userId, Integer pageIndex, Integer size) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
 
         Pageable pageable = PageRequest.of(pageIndex, size);
         List<GetBoardRes> getBoardsResList = boardRepository.findAllByUserAndState(user, ACTIVE, pageable).stream()
@@ -114,7 +116,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public GetBoardRes getBoard(Long boardId) {
         Board board = boardRepository.findByIdAndState(boardId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD, messageUtils.getMessage("NOT_FIND_BOARD")));
         return new GetBoardRes(board);
     }
 
@@ -122,7 +124,7 @@ public class BoardService {
     public List<GetBoardLogRes> getBoardHistoryByRevType(String revType) {
 
         if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
-            throw new BaseException(REVTYPE_ERROR);
+            throw new BaseException(REVTYPE_ERROR, messageUtils.getMessage("REVTYPE_ERROR"));
         }
 
         List<Object> revs = getRevs();
@@ -227,13 +229,13 @@ public class BoardService {
     // PATCH
     public void modifyBoardContent(Long boardId, PatchBoardReq patchPostReq) {
         Board board = boardRepository.findByIdAndState(boardId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD, messageUtils.getMessage("NOT_FIND_BOARD")));
         board.updateContent(patchPostReq.getContent());
     }
 
     public void modifyBoardState(Long boardId, State state) {
         Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD, messageUtils.getMessage("NOT_FIND_BOARD")));
         board.updateState(state);
     }
 
@@ -241,7 +243,7 @@ public class BoardService {
     // DELETE
     public void deleteBoard(Long boardId) {
         Board board = boardRepository.findByIdAndState(boardId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD));
+                .orElseThrow(() -> new BaseException(NOT_FIND_BOARD, messageUtils.getMessage("NOT_FIND_BOARD")));
         boardRepository.delete(board);
     }
 

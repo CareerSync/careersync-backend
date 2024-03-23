@@ -60,7 +60,7 @@ public class JwtService {
         //1. JWT 추출
         String accessToken = getJwt();
         if(accessToken == null || accessToken.length() == 0){
-            throw new BaseException(EMPTY_JWT);
+            throw new BaseException(EMPTY_JWT, messageUtils.getMessage("EMPTY_JWT"));
         }
 
         // 2. JWT parsing
@@ -70,7 +70,7 @@ public class JwtService {
                     .setSigningKey(JWT_SECRET_KEY)
                     .parseClaimsJws(accessToken);
         } catch (Exception ignored) {
-            throw new BaseException(INVALID_JWT);
+            throw new BaseException(INVALID_JWT, messageUtils.getMessage("INVALID_JWT"));
         }
 
         // 3. userIdx 추출

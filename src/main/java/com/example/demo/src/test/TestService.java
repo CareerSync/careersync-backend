@@ -61,7 +61,7 @@ public class TestService {
             throw new BaseException(POST_TEST_EXISTS_MEMO, messageUtils.getMessage("POST_TEST_EXISTS_MEMO"));
         }
         Memo memo = memoRepository.findByIdAndState(memoId, ACTIVE)
-                .orElseThrow(() -> new BaseException(MODIFY_FAIL_MEMO));
+                .orElseThrow(() -> new BaseException(MODIFY_FAIL_MEMO, messageUtils.getMessage("MODIFY_FAIL_MEMO")));
 
         memo.updateMemo(memoDto);
 
