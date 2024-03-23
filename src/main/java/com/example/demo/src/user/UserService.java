@@ -45,16 +45,10 @@ public class UserService {
     public PostUserRes createUser(PostUserReq postUserReq) {
 
         // 소셜 로그인인지 구분
-        boolean oAuth = postUserReq.isOAuth();
-
-        log.info("oAuth : {}", oAuth);
+        Boolean oAuth = postUserReq.getIsOAuth();
 
         // 소셜 로그인을 사용하기로 메세지 넘기기
         if (oAuth) {
-//            validateSocialLoginType(postUserReq.getSocialLoginType());
-            log.info("wrong login request");
-            // GOOGLE, KAKAO, NAVER, APPLE 중 하나라면 소셜 로그인 진행 후 회원가입 진행
-            //createOAuthUser(postUserReq);
             throw new BaseException(INVALID_LOGIN_METHOD, messageUtils.getMessage("INVALID_LOGIN_METHOD"));
         }
 

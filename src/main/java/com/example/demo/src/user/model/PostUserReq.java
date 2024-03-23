@@ -20,7 +20,7 @@ public class PostUserReq {
     private String password;
     private String name;
     private String profileImgUrl;
-    private boolean isOAuth;
+    private Boolean isOAuth;
 
 
     public User toEntity() {
