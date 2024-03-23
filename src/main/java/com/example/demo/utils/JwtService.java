@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -18,10 +19,12 @@ import static com.example.demo.common.response.BaseResponseStatus.EMPTY_JWT;
 import static com.example.demo.common.response.BaseResponseStatus.INVALID_JWT;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${jwt.secret-key}")
     private String JWT_SECRET_KEY;
+    private final MessageUtils messageUtils;
 
     /*
     JWT 생성

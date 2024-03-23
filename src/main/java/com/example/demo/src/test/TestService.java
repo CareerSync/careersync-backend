@@ -5,6 +5,7 @@ import com.example.demo.src.test.entity.Memo;
 import com.example.demo.src.test.model.PostCommentDto;
 import com.example.demo.src.test.model.GetMemoDto;
 import com.example.demo.src.test.model.MemoDto;
+import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -24,11 +25,12 @@ public class TestService {
 
     private final MemoRepository memoRepository;
     private final CommentRepository commentRepository;
+    private final MessageUtils messageUtils;
 
     public void createMemo(MemoDto memoDto) throws BaseException {
         //중복
         if(checkMemo(memoDto.getMemo()) >= 1){
-            throw new BaseException(POST_TEST_EXISTS_MEMO);
+            throw new BaseException(POST_TEST_EXISTS_MEMO, messageUtils);
         }
         memoRepository.save(memoDto.toEntity());
     }
