@@ -20,7 +20,6 @@ public class PostUserReq {
     private String password;
     private String name;
     private String profileImgUrl;
-    private SocialLoginType socialLoginType;
     private boolean isOAuth;
 
 
@@ -30,7 +29,6 @@ public class PostUserReq {
                 .password(this.password)
                 .name(this.name)
                 .isOAuth(this.isOAuth)
-                .socialLoginType(this.socialLoginType)
                 .profileImgUrl(this.profileImgUrl)
                 .build();
     }
