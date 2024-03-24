@@ -130,8 +130,8 @@ public class UserService {
     public void modifyPrivacy(Long userId, PatchUserPrivacyTermReq privacyTermReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
-        user.updatePrivacyTerm(privacyTermReq.isServiceTerm(), privacyTermReq.isDataTerm(),
-                privacyTermReq.isLocationTerm());
+        user.updatePrivacyTerm(privacyTermReq.getServiceTerm(), privacyTermReq.getDataTerm(),
+                privacyTermReq.getLocationTerm());
     }
 
     public void modifyState(Long userId, State state) {
