@@ -80,7 +80,7 @@ public class PaymentController {
      */
     @Operation(summary = "결제 내역 조회", description = "로그인한 유저의 결제 내역을 조회합니다. paymentState값이 없다면 모든 내역을 조회하고, 있다면 성공 혹은 실패한 내역만 조회합니다.")
     @GetMapping("")
-    public BaseResponse<List<GetPaymentRes>> getPayments(@RequestParam(name = "paymentState", required = false) PaymentState paymentState){
+    public BaseResponse<List<GetPaymentRes>> getPayments(@RequestParam(name = "paymentState", required = false) String paymentState){
 
         Long userId = jwtService.getUserId();
 
@@ -89,7 +89,7 @@ public class PaymentController {
             return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
         }
 
-        List<GetPaymentRes> payments = paymentService.getPaymentsByState(userId, paymentState);
+        List<GetPaymentRes> payments = paymentService.getPaymentsByState(userId, PaymentState.valueOf(paymentState.toUpperCase()));
         return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
     }
 
