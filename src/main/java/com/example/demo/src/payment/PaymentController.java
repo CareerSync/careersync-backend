@@ -39,8 +39,8 @@ public class PaymentController {
      * @return html
      */
     @Operation(summary = "결제 화면", description = "브라우저에서 해당 url로 접속 시, paymentStart 버튼이 보이는 페이지를 조회합니다. 입력된 userId값에 해당하는 유저가 itemId값에 해당하는 상품을 결제 시도합니다.")
-    @GetMapping("/startPayment/{userId}/{itemId}")
-    public void startPayment(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId, HttpServletResponse response) throws IOException {
+    @GetMapping("/startPayment")
+    public void startPayment(@RequestParam("userId") Long userId, @RequestParam("itemId") Long itemId, HttpServletResponse response) throws IOException {
         paymentService.startPayment(userId, itemId, response);
     }
 
