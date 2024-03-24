@@ -10,6 +10,7 @@ import com.example.demo.src.item.entity.Item;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.payment.model.GetPaymentLogRes;
+import com.example.demo.utils.MessageUtils;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -54,6 +55,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final ItemRepository itemRepository;
     private final AuditReader auditReader;
+    private final MessageUtils messageUtils;
 
     @Value("${spring.imp.api-key}")
     private String apiKey;
@@ -72,14 +74,14 @@ public class PaymentService {
 
         // 회원이 아니라면 에러반환
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
 
         String userEmail = user.getEmail();
         String userName = user.getName();
 //
 //        // 등록된 상품이 아니라면 에러반환
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM));
+                .orElseThrow(() -> new BaseException(NOT_FIND_ITEM, messageUtils.getMessage("NOT_FIND_ITEM")));
 
         String itemName = item.getName();
         int price = item.getPrice();
@@ -186,7 +188,7 @@ public class PaymentService {
     @Transactional(readOnly = true)
     public List<GetPaymentRes> getPayments(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
 
         List<GetPaymentRes> paymentResList = paymentRepository.findAllByUser(user).stream()
                 .map(GetPaymentRes::new)
@@ -199,7 +201,7 @@ public class PaymentService {
     public GetPaymentRes getPayment(Long paymentId) {
 
         com.example.demo.src.payment.entity.Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT, messageUtils.getMessage("INVALID_PAYMENT")));
 
         return new GetPaymentRes(payment);
     }
@@ -208,7 +210,7 @@ public class PaymentService {
     public List<GetPaymentRes> getPaymentsByState(Long userId, PaymentState paymentState) {
 
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
 
         if (paymentState.equals(SUCCESS)) {
             return paymentRepository.findAllByUserAndPaymentState(user, SUCCESS).stream()
@@ -220,7 +222,7 @@ public class PaymentService {
                     .map(GetPaymentRes::new)
                     .collect(Collectors.toList());
         } else {
-            throw new BaseException(PAYMENT_TYPE_ERROR);
+            throw new BaseException(PAYMENT_TYPE_ERROR, messageUtils.getMessage("PAYMENT_TYPE_ERROR"));
         }
     }
 
@@ -228,7 +230,7 @@ public class PaymentService {
     public List<GetPaymentLogRes> getPaymentHistoryByRevType(String revType) {
 
         if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
-            throw new BaseException(REVTYPE_ERROR);
+            throw new BaseException(REVTYPE_ERROR, messageUtils.getMessage("REVTYPE_ERROR"));
         }
 
         List<Object> revs = getRevs();
@@ -345,13 +347,13 @@ public class PaymentService {
         Optional<User> findUser = userRepository.findByEmailAndState(buyerEmail, ACTIVE);
 
         if (!findUser.isPresent()) {
-            throw new BaseException(NOT_FIND_USER);
+            throw new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER"));
         }
 
         Optional<Item> findItem = itemRepository.findByNameAndState(name, ACTIVE);
 
         if (!findItem.isPresent()) {
-            throw new BaseException(NOT_FIND_ITEM);
+            throw new BaseException(NOT_FIND_ITEM, messageUtils.getMessage("NOT_FIND_ITEM"));
         }
 
         // 실제 db에 저장되어 있는 유저랑 상품 정보
@@ -366,7 +368,7 @@ public class PaymentService {
             savePayment(user, item, impUid, merchantUid, FAIL);
             // 결제 실패 했으므로, 전액 환불
             cancelReservationWithFullRefund(impUid);
-            throw new BaseException(DUPLICATED_IMP_UID);
+            throw new BaseException(DUPLICATED_IMP_UID, messageUtils.getMessage("DUPLICATED_IMP_UID"));
         }
 
         // 이미 등록된 주문 번호면 결제 실패
@@ -377,7 +379,7 @@ public class PaymentService {
             savePayment(user, item, impUid, merchantUid, FAIL);
             // 결제 실패 했으므로, 전액 환불
             cancelReservationWithFullRefund(impUid);
-            throw new BaseException(DUPLICATED_MERCHANT_UID);
+            throw new BaseException(DUPLICATED_MERCHANT_UID, messageUtils.getMessage("DUPLICATED_MERCHANT_UID"));
         }
 
         // db에 저장된 상품 금액과 사용자가 결제한 금액이 같은지 확인
@@ -390,7 +392,7 @@ public class PaymentService {
 
             // 결제 실패 했으므로, 전액 환불
             cancelReservationWithFullRefund(impUid);
-            throw new BaseException(PAYMENT_PRICE_ERROR);
+            throw new BaseException(PAYMENT_PRICE_ERROR, messageUtils.getMessage("PAYMENT_PRICE_ERROR"));
         }
 
         // 결제 성공 기록 남기기
@@ -453,7 +455,7 @@ public class PaymentService {
     public void modifyPaymentMerchantUid(Long paymentId, PatchPaymentReq req) {
 
         com.example.demo.src.payment.entity.Payment payment = paymentRepository.findByIdAndState(paymentId, ACTIVE)
-                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT, messageUtils.getMessage("INVALID_PAYMENT")));
 
         String merchantUid = req.getMerchantUid();
         payment.updateMerchantUid(merchantUid);
@@ -462,7 +464,7 @@ public class PaymentService {
     public void modifyPaymentState(Long paymentId, State state) {
 
         com.example.demo.src.payment.entity.Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT, messageUtils.getMessage("INVALID_PAYMENT")));
 
         payment.updateState(state);
     }
@@ -471,7 +473,7 @@ public class PaymentService {
     public void deletePayment(Long paymentId) {
 
         com.example.demo.src.payment.entity.Payment payment = paymentRepository.findByIdAndState(paymentId, ACTIVE)
-                .orElseThrow(() -> new BaseException(INVALID_PAYMENT));
+                .orElseThrow(() -> new BaseException(INVALID_PAYMENT, messageUtils.getMessage("INVALID_PAYMENT")));
 
         paymentRepository.delete(payment);
     }

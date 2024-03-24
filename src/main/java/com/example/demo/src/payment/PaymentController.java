@@ -1,5 +1,6 @@
 package com.example.demo.src.payment;
 
+import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.payment.model.*;
 import com.example.demo.utils.JwtService;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static com.example.demo.common.response.BaseResponseStatus.INVALID_STATE;
 import static com.example.demo.src.payment.entity.Payment.*;
 @Slf4j
 @Tag(name = "payment 도메인", description = "결제 API")
@@ -37,8 +39,8 @@ public class PaymentController {
      * @return html
      */
     @Operation(summary = "결제 화면", description = "브라우저에서 해당 url로 접속 시, paymentStart 버튼이 보이는 페이지를 조회합니다. 입력된 userId값에 해당하는 유저가 itemId값에 해당하는 상품을 결제 시도합니다.")
-    @GetMapping("/startPayment/{userId}/{itemId}")
-    public void startPayment(@PathVariable("userId") Long userId, @PathVariable("itemId") Long itemId, HttpServletResponse response) throws IOException {
+    @GetMapping("/startPayment")
+    public void startPayment(@RequestParam("userId") Long userId, @RequestParam("itemId") Long itemId, HttpServletResponse response) throws IOException {
         paymentService.startPayment(userId, itemId, response);
     }
 
@@ -78,7 +80,7 @@ public class PaymentController {
      */
     @Operation(summary = "결제 내역 조회", description = "로그인한 유저의 결제 내역을 조회합니다. paymentState값이 없다면 모든 내역을 조회하고, 있다면 성공 혹은 실패한 내역만 조회합니다.")
     @GetMapping("")
-    public BaseResponse<List<GetPaymentRes>> getPayments(@RequestParam(name = "paymentState", required = false) PaymentState paymentState){
+    public BaseResponse<List<GetPaymentRes>> getPayments(@RequestParam(name = "paymentState", required = false) String paymentState){
 
         Long userId = jwtService.getUserId();
 
@@ -87,7 +89,7 @@ public class PaymentController {
             return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
         }
 
-        List<GetPaymentRes> payments = paymentService.getPaymentsByState(userId, paymentState);
+        List<GetPaymentRes> payments = paymentService.getPaymentsByState(userId, PaymentState.valueOf(paymentState.toUpperCase()));
         return new BaseResponse<>(payments, messageUtils.getMessage("SUCCESS"));
     }
 
@@ -132,9 +134,14 @@ public class PaymentController {
      */
     @Operation(summary = "결제 내역 상태 수정", description = "입력된 paymentId값에 해당하는 결제 내역의 상태값을 수정합니다.")
     @PatchMapping("/{paymentId}/state")
-    public BaseResponse<String> modifyPaymentState(@PathVariable("paymentId") Long paymentId, @RequestParam("state") State state){
+    public BaseResponse<String> modifyPaymentState(@PathVariable("paymentId") Long paymentId, @RequestParam("state") String state){
+
+        if (!state.equals("ACTIVE") && !state.equals("INACTIVE")) {
+            throw new BaseException(INVALID_STATE, messageUtils.getMessage("INVALID_STATE"));
+        }
+
         jwtService.getUserId();
-        paymentService.modifyPaymentState(paymentId, state);
+        paymentService.modifyPaymentState(paymentId, State.valueOf(state.toUpperCase()));
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_PAYMENT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 

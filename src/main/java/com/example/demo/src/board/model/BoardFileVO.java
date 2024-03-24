@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -14,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BoardFileVO {
     private String content;
-    private boolean isVideo;
-    private boolean isImageOne;
-    private List<MultipartFile> images;
+    private Boolean isVideo;
+    private Boolean isImageOne;
+    private List<MultipartFile> images = new ArrayList<>();
 }

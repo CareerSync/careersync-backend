@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostReportReq {
-    private Long postId;
+    private Long boardId;
     private String category;
 
     public Report toEntity(User user, Board board) {

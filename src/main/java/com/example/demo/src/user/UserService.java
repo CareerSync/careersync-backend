@@ -7,6 +7,7 @@ import com.example.demo.src.admin.model.PostUserLogTimeReq;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.MessageUtils;
 import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,28 +39,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuditReader auditReader;
+    private final MessageUtils messageUtils;
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
 
         // 소셜 로그인인지 구분
-        boolean oAuth = postUserReq.isOAuth();
-
-        log.info("oAuth : {}", oAuth);
+        Boolean oAuth = postUserReq.getIsOAuth();
 
         // 소셜 로그인을 사용하기로 메세지 넘기기
         if (oAuth) {
-//            validateSocialLoginType(postUserReq.getSocialLoginType());
-            log.info("wrong login request");
-            // GOOGLE, KAKAO, NAVER, APPLE 중 하나라면 소셜 로그인 진행 후 회원가입 진행
-            //createOAuthUser(postUserReq);
-            throw new BaseException(INVALID_LOGIN_METHOD);
+            throw new BaseException(INVALID_LOGIN_METHOD, messageUtils.getMessage("INVALID_LOGIN_METHOD"));
         }
 
         //중복 체크
         Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
         if (checkUser.isPresent()) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+            throw new BaseException(POST_USERS_EXISTS_EMAIL, messageUtils.getMessage("POST_USERS_EXISTS_EMAIL"));
         }
 
         String encryptPwd;
@@ -67,7 +63,7 @@ public class UserService {
             encryptPwd = new SHA256().encrypt(postUserReq.getPassword());
             postUserReq.setPassword(encryptPwd);
         } catch (Exception exception) {
-            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+            throw new BaseException(PASSWORD_ENCRYPTION_ERROR, messageUtils.getMessage("PASSWORD_ENCRYPTION_ERROR"));
         }
 
         // 일반 로그인
@@ -94,18 +90,18 @@ public class UserService {
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
         if (user.getAccountState().equals(BLOCKED)) {
-            throw new BaseException(USER_BLOCKED_ERROR);
+            throw new BaseException(USER_BLOCKED_ERROR, messageUtils.getMessage("USER_BLOCKED_ERROR"));
         }
 
         if (user.getState().equals(INACTIVE)) {
-            throw new BaseException(USER_INACTIVE_ERROR);
+            throw new BaseException(USER_INACTIVE_ERROR, messageUtils.getMessage("USER_INACTIVE_ERROR"));
         }
 
         String encryptPwd;
         try {
             encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
         } catch (Exception exception) {
-            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+            throw new BaseException(PASSWORD_ENCRYPTION_ERROR, messageUtils.getMessage("PASSWORD_ENCRYPTION_ERROR"));
         }
 
         if(user.getPassword().equals(encryptPwd)){
@@ -113,7 +109,7 @@ public class UserService {
             String jwt = jwtService.createJwt(userId);
             return new PostLoginRes(userId, jwt);
         } else{
-            throw new BaseException(FAILED_TO_LOGIN);
+            throw new BaseException(FAILED_TO_LOGIN, messageUtils.getMessage("FAILED_TO_LOGIN"));
         }
 
     }
@@ -121,33 +117,33 @@ public class UserService {
     // PATCH
     public void modifyUserName(Long userId, PatchUserReq patchUserReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER , messageUtils.getMessage("NOT_FIND_USER")));
         user.updateName(patchUserReq.getName());
     }
 
     public void modifyBirthDate(Long userId, PatchUserBirthDateReq birthDateReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
         user.updateBirthDate(birthDateReq.getBirthDate());
     }
 
     public void modifyPrivacy(Long userId, PatchUserPrivacyTermReq privacyTermReq) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-        user.updatePrivacyTerm(privacyTermReq.isServiceTerm(), privacyTermReq.isDataTerm(),
-                privacyTermReq.isLocationTerm());
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
+        user.updatePrivacyTerm(privacyTermReq.getServiceTerm(), privacyTermReq.getDataTerm(),
+                privacyTermReq.getLocationTerm());
     }
 
     public void modifyState(Long userId, State state) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
         user.updateState(state);
     }
 
     // DELETE
     public void deleteUser(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
         userRepository.delete(user);
     }
 
@@ -172,7 +168,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public GetUserRes getUser(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
         return new GetUserRes(user);
     }
 
@@ -185,7 +181,8 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public GetUserRes getUserByEmail(String email) {
-        User user = userRepository.findByEmailAndState(email, ACTIVE).orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        User user = userRepository.findByEmailAndState(email, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));
         return new GetUserRes(user);
     }
 
@@ -193,7 +190,7 @@ public class UserService {
     public List<GetUserLogRes> getUserHistoryByRevType(String revType) {
 
         if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
-            throw new BaseException(REVTYPE_ERROR);
+            throw new BaseException(REVTYPE_ERROR, messageUtils.getMessage("REVTYPE_ERROR"));
         }
 
         List<Object> revs = getRevs();

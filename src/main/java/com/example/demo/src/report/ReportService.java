@@ -9,6 +9,7 @@ import com.example.demo.src.report.entity.Report;
 import com.example.demo.src.report.model.*;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
+import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.envers.AuditReader;
 import org.springframework.data.history.Revision;
@@ -37,6 +38,7 @@ public class ReportService {
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final AuditReader auditReader;
+    private final MessageUtils messageUtils;
 
     // POST
     public PostReportRes createReport(Long userId, PostReportReq req) {
@@ -45,13 +47,13 @@ public class ReportService {
         User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
-        Board board = boardRepository.findByIdAndState(req.getPostId(), ACTIVE).
+        Board board = boardRepository.findByIdAndState(req.getBoardId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_BOARD));
 
         // 이미 신고한 내역 있으면 중복 신고 안되도록 처리
         Optional<Report> checkReport = reportRepository.findByUserIdAndBoardId(user.getId(), board.getId());
         if(checkReport.isPresent()){
-            throw new BaseException(POST_REPORT_EXISTS_USER_AND_BOARD);
+            throw new BaseException(POST_REPORT_EXISTS_USER_AND_BOARD, messageUtils.getMessage("POST_REPORT_EXISTS_USER_AND_BOARD"));
         }
 
         Report saveReport = reportRepository.save(req.toEntity(user, board));
@@ -64,7 +66,7 @@ public class ReportService {
     @Transactional(readOnly = true)
     public List<GetReportRes> getReports(Long userId) {
         User user = userRepository.findByIdAndState(userId, ACTIVE).
-                orElseThrow(() -> new BaseException(INVALID_USER));
+                orElseThrow(() -> new BaseException(INVALID_USER, messageUtils.getMessage("INVALID_USER")));
 
         List<GetReportRes> getReportResList = reportRepository.findAllByUserAndState(user, ACTIVE).stream()
                 .map(GetReportRes::new)
@@ -85,7 +87,7 @@ public class ReportService {
     @Transactional(readOnly = true)
     public GetReportRes getReport(Long reportId) {
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT, messageUtils.getMessage("NOT_FIND_REPORT")));
 
         return new GetReportRes(report);
     }
@@ -94,7 +96,7 @@ public class ReportService {
     public List<GetReportLogRes> getReportHistoryByRevType(String revType) {
 
         if (!revType.equals("INSERT") && !revType.equals("UPDATE") && !revType.equals("DELETE")) {
-            throw new BaseException(REVTYPE_ERROR);
+            throw new BaseException(REVTYPE_ERROR, messageUtils.getMessage("REVTYPE_ERROR"));
         }
 
         List<Object> revs = getRevs();
@@ -200,20 +202,20 @@ public class ReportService {
     // PATCH
     public void modifyReportCategory(Long reportId, PatchReportReq patchReportReq) {
         Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT, messageUtils.getMessage("NOT_FIND_REPORT")));
         report.updateCategory(patchReportReq.getCategory());
     }
 
     public void modifyReportState(Long reportId, State state) {
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT, messageUtils.getMessage("NOT_FIND_REPORT")));
         report.updateState(state);
     }
 
     // DELETE
     public void deleteReport(Long reportId) {
         Report report = reportRepository.findByIdAndState(reportId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
+                .orElseThrow(() -> new BaseException(NOT_FIND_REPORT, messageUtils.getMessage("NOT_FIND_REPORT")));
         reportRepository.delete(report);
     }
 

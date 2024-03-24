@@ -14,6 +14,7 @@ import com.example.demo.src.subscription.model.PostSubscriptionReq;
 import com.example.demo.src.subscription.model.PostSubscriptionRes;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
+import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,6 +42,7 @@ public class SubscriptionService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final PaymentRepository paymentRepository;
+    private final MessageUtils messageUtils;
 
     // POST
     @Transactional(noRollbackFor = BaseException.class)
@@ -49,13 +51,13 @@ public class SubscriptionService {
         // 존재하지 않는 유저 예외처리
         Optional<User> findUser = userRepository.findByIdAndState(userId, ACTIVE);
         if (!findUser.isPresent()) {
-            throw new BaseException(NOT_FIND_USER);
+            throw new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER"));
         }
 
         // 존재하지 않는 상품 예외처리
         Optional<Item> findItem = itemRepository.findByIdAndState(req.getItemId(), ACTIVE);
         if (!findItem.isPresent()) {
-            throw new BaseException(NOT_FIND_ITEM);
+            throw new BaseException(NOT_FIND_ITEM, messageUtils.getMessage("NOT_FIND_ITEM"));
         }
 
         User user = findUser.get();
@@ -64,19 +66,19 @@ public class SubscriptionService {
         // 이미 구독 테이블에 있는 성공 이력이면 예외처리
         Optional<Subscription> findSubscription = subscriptionRepository.findByUserAndItemAndSubscriptionState(user, item, SUCCESS);
         if (findSubscription.isPresent()) {
-            throw new BaseException(DUPLICATED_SUBSCRIPTION);
+            throw new BaseException(DUPLICATED_SUBSCRIPTION, messageUtils.getMessage("DUPLICATED_SUBSCRIPTION"));
         }
 
         // 결제 내역에 없는 유저 예외처리
         Optional<Payment> findPaymentUser = paymentRepository.findByUser(user);
         if (!findPaymentUser.isPresent()) {
-            throw new BaseException(INVALID_PAYMENT_USER);
+            throw new BaseException(INVALID_PAYMENT_USER, messageUtils.getMessage("INVALID_PAYMENT_USER"));
         }
 
         // 결제 내역에 없는 상품 예외처리
         Optional<Payment> findPaymentItem  = paymentRepository.findByItem(item);
         if (!findPaymentItem.isPresent()) {
-            throw new BaseException(INVALID_PAYMENT_ITEM);
+            throw new BaseException(INVALID_PAYMENT_ITEM, messageUtils.getMessage("INVALID_PAYMENT_ITEM"));
         }
 
         // 구독 성공 - 결제 성공한 상품(SUCCESS)이면서, 환불 안한 상품(ACTIVE) 구독하려 할때
@@ -87,7 +89,7 @@ public class SubscriptionService {
             return postSubscriptionRes;
         } else {
             saveSubscription(user, item, Subscription.SubscriptionState.FAIL);
-            throw new BaseException(SUBSCRIPTION_ERROR);
+            throw new BaseException(SUBSCRIPTION_ERROR, messageUtils.getMessage("SUBSCRIPTION_ERROR"));
         }
     }
 
@@ -137,7 +139,7 @@ public class SubscriptionService {
     // PATCH
     public void modifyNextSubscriptionDate(Long subscriptionId, PatchSubscriptionReq req) {
         Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
-                .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
+                .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION, messageUtils.getMessage("INVALID_SUBSCRIPTION")));
 
         LocalDate nextPaymentDate = req.getNextPaymentDate();
         subscription.updateNextPaymentDate(nextPaymentDate);
@@ -145,7 +147,7 @@ public class SubscriptionService {
 
     public void modifySubscriptionState(Long subscriptionId, State state) {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
+                .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION, messageUtils.getMessage("INVALID_SUBSCRIPTION")));
 
         subscription.updateState(state);
     }
@@ -153,7 +155,7 @@ public class SubscriptionService {
     // DELETE
     public void deleteSubscription(Long subscriptionId) {
         Subscription subscription = subscriptionRepository.findByIdAndState(subscriptionId, ACTIVE)
-                    .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION));
+                    .orElseThrow(() -> new BaseException(INVALID_SUBSCRIPTION, messageUtils.getMessage("INVALID_SUBSCRIPTION")));
         subscriptionRepository.delete(subscription);
     }
 }

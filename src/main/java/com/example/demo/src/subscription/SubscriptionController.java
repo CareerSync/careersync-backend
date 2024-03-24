@@ -1,6 +1,7 @@
 package com.example.demo.src.subscription;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.subscription.model.GetSubscriptionRes;
 import com.example.demo.src.subscription.model.PatchSubscriptionReq;
@@ -19,6 +20,7 @@ import retrofit2.http.Path;
 import java.util.List;
 
 import static com.example.demo.common.entity.BaseEntity.*;
+import static com.example.demo.common.response.BaseResponseStatus.INVALID_STATE;
 
 @Slf4j
 @Tag(name = "subscription 도메인", description = "구독 API")
@@ -99,9 +101,14 @@ public class SubscriptionController {
     @Operation(summary = "구독 내역 상태 수정", description = "입력된 subscriptionId값에 해당하는 구독 내역의 상태값을 수정합니다.")
     @ResponseBody
     @PatchMapping("/{subscriptionId}/state")
-    public BaseResponse<String> modifySubscriptionState(@PathVariable("subscriptionId") Long subscriptionId, @RequestParam("state") State state) {
+    public BaseResponse<String> modifySubscriptionState(@PathVariable("subscriptionId") Long subscriptionId, @RequestParam("state") String state) {
+
+        if (!state.equals("ACTIVE") && !state.equals("INACTIVE")) {
+            throw new BaseException(INVALID_STATE, messageUtils.getMessage("INVALID_STATE"));
+        }
+
         jwtService.getUserId();
-        subscriptionService.modifySubscriptionState(subscriptionId, state);
+        subscriptionService.modifySubscriptionState(subscriptionId, State.valueOf(state.toUpperCase()));
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_SUBSCRIPTION_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 

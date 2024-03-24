@@ -6,6 +6,7 @@ import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.user.UserService;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
+import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class OAuthService {
     private final HttpServletResponse response;
     private final UserService userService;
     private final JwtService jwtService;
+    private final MessageUtils messageUtils;
 
 
     public void accessRequest(SocialLoginType socialLoginType) throws IOException {
@@ -37,7 +39,7 @@ public class OAuthService {
             } break;
 
             default:{
-                throw new BaseException(INVALID_OAUTH_TYPE);
+                throw new BaseException(INVALID_OAUTH_TYPE, messageUtils.getMessage("INVALID_OAUTH_TYPE"));
             }
 
         }
@@ -113,7 +115,7 @@ public class OAuthService {
             }
 
             default: {
-                throw new BaseException(INVALID_OAUTH_TYPE);
+                throw new BaseException(INVALID_OAUTH_TYPE, messageUtils.getMessage("INVALID_OAUTH_TYPE"));
             }
 
         }

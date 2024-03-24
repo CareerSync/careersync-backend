@@ -10,6 +10,7 @@ import com.example.demo.src.report.model.GetReportUserRes;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetUserRes;
+import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.AuditReader;
@@ -33,6 +34,7 @@ public class AdminService {
     private final ReportService reportService;
     private final UserRepository userRepository;
     private final ReportRepository reportRepository;
+    private final MessageUtils messageUtils;
 
     public void blockReportedUsers() {
         reportService.getReportedUsers()
@@ -42,12 +44,12 @@ public class AdminService {
 
                     Long userId = reportedUser.getUserId();
                     User user = userRepository.findById(userId).
-                            orElseThrow(() -> new BaseException(NOT_FIND_USER));;
+                            orElseThrow(() -> new BaseException(NOT_FIND_USER, messageUtils.getMessage("NOT_FIND_USER")));;
                     user.updateAccountState(BLOCKED);
 
                     Long reportId = reportedUser.getId();
                     Report report = reportRepository.findById(reportId)
-                            .orElseThrow(() -> new BaseException(NOT_FIND_REPORT));
+                            .orElseThrow(() -> new BaseException(NOT_FIND_REPORT, messageUtils.getMessage("NOT_FIND_REPORT")));
                     report.updateState(INACTIVE);
                 });
 

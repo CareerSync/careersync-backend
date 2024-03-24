@@ -54,7 +54,7 @@ public class TestController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "POST_TEST_EXISTS_MEMO"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR")
+            @ApiResponse(responseCode = "500", description = "INTERNAL_SERVER_ERROR")
     })
     @ResponseBody
     @PostMapping("/memos")
