@@ -47,7 +47,7 @@ public class ReportService {
         User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER));
 
-        Board board = boardRepository.findByIdAndState(req.getPostId(), ACTIVE).
+        Board board = boardRepository.findByIdAndState(req.getBoardId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_BOARD));
 
         // 이미 신고한 내역 있으면 중복 신고 안되도록 처리
