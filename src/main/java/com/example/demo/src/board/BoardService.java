@@ -54,6 +54,12 @@ public class BoardService {
         User user = userRepository.findByIdAndState(userId, ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_USER, messageUtils.getMessage("INVALID_USER")));
 
+        log.info("images: {}", images);
+
+        for (MultipartFile image : images) {
+            log.info("image: {}",image);
+        }
+
         // 이미지 업로드 했는지 확인
         if(images.isEmpty()) {
             throw new BaseException(IMAGE_NOT_EXISTS_ERROR, messageUtils.getMessage("IMAGE_NOT_EXISTS_ERROR"));
