@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchUserPrivacyTermReq {
-    private boolean serviceTerm;
-    private boolean dataTerm;
-    private boolean locationTerm;
+    private Boolean serviceTerm;
+    private Boolean dataTerm;
+    private Boolean locationTerm;
 }

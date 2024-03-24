@@ -41,7 +41,7 @@ public class User extends BaseEntity {
     private String name;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private boolean isOAuth;
+    private Boolean isOAuth;
 
     @Column()
     private LocalDate birthDate;
@@ -53,13 +53,13 @@ public class User extends BaseEntity {
     private String profileImgUrl;
 
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean serviceTerm;
+    private Boolean serviceTerm;
 
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean dataTerm;
+    private Boolean dataTerm;
 
     @Column(columnDefinition = "TINYINT(1)")
-    private boolean locationTerm;
+    private Boolean locationTerm;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
@@ -86,7 +86,7 @@ public class User extends BaseEntity {
 
     // 구글 로그인 전용 Builder
     @Builder
-    public User(Long id, String email, String password, String name, boolean isOAuth, String profileImgUrl, SocialLoginType socialLoginType) {
+    public User(Long id, String email, String password, String name, Boolean isOAuth, String profileImgUrl, SocialLoginType socialLoginType) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -114,7 +114,7 @@ public class User extends BaseEntity {
         this.birthDate = localDate;
     }
 
-    public void updatePrivacyTerm(boolean serviceTerm, boolean dataTerm, boolean locationTerm) {
+    public void updatePrivacyTerm(Boolean serviceTerm, Boolean dataTerm, Boolean locationTerm) {
         this.serviceTerm = serviceTerm;
         this.dataTerm = dataTerm;
         this.locationTerm = locationTerm;
