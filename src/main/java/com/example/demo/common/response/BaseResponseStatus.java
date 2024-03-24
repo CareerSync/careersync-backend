@@ -43,6 +43,7 @@ public enum BaseResponseStatus {
     BOARD_IMAGE_UPLOAD_ERROR(false, HttpStatus.BAD_REQUEST.value(), "게시물 이미지 업로드 실패"),
     IMAGE_NOT_EXISTS_ERROR(false, HttpStatus.BAD_REQUEST.value(), "게시물 업로드 시, 최소 한장의 이미지가 필요합니다."),
     IMAGE_OVERFLOW_ERROR(false, HttpStatus.BAD_REQUEST.value(), "게시물 업로드 시, 최대 열장의 이미지를 업로드 가능합니다."),
+    INVALID_STATE(false, HttpStatus.BAD_REQUEST.value(), "잘못된 상태값입니다."),
 
     INVALID_MEMO(false,HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER(false, HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),

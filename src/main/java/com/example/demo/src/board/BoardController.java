@@ -1,6 +1,7 @@
 package com.example.demo.src.board;
 
 import com.example.demo.common.entity.BaseEntity.State;
+import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.board.model.*;
 import com.example.demo.utils.JwtService;
@@ -13,6 +14,8 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.demo.common.response.BaseResponseStatus.INVALID_STATE;
 
 @Slf4j
 @Tag(name = "board 도메인", description = "게시물 API")
@@ -102,10 +105,14 @@ public class BoardController {
     @Operation(summary = "게시물 상태 수정", description = "입력된 상태값에 따라 게시물의 상태를 수정합니다.")
     @ResponseBody
     @PatchMapping("/{boardId}/state")
-    public BaseResponse<String> modifyBoardState(@PathVariable("boardId") Long boardId, @RequestParam("state") State state) {
+    public BaseResponse<String> modifyBoardState(@PathVariable("boardId") Long boardId, @RequestParam("state") String state) {
+
+        if (!state.equals("ACTIVE") && !state.equals("INACTIVE")) {
+            throw new BaseException(INVALID_STATE, messageUtils.getMessage("INVALID_STATE"));
+        }
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 게시물 수정 가능
-        boardService.modifyBoardState(boardId, state);
+        boardService.modifyBoardState(boardId, State.valueOf(state.toUpperCase()));
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_BOARD_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 

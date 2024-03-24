@@ -169,9 +169,13 @@ public class UserController {
     @Operation(summary = "회원 상태 수정", description = "입력된 상태값을 가지고 기존 회원 상태를 수정합니다.")
     @ResponseBody
     @PatchMapping("/state")
-    public BaseResponse<String> modifyState(@RequestParam("state") State state){
+    public BaseResponse<String> modifyState(@RequestParam("state") String state){
         Long jwtUserId = jwtService.getUserId();
-        userService.modifyState(jwtUserId, state);
+        if (!state.equals("ACTIVE") && !state.equals("INACTIVE")) {
+            throw new BaseException(INVALID_STATE, messageUtils.getMessage("INVALID_STATE"));
+        }
+
+        userService.modifyState(jwtUserId, State.valueOf(state.toUpperCase()));
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_USER_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 

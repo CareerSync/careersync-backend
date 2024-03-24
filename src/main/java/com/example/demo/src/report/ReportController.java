@@ -1,6 +1,7 @@
 package com.example.demo.src.report;
 
 import com.example.demo.common.entity.BaseEntity.State;
+import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.report.model.*;
 import com.example.demo.utils.JwtService;
@@ -12,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.example.demo.common.response.BaseResponseStatus.INVALID_STATE;
 
 @Slf4j
 @Tag(name = "report 도메인", description = "신고 API")
@@ -103,10 +106,14 @@ public class ReportController {
     @Operation(summary = "신고 내역 상태 수정", description = "입력된 reportId값에 해당하는 신고 내역의 상태값을 수정합니다.")
     @ResponseBody
     @PatchMapping("/{reportId}/state")
-    public BaseResponse<String> modifyReportState(@PathVariable("reportId") Long reportId, @RequestParam State state) {
+    public BaseResponse<String> modifyReportState(@PathVariable("reportId") Long reportId, @RequestParam("state") String state) {
+
+        if (!state.equals("ACTIVE") && !state.equals("INACTIVE")) {
+            throw new BaseException(INVALID_STATE, messageUtils.getMessage("INVALID_STATE"));
+        }
 
         jwtService.getUserId(); // 로그인이 정상적으로 이뤄져야 신고 내역 수정 가능
-        reportService.modifyReportState(reportId, state);
+        reportService.modifyReportState(reportId, State.valueOf(state.toUpperCase()));
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_REPORT_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 

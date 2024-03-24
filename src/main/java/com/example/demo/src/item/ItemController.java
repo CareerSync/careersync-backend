@@ -1,6 +1,7 @@
 package com.example.demo.src.item;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.src.item.model.GetItemRes;
 import com.example.demo.src.item.model.PatchItemReq;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.example.demo.common.entity.BaseEntity.*;
+import static com.example.demo.common.response.BaseResponseStatus.INVALID_STATE;
 
 @Slf4j
 @Tag(name = "item 도메인", description = "구독 상품 API")
@@ -102,9 +104,14 @@ public class ItemController {
     @Operation(summary = "상품 상태 수정", description = "입력된 상태값에 따라 기존 상품의 상태값을 수정합니다.")
     @ResponseBody
     @PatchMapping("/{itemId}/state")
-    public BaseResponse<String> modifyItemState(@PathVariable("itemId") Long itemId, @RequestParam("state") State state) {
+    public BaseResponse<String> modifyItemState(@PathVariable("itemId") Long itemId, @RequestParam("state") String state) {
+
+        if (!state.equals("ACTIVE") && !state.equals("INACTIVE")) {
+            throw new BaseException(INVALID_STATE, messageUtils.getMessage("INVALID_STATE"));
+        }
+
         jwtService.getUserId();
-        itemService.modifyItemState(itemId, state);
+        itemService.modifyItemState(itemId, State.valueOf(state.toUpperCase()));
         return new BaseResponse<>(messageUtils.getMessage("MODIFY_ITEM_SUCCESS"), messageUtils.getMessage("SUCCESS"));
     }
 
