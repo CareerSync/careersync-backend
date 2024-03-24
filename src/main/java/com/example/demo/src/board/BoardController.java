@@ -36,7 +36,7 @@ public class BoardController {
     public BaseResponse<PostBoardRes> createBoard(BoardFileVO boardFileVO) throws Exception {
 
         Long userId = jwtService.getUserId();// 로그인이 정상적으로 이뤄져야 게시물 등록 가능
-        PostBoardReq postBoardReq = new PostBoardReq(boardFileVO.getContent(), boardFileVO.isVideo(), boardFileVO.isImageOne());
+        PostBoardReq postBoardReq = new PostBoardReq(boardFileVO.getContent(), boardFileVO.getIsVideo(), boardFileVO.getIsImageOne());
         PostBoardRes postRes = boardService.createBoard(userId, postBoardReq, boardFileVO.getImages());
         return new BaseResponse<>(postRes, messageUtils.getMessage("SUCCESS"));
     }

@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class BoardFileVO {
     private String content;
-    private boolean isVideo;
-    private boolean isImageOne;
+    private Boolean isVideo;
+    private Boolean isImageOne;
     private List<MultipartFile> images;
 }
