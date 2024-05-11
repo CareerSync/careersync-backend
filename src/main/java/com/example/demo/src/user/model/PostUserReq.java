@@ -1,14 +1,10 @@
 package com.example.demo.src.user.model;
 
-import com.example.demo.common.Constant;
-import com.example.demo.common.Constant.SocialLoginType;
 import com.example.demo.src.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -28,8 +24,6 @@ public class PostUserReq {
                 .email(this.email)
                 .password(this.password)
                 .name(this.name)
-                .isOAuth(this.isOAuth)
-                .profileImgUrl(this.profileImgUrl)
                 .build();
     }
 }

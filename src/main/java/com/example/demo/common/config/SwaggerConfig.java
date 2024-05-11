@@ -22,12 +22,12 @@ import static com.example.demo.common.Constant.AUTH_TOKEN_HEADER;
 import static org.springframework.boot.context.properties.bind.Bindable.listOf;
 
 @OpenAPIDefinition(
-        info = @Info(title = "demo 서비스 API 명세서",
-                description = "스프링부트 demo 서비스 CRUD 실습 API 명세서",
+        info = @Info(title = "CareerSync API 명세서",
+                description = "Swagger 기반 API 명세서",
                 version = "v1"),
     servers = {
-                @Server(url = "http://localhost:9000", description = "local server"),
-                @Server(url = "https://gridgetest-server.shop", description = "dev server")
+                @Server(url = "http://localhost:9000", description = "local server")
+                //@Server(url = "https://gridgetest-server.shop", description = "dev server")
     },
         security = {
                 @SecurityRequirement(name = "X-ACCESS-TOKEN")
@@ -43,8 +43,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi chatOpenApi() {
-        String[] paths = {"/**", "/swagger-ui/**", "/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs",
-                "/v1/api-docs/**", "/v1/api-docs"};
+        String[] paths = {"/**"};
 
         return GroupedOpenApi.builder()
                 .group("demo 서비스 API v1")

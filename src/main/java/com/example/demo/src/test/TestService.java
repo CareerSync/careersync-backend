@@ -5,7 +5,6 @@ import com.example.demo.src.test.entity.Memo;
 import com.example.demo.src.test.model.PostCommentDto;
 import com.example.demo.src.test.model.GetMemoDto;
 import com.example.demo.src.test.model.MemoDto;
-import com.example.demo.utils.MessageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -25,12 +24,11 @@ public class TestService {
 
     private final MemoRepository memoRepository;
     private final CommentRepository commentRepository;
-    private final MessageUtils messageUtils;
 
     public void createMemo(MemoDto memoDto) throws BaseException {
         //중복
         if(checkMemo(memoDto.getMemo()) >= 1){
-            throw new BaseException(POST_TEST_EXISTS_MEMO, messageUtils.getMessage("POST_TEST_EXISTS_MEMO"));
+            throw new BaseException(POST_TEST_EXISTS_MEMO);
         }
         memoRepository.save(memoDto.toEntity());
     }
@@ -58,10 +56,10 @@ public class TestService {
     public void modifyMemo(Long memoId, MemoDto memoDto) throws BaseException {
         //중복
         if(checkMemo(memoDto.getMemo()) >= 1){
-            throw new BaseException(POST_TEST_EXISTS_MEMO, messageUtils.getMessage("POST_TEST_EXISTS_MEMO"));
+            throw new BaseException(POST_TEST_EXISTS_MEMO);
         }
         Memo memo = memoRepository.findByIdAndState(memoId, ACTIVE)
-                .orElseThrow(() -> new BaseException(MODIFY_FAIL_MEMO, messageUtils.getMessage("MODIFY_FAIL_MEMO")));
+                .orElseThrow(() -> new BaseException(MODIFY_FAIL_MEMO));
 
         memo.updateMemo(memoDto);
 
@@ -69,7 +67,7 @@ public class TestService {
 
     public void createComment(PostCommentDto postCommentDto){
         Memo memo = memoRepository.findByIdAndState(postCommentDto.getMemoId(), ACTIVE).
-                orElseThrow(() -> new BaseException(INVALID_MEMO, messageUtils.getMessage("INVALID_MEMO")));
+                orElseThrow(() -> new BaseException(INVALID_MEMO));
         commentRepository.save(postCommentDto.toEntity(memo));
     }
 }

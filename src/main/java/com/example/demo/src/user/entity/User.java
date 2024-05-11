@@ -1,21 +1,11 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.src.board.entity.Board;
-import com.example.demo.src.report.entity.Report;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.example.demo.common.Constant.*;
-import static com.example.demo.common.entity.BaseEntity.State.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,7 +17,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 public class User extends BaseEntity {
 
     @Id // PK를 의미하는 어노테이션
-    @Column(name = "userId", nullable = false, updatable = false)
+    @Column(name = "user_id", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -37,102 +27,16 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean isOAuth;
-
-    @Column()
-    private LocalDate birthDate;
-
-    @Column()
-    private LocalDate privacyDate;
-
-    @Column(columnDefinition = "TEXT")
-    private String profileImgUrl;
-
-    @Column(columnDefinition = "TINYINT(1)")
-    private Boolean serviceTerm;
-
-    @Column(columnDefinition = "TINYINT(1)")
-    private Boolean dataTerm;
-
-    @Column(columnDefinition = "TINYINT(1)")
-    private Boolean locationTerm;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
-    private AccountState accountState = AccountState.ACTIVE;
-
-    @Column(length = 10)
-    private SocialLoginType socialLoginType;
-
-    // 양방향 매핑
-    @NotAudited
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    List<Board> boardList = new ArrayList<>();
-
-    // 양방향 매핑
-    @NotAudited
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
-    List<Report> reportList = new ArrayList<>();
-
-    public enum AccountState {
-        ACTIVE, DORMANT, BLOCKED;
-    }
 
     // 구글 로그인 전용 Builder
     @Builder
-    public User(Long id, String email, String password, String name, Boolean isOAuth, String profileImgUrl, SocialLoginType socialLoginType) {
+    public User(Long id, String email, String password, String name) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.name = name;
-        this.isOAuth = isOAuth;
-        this.socialLoginType = socialLoginType;
-        this.profileImgUrl = profileImgUrl;
-    }
-
-
-    public void updateName(String name) {
-        this.name = name;
-    }
-
-    public void updatePrivacyDate(LocalDate privacyDate) {
-        this.privacyDate = privacyDate;
-    }
-
-    // 관리자가 신고당한 유저의 계정 정지
-    public void updateAccountState(AccountState accountState) {
-        this.accountState = accountState;
-    }
-
-    public void updateBirthDate(LocalDate localDate) {
-        this.birthDate = localDate;
-    }
-
-    public void updatePrivacyTerm(Boolean serviceTerm, Boolean dataTerm, Boolean locationTerm) {
-        this.serviceTerm = serviceTerm;
-        this.dataTerm = dataTerm;
-        this.locationTerm = locationTerm;
-        this.privacyDate = LocalDate.now();
-    }
-
-    public void deleteUser() {
-        this.state = INACTIVE;
-    }
-
-    // 연관관계 편의 메서드
-    public void addPost(Board board) {
-        board.setUser(this);
-        boardList.add(board);
-    }
-
-    public void updateState(State state) {
-        this.state = state;
     }
 
 }

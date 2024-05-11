@@ -1,8 +1,6 @@
 package com.example.demo.common.response;
 
-import com.example.demo.utils.MessageUtils;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 /**

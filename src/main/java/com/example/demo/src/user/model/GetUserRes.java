@@ -24,6 +24,5 @@ public class GetUserRes {
         this.id = user.getId();
         this.email = user.getEmail();
         this.name = user.getName();
-        this.privacyDate = user.getPrivacyDate();
     }
 }
