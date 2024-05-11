@@ -1,5 +1,4 @@
-# SpringBoot Template
-본 템플릿은 소프트스퀘어드 서버 교육용 Spring Boot 템플릿 입니다.
+# CareerSync Backend
 
 ## ✨Common
 ### REST API
