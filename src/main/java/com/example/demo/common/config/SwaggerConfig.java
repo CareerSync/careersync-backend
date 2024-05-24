@@ -26,8 +26,8 @@ import static org.springframework.boot.context.properties.bind.Bindable.listOf;
                 description = "Swagger 기반 API 명세서",
                 version = "v1"),
     servers = {
-                @Server(url = "http://localhost:9000", description = "local server")
-                //@Server(url = "https://gridgetest-server.shop", description = "dev server")
+                @Server(url = "http://localhost:9000", description = "local server"),
+                @Server(url = "http://20.41.119.137:9000", description = "dev server")
     },
         security = {
                 @SecurityRequirement(name = "X-ACCESS-TOKEN")
