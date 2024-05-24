@@ -37,7 +37,7 @@ jobs:
     - name: Set environment values
       run: |
         cd ./src/main/resources
-        touch ./application.properties
+        touch ./application.yml
         echo "${{ secrets.APPLICATION_YML }}" > application.yml
       shell: bash
     
