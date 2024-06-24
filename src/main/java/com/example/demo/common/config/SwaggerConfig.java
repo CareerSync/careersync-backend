@@ -27,7 +27,7 @@ import static org.springframework.boot.context.properties.bind.Bindable.listOf;
                 version = "v1"),
     servers = {
                 @Server(url = "http://localhost:9000", description = "local server"),
-                @Server(url = "http://20.41.119.137:9000", description = "dev server")
+                @Server(url = "https://api.careersync.site", description = "dev server")
     },
         security = {
                 @SecurityRequirement(name = "X-ACCESS-TOKEN")
