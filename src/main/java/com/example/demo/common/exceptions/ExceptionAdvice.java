@@ -1,7 +1,9 @@
 package com.example.demo.common.exceptions;
 
+import com.example.demo.common.response.ApiResponse;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.common.response.BaseResponseStatus;
+import com.google.protobuf.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
 import org.springframework.http.ResponseEntity;
@@ -16,20 +18,20 @@ import java.sql.SQLException;
 public class ExceptionAdvice {
 
     @ExceptionHandler(BaseException.class)
-    public BaseResponse<BaseResponseStatus> BaseExceptionHandle(BaseException exception) {
+    public ApiResponse<BaseResponseStatus> BaseExceptionHandle(BaseException exception) {
         log.warn("BaseException. error message: {}", exception.getMessage());
-        return new BaseResponse<>(exception.getStatus());
+        return ApiResponse.fail(exception.getStatus(), null);
     }
 
     @ExceptionHandler(SQLException.class)
-    public BaseResponse<BaseResponseStatus> sqlExceptionHandle(SQLException exception) {
+    public ApiResponse<BaseResponseStatus> sqlExceptionHandle(SQLException exception) {
         log.warn("SQLException. error message: {}", exception.getMessage());
-        return new BaseResponse<>(BaseResponseStatus.SQL_ERROR);
+        return ApiResponse.fail(BaseResponseStatus.SQL_ERROR, null);
     }
 
     @ExceptionHandler(Exception.class)
-    public BaseResponse<BaseResponseStatus> ExceptionHandle(Exception exception) {
+    public ApiResponse<BaseResponseStatus> ExceptionHandle(Exception exception) {
         log.error("Exception has occured. ", exception);
-        return new BaseResponse<>(BaseResponseStatus.UNEXPECTED_ERROR);
+        return ApiResponse.fail(BaseResponseStatus.UNEXPECTED_ERROR, null);
     }
 }

@@ -43,7 +43,7 @@ public class UserController {
 //        }
 
         PostUserRes postUserRes = userService.createUser(postUserReq);
-        return ApiResponse.success("1.0.0", postUserRes);
+        return ApiResponse.success(postUserRes);
     }
 
 

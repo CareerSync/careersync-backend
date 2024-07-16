@@ -28,8 +28,8 @@ public class ApiResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
-    private ApiResponse(String apiVersion, BaseResponseStatus baseResponseStatus, T data) {
-        this.apiVersion = apiVersion;
+    private ApiResponse(BaseResponseStatus baseResponseStatus, T data) {
+        this.apiVersion = "1.0.0";
         this.timestamp = ZonedDateTime.now();
         this.status = baseResponseStatus.getStatus();
         this.statusCode = baseResponseStatus.getCode();
@@ -38,12 +38,16 @@ public class ApiResponse<T> {
     }
 
 
-    public static <T> ApiResponse<T> success(String apiVersion, BaseResponseStatus baseResponseStatus, T data) {
-        return new ApiResponse<T>(apiVersion, baseResponseStatus, data);
+    public static <T> ApiResponse<T> success(BaseResponseStatus baseResponseStatus, T data) {
+        return new ApiResponse<T>(baseResponseStatus, data);
     }
 
-    public static <T> ApiResponse<T> success(String apiVersion, T data) {
-        return new ApiResponse<T>(apiVersion, BaseResponseStatus.SUCCESS, data);
+    public static <T> ApiResponse<T> success(T data) {
+        return new ApiResponse<T>(BaseResponseStatus.SUCCESS, data);
+    }
+
+    public static <T> ApiResponse<T> fail(BaseResponseStatus baseResponseStatus, T data) {
+        return new ApiResponse<T>(baseResponseStatus, data);
     }
 
 //    public static <T> ApiResponse<T> fail(ResponseCode responseCode, T data) {
