@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
@@ -39,7 +40,7 @@ public class UserService {
         }
 
         //중복 체크
-        Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
+        Optional<User> checkUser = userRepository.findByUserIdAndState(postUserReq.getUserId(), ACTIVE);
         if (checkUser.isPresent()) {
             throw new BaseException(POST_USERS_EXISTS_EMAIL);
         }
@@ -72,7 +73,7 @@ public class UserService {
 
 
     public PostLoginRes logIn(PostLoginReq postLoginReq) {
-        User user = userRepository.findByEmailAndState(postLoginReq.getEmail(), ACTIVE)
+        User user = userRepository.findByUserIdAndState(postLoginReq.getEmail(), ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
         if (user.getState().equals(INACTIVE)) {
@@ -87,7 +88,7 @@ public class UserService {
         }
 
         if(user.getPassword().equals(encryptPwd)){
-            Long userId = user.getId();
+            UUID userId = user.getId();
             String jwt = jwtService.createJwt(userId);
             return new PostLoginRes(userId, jwt);
         } else{
@@ -113,8 +114,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetUserRes> getUsersByEmail(String email) {
-        List<GetUserRes> getUserResList = userRepository.findAllByEmailAndState(email, ACTIVE).stream()
+    public List<GetUserRes> getUsersByUserId(String userId) {
+        List<GetUserRes> getUserResList = userRepository.findAllByUserIdAndState(userId, ACTIVE).stream()
                 .map(GetUserRes::new)
                 .collect(Collectors.toList());
         return getUserResList;
@@ -129,15 +130,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkUserByEmail(String email) {
-        Optional<User> result = userRepository.findByEmailAndState(email, ACTIVE);
+    public boolean checkUserByUserId(String userId) {
+        Optional<User> result = userRepository.findByUserIdAndState(userId, ACTIVE);
         if (result.isPresent()) return true;
         return false;
     }
 
     @Transactional(readOnly = true)
-    public GetUserRes getUserByEmail(String email) {
-        User user = userRepository.findByEmailAndState(email, ACTIVE)
+    public GetUserRes getUserByEmail(String userId) {
+        User user = userRepository.findByUserIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         return new GetUserRes(user);
     }

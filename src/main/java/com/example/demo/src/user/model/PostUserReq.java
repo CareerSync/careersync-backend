@@ -12,18 +12,17 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostUserReq {
 
-    private String email;
+    private String userName;
+    private String userId;
     private String password;
-    private String name;
-    private String profileImgUrl;
     private Boolean isOAuth;
-
 
     public User toEntity() {
         return User.builder()
-                .email(this.email)
+                .userName(this.userName)
+                .userId(this.userId)
                 .password(this.password)
-                .name(this.name)
+                .isOAuth(false)
                 .build();
     }
 }

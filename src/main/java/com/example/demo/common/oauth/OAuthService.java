@@ -55,7 +55,7 @@ public class OAuthService {
                 GoogleUser googleUser = googleOauth.getUserInfo(userInfoResponse);
 
                 //우리 서버의 db와 대조하여 해당 user가 존재하는 지 확인한다.
-                if(userService.checkUserByEmail(googleUser.getEmail())) { // user가 DB에 있다면, 로그인 진행
+                if(userService.checkUserByUserId(googleUser.getEmail())) { // user가 DB에 있다면, 로그인 진행
                     // 유저 정보 조회
                     GetUserRes getUserRes = userService.getUserByEmail(googleUser.getEmail());
 

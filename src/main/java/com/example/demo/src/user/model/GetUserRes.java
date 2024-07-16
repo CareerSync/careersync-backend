@@ -8,21 +8,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetUserRes {
-    private Long id;
-    private String email;
-    private String name;
+    private UUID id;
+    private String userName;
+    private String userId;
 
     private LocalDate privacyDate;
 
     public GetUserRes(User user) {
         this.id = user.getId();
-        this.email = user.getEmail();
-        this.name = user.getName();
+        this.userName = user.getUserName();
+        this.userId = user.getUserId();
     }
 }

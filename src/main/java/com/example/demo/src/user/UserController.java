@@ -1,19 +1,50 @@
 package com.example.demo.src.user;
 
 
+import com.example.demo.common.response.BaseResponse;
+import com.example.demo.src.user.model.PostUserReq;
+import com.example.demo.src.user.model.PostUserRes;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import static com.example.demo.common.response.BaseResponseStatus.POST_USERS_INVALID_EMAIL;
+import static com.example.demo.common.response.BaseResponseStatus.USERS_EMPTY_EMAIL;
+import static com.example.demo.utils.ValidationRegex.isRegexEmail;
+
 @Slf4j
-@Tag(name = "user 도메인", description = "회원 API, 소셜 로그인 API")
+@Tag(name = "user 도메인", description = "회원가입, 로그인, 소셜로그인 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/app/users")
+@RequestMapping("/users")
 public class UserController {
 
-//    private final UserService userService;
+    private final UserService userService;
+
+    /**
+     * 회원가입 API
+     * [POST] /app/users
+     * @return BaseResponse<PostUserRes>
+     */
+    // Body
+    @Operation(summary = "회원가입", description = "입력된 회원 정보를 받아 회원을 생성합니다. oauth가 true면 소셜 로그인을 하라고 안내합니다.")
+    @ResponseBody
+    @PostMapping("")
+    public BaseResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
+        // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
+        if(postUserReq.getUserId() == null){
+            return new BaseResponse<>(USERS_EMPTY_EMAIL.isSuccess(),
+                    "유저 이메일이 비어있습니다",
+                    USERS_EMPTY_EMAIL.getCode());
+        }
+
+        PostUserRes postUserRes = userService.createUser(postUserReq);
+        return new BaseResponse<>(postUserRes, "성공");
+    }
+
+
 //
 //    /**
 //     * 로그인 API
@@ -29,6 +60,8 @@ public class UserController {
 //        PostLoginRes postLoginRes = userService.logIn(postLoginReq);
 //        return new BaseResponse<>(postLoginRes, messageUtils.getMessage("SUCCESS"));
 //    }
+
+
 //
 //
 //    /**
