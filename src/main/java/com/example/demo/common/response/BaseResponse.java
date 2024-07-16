@@ -12,8 +12,9 @@ import static com.example.demo.common.response.BaseResponseStatus.SUCCESS;
 @AllArgsConstructor
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 public class BaseResponse<T> {
+
     @JsonProperty("isSuccess")
-    private final Boolean isSuccess;
+    private final String isSuccess;
     private final String message;
     private final int code;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -21,14 +22,14 @@ public class BaseResponse<T> {
 
     // 요청에 성공한 경우
     public BaseResponse(T result) {
-        this.isSuccess = SUCCESS.isSuccess();
+        this.isSuccess = SUCCESS.getStatus();
         this.message = SUCCESS.getMessage();
         this.code = SUCCESS.getCode();
         this.result = result;
     }
 
     public BaseResponse(T result, String message) {
-        this.isSuccess = SUCCESS.isSuccess();
+        this.isSuccess = SUCCESS.getStatus();
         this.message = message;
         this.code = SUCCESS.getCode();
         this.result = result;
@@ -36,12 +37,12 @@ public class BaseResponse<T> {
 
     // 요청에 실패한 경우
     public BaseResponse(BaseResponseStatus status) {
-        this.isSuccess = status.isSuccess();
+        this.isSuccess = status.getStatus();
         this.message = status.getMessage();
         this.code = status.getCode();
     }
 
-    public BaseResponse(boolean isSuccess, String message, int code) {
+    public BaseResponse(String isSuccess, String message, int code) {
         this.isSuccess = isSuccess;
         this.message = message;
         this.code = code;
