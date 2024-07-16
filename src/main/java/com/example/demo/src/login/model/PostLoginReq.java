@@ -1,4 +1,4 @@
-package com.example.demo.src.user.model;
+package com.example.demo.src.login.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostLoginReq {
-    private String email;
+    private String loginId;
     private String password;
 }

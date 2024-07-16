@@ -20,7 +20,7 @@ import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 @Tag(name = "user 도메인", description = "회원가입 및 유저 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/app/users")
 public class UserController {
 
     private final UserService userService;

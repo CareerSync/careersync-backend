@@ -1,6 +1,8 @@
 package com.example.demo.src.user;
 
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.login.model.PostLoginReq;
+import com.example.demo.src.login.model.PostLoginRes;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
@@ -72,30 +74,30 @@ public class UserService {
 
 
 
-    public PostLoginRes logIn(PostLoginReq postLoginReq) {
-        User user = userRepository.findByUserIdAndState(postLoginReq.getEmail(), ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-
-        if (user.getState().equals(INACTIVE)) {
-            throw new BaseException(USER_INACTIVE_ERROR);
-        }
-
-        String encryptPwd;
-        try {
-            encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
-        } catch (Exception exception) {
-            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
-        }
-
-        if(user.getPassword().equals(encryptPwd)){
-            UUID userId = user.getId();
-            String jwt = jwtService.createJwt(userId);
-            return new PostLoginRes(userId, jwt);
-        } else{
-            throw new BaseException(FAILED_TO_LOGIN);
-        }
-
-    }
+//    public PostLoginRes logIn(PostLoginReq postLoginReq) {
+//        User user = userRepository.findByUserIdAndState(postLoginReq.getEmail(), ACTIVE)
+//                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+//
+//        if (user.getState().equals(INACTIVE)) {
+//            throw new BaseException(USER_INACTIVE_ERROR);
+//        }
+//
+//        String encryptPwd;
+//        try {
+//            encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
+//        } catch (Exception exception) {
+//            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+//        }
+//
+//        if(user.getPassword().equals(encryptPwd)){
+//            UUID userId = user.getId();
+//            String jwt = jwtService.createJwt(userId);
+//            return new PostLoginRes(userId, jwt);
+//        } else{
+//            throw new BaseException(FAILED_TO_LOGIN);
+//        }
+//
+//    }
 
     // DELETE
     public void deleteUser(Long userId) {
