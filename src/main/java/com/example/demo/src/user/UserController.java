@@ -17,7 +17,7 @@ import static com.example.demo.common.response.BaseResponseStatus.USERS_EMPTY_EM
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 
 @Slf4j
-@Tag(name = "user 도메인", description = "회원가입, 로그인, 소셜로그인 API")
+@Tag(name = "user 도메인", description = "회원가입 및 유저 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
@@ -27,7 +27,7 @@ public class UserController {
 
     /**
      * 회원가입 API
-     * [POST] /app/users
+     * [POST] /users
      * @return BaseResponse<PostUserRes>
      */
     // Body
