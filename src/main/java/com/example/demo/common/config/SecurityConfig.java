@@ -41,6 +41,9 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .antMatchers("/login", "/register").permitAll()
+                                // Allow access to Swagger endpoints
+                                .antMatchers("/v2/api-docs", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**")
+                                .permitAll()
                                 .anyRequest().authenticated()
                 )
                 .formLogin(withDefaults())
