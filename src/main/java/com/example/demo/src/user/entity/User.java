@@ -32,7 +32,7 @@ public class User extends BaseEntity {
     @Column(name = "user_id", nullable = false, length = 10)
     private String userId;
 
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String password;
 
     @Column(name = "is_oauth", nullable = false, columnDefinition = "tinyint")
