@@ -42,6 +42,7 @@ public enum BaseResponseStatus {
     IMAGE_NOT_EXISTS_ERROR("fail", HttpStatus.BAD_REQUEST.value(), "게시물 업로드 시, 최소 한장의 이미지가 필요합니다."),
     IMAGE_OVERFLOW_ERROR("fail", HttpStatus.BAD_REQUEST.value(), "게시물 업로드 시, 최대 열장의 이미지를 업로드 가능합니다."),
     INVALID_STATE("fail", HttpStatus.BAD_REQUEST.value(), "잘못된 상태값입니다."),
+    ALREADY_LOGGED_OUT_USER("fail", HttpStatus.BAD_REQUEST.value(), "이미 로그아웃된 사용자입니다."),
 
     INVALID_MEMO("fail",HttpStatus.NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER("fail", HttpStatus.NOT_FOUND.value(), "존재하지 않는 유저입니다."),
@@ -59,6 +60,7 @@ public enum BaseResponseStatus {
 
     EMPTY_JWT("fail", HttpStatus.UNAUTHORIZED.value(), "JWT를 입력해주세요."),
     INVALID_JWT("fail", HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
+    UNAUTHORIZED_USER("fail", HttpStatus.UNAUTHORIZED.value(), "로그인 된 사용자가 아닙니다."),
 
     INVALID_USER_JWT("fail",HttpStatus.FORBIDDEN.value(),"권한이 없는 유저의 접근입니다."),
 

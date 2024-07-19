@@ -22,7 +22,6 @@ public class OAuthService {
     private final UserService userService;
     private final JwtService jwtService;
 
-
     public void accessRequest(SocialLoginType socialLoginType) throws IOException {
         String redirectURL;
         switch (socialLoginType){ //각 소셜 로그인을 요청하면 소셜로그인 페이지로 리다이렉트 해주는 프로세스이다.
@@ -59,18 +58,13 @@ public class OAuthService {
                     // 유저 정보 조회
                     GetUserRes getUserRes = userService.getUserByEmail(googleUser.getEmail());
 
-                    //서버에 user가 존재하면 앞으로 회원 인가 처리를 위한 jwtToken을 발급한다.
-                    String jwtToken = jwtService.createJwt(getUserRes.getId());
-
                     //액세스 토큰과 jwtToken, 이외 정보들이 담긴 자바 객체를 다시 전송한다.
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(jwtToken, getUserRes.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(getUserRes.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
                     return getSocialOAuthRes;
-                }else { // user가 DB에 없다면, 회원가입 진행
+                } else { // user가 DB에 없다면, 회원가입 진행
                     // 유저 정보 저장
                     PostUserRes postUserRes = userService.createOAuthUser(googleUser.toEntity());
-
-
-                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(postUserRes.getJwt(), postUserRes.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
+                    GetSocialOAuthRes getSocialOAuthRes = new GetSocialOAuthRes(postUserRes.getId(), oAuthToken.getAccess_token(), oAuthToken.getToken_type());
                     return getSocialOAuthRes;
                 }
             }

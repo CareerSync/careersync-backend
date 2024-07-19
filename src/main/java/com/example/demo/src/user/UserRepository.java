@@ -1,6 +1,7 @@
 package com.example.demo.src.user;
 
 import com.example.demo.src.user.entity.User;
+import com.google.common.collect.Collections2;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.history.RevisionRepository;
 
@@ -14,8 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long>,
         RevisionRepository<User, Long, Long> {
 
     Optional<User> findByIdAndState(Long id, State state);
-
     Optional<User> findByUserIdAndState(String userId, State state);
+
     Optional<User> findAllByUserIdAndState(String userId, State state);
 
     List<User> findAllByState(State state);

@@ -14,12 +14,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user = User.withUsername("user")
@@ -35,13 +35,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
-                        .authenticated())
-                .httpBasic(withDefaults())
-                .formLogin(withDefaults())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
                 .csrf(AbstractHttpConfigurer::disable)
-                .build();
-    }
+                .authorizeRequests(authorizeRequests ->
+                        authorizeRequests
+                                .antMatchers("/**").permitAll() // 모든 경로에 대해 인증 요구하지 않음
+                )
+                .formLogin(withDefaults())
+                .httpBasic(withDefaults());
 
+        return http.build();
+    }
 }

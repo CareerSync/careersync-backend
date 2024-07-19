@@ -26,19 +26,19 @@ public class User extends BaseEntity {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @Column(name = "user_name", nullable = false, length = 10)
+    @Column(name = "user_name", nullable = false, length = 10, columnDefinition = "varchar(10)")
     private String userName;
 
-    @Column(name = "user_id", nullable = false, length = 10)
+    @Column(name = "user_id", nullable = false, length = 50, columnDefinition = "varchar(50)")
     private String userId;
 
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(columnDefinition = "text")
     private String password;
 
     @Column(name = "is_oauth", nullable = false, columnDefinition = "tinyint")
     private Boolean isOAuth;
 
-    @Column(name = "social_login_type", length = 10)
+    @Column(name = "social_login_type", length = 10, columnDefinition = "varchar(10)")
     private SocialLoginType socialLoginType;
 
     @Builder
