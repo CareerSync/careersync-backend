@@ -3,6 +3,8 @@ package com.example.demo.src.login;
 import com.example.demo.common.Constant;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.exceptions.notfound.user.UserNotFoundException;
+import com.example.demo.common.exceptions.unauthorized.user.UserAlreadyLoggedoutException;
+import com.example.demo.common.exceptions.unauthorized.user.UserUnauthorizedException;
 import com.example.demo.common.oauth.OAuthService;
 import com.example.demo.common.response.ApiResponse;
 import com.example.demo.common.response.BaseResponse;
@@ -61,15 +63,43 @@ public class LoginController {
         return ApiResponse.success(SUCCESS, new PostLoginRes(loginUser));
     }
 
-    @PostMapping("/logout")
-    public String logout(HttpServletRequest request){
-        //세션이 있으면 있는 세션 반환, 없으면 신규세션 생성 -> false : 없어도 신규 세션 생성 x , default = true
-        HttpSession session = request.getSession(false);//
-        if(session != null){
-            session.invalidate();
+    @PostMapping("/check-login")
+    public ApiResponse<PostLoginRes> checkLogin(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
+            throw new UserUnauthorizedException();
         }
-        return "redirect:/board";
+
+        User loginUser = (User) session.getAttribute(LOGIN_MEMBER);
+        return ApiResponse.success(SUCCESS, new PostLoginRes(loginUser));
     }
+
+
+    @PostMapping("/logout")
+    public ApiResponse<String> logout(HttpServletRequest request, HttpServletResponse response){
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
+            throw new UserAlreadyLoggedoutException();
+        }
+
+        // 세션 무효화
+        session.invalidate();
+
+        // Set-Cookie 헤더에 쿠키 만료 설정
+        ResponseCookie cookie = ResponseCookie.from("access_token", "")
+                .domain(".careersync.site")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(0) // 쿠키 즉시 만료
+                .path("/")
+                .sameSite("None")
+                .build();
+
+        response.addHeader("Set-Cookie", cookie.toString());
+
+        return ApiResponse.success(SUCCESS, "로그아웃 성공");
+    }
+
 
     public static void addCookieToResponse(HttpSession session, HttpServletResponse response) {
         // 세션 만료 시간 1주일로 설정
