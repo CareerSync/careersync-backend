@@ -40,11 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .antMatchers("/login", "/register").permitAll()
-                                // Allow access to Swagger endpoints
-                                .antMatchers("/v2/api-docs", "/swagger-resources/**", "/swagger-ui/**", "/webjars/**")
-                                .permitAll()
-                                .anyRequest().authenticated()
+                                .antMatchers("/**").permitAll() // 모든 경로에 대해 인증 요구하지 않음
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());
