@@ -13,9 +13,4 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PostUserRes {
     private UUID id;
-    private String jwt;
-
-    public PostUserRes(UUID id) {
-        this.id = id;
-    }
 }

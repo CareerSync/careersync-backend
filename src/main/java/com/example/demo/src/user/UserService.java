@@ -64,10 +64,7 @@ public class UserService {
     public PostUserRes createOAuthUser(User user) {
 
         User saveUser = userRepository.save(user);
-
-        // JWT 발급
-        String jwtToken = jwtService.createJwt(saveUser.getId());
-        return new PostUserRes(saveUser.getId(), jwtToken);
+        return new PostUserRes(saveUser.getId());
 
     }
 

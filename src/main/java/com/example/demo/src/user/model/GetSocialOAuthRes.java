@@ -14,8 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GetSocialOAuthRes {
 
-    private String jwtToken;
-    private UUID userId;
+    private UUID id;
     private String accessToken;
     private String tokenType;
 }
