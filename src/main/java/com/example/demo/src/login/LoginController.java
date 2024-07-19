@@ -1,6 +1,7 @@
 package com.example.demo.src.login;
 
 import com.example.demo.common.Constant;
+import com.example.demo.common.SessionService;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.exceptions.notfound.user.UserNotFoundException;
 import com.example.demo.common.exceptions.unauthorized.user.UserAlreadyLoggedoutException;
@@ -44,6 +45,7 @@ public class LoginController {
 
     private final LoginService loginService;
     private final OAuthService oAuthService;
+    private final SessionService sessionService;
 
     private static final String COOKIE_NAME = "access-token";
 
@@ -66,15 +68,18 @@ public class LoginController {
 
     @PostMapping("/check-login")
     public ResponseEntity<ApiResponse<PostUserRes>> checkLogin(HttpServletRequest request) {
-        HttpSession session = getSessionFromCookie(request);
+        HttpSession session = sessionService.getSessionFromCookie(request);
 
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
             ApiResponse<PostUserRes> apiResponse = ApiResponse.fail(BaseResponseStatus.UNAUTHORIZED_USER, null);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
 
-        PostUserRes postuserRes = new PostUserRes((UUID) session.getAttribute(LOGIN_MEMBER));
-        ApiResponse<PostUserRes> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, postuserRes);
+        // Assuming you need to fetch user details using user ID stored in session
+        UUID userId = (UUID) session.getAttribute(LOGIN_MEMBER);
+        PostUserRes postUserRes = new PostUserRes(userId); // You might need to use a service to fetch user details if needed
+
+        ApiResponse<PostUserRes> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, postUserRes);
         return ResponseEntity.ok(apiResponse);
     }
 
