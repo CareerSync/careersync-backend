@@ -116,7 +116,7 @@ public class LoginController {
         log.info(">> 소셜 로그인 API 서버로부터 받은 code : {}", code);
         SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
         GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLoginOrJoin(socialLoginType, code);
-        return new BaseResponse<>(getSocialOAuthRes, messageUtils.getMessage("SUCCESS"));
+        return new BaseResponse<>(getSocialOAuthRes);
     }
 
 }

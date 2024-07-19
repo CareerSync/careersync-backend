@@ -59,6 +59,7 @@ public enum BaseResponseStatus {
 
     EMPTY_JWT("fail", HttpStatus.UNAUTHORIZED.value(), "JWT를 입력해주세요."),
     INVALID_JWT("fail", HttpStatus.UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
+    UNAUTHORIZED_USER("fail", HttpStatus.UNAUTHORIZED.value(), "로그인 된 사용자가 아닙니다."),
 
     INVALID_USER_JWT("fail",HttpStatus.FORBIDDEN.value(),"권한이 없는 유저의 접근입니다."),
 
