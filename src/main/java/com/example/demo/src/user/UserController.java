@@ -38,7 +38,7 @@ public class UserController {
     // Body
     @Operation(summary = "회원가입", description = "입력된 회원 정보를 받아 회원을 생성합니다. oauth가 true면 소셜 로그인을 하라고 안내합니다.")
     @ResponseBody
-    @PostMapping("")
+    @PostMapping("/register")
     public ApiResponse<PostUserRes> createUser(@RequestBody PostUserReq postUserReq) {
         // TODO: email 관련한 짧은 validation 예시입니다. 그 외 더 부가적으로 추가해주세요!
 //        if(postUserReq.getUserId() == null){
