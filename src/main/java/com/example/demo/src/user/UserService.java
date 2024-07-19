@@ -72,8 +72,6 @@ public class UserService {
     }
 
 
-
-
 //    public PostLoginRes logIn(PostLoginReq postLoginReq) {
 //        User user = userRepository.findByUserIdAndState(postLoginReq.getEmail(), ACTIVE)
 //                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
