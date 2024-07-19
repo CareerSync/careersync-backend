@@ -18,7 +18,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +43,7 @@ public class LoginController {
     private final OAuthService oAuthService;
 
     @PostMapping("/login")
-    public ApiResponse<PostLoginRes> login(@RequestBody PostLoginReq req, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponse<PostLoginRes>> login(@RequestBody PostLoginReq req, HttpServletRequest request, HttpServletResponse response) {
         // Id, pw 입력받아서 loginService.login 로직 실행 -> 성공 : member 반환 , 실패 : null 반환
 
         // 유저가 입력한 비밀번호 암호화 -> DB에 저장된 유저 정보 조회하기 위해서
@@ -49,55 +51,61 @@ public class LoginController {
 
         User loginUser = loginService.login(req.getLoginId(), encryptedPW);
         // null 반환시 없는 유저입니다 오류 반환
-        if(loginUser == null){
-            throw new UserNotFoundException();
+        if (loginUser == null) {
+            ApiResponse<PostLoginRes> apiResponse = ApiResponse.fail(NOT_FIND_USER, null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         }
 
         // 로그인 성공 로직
-        HttpSession session = request.getSession();// 세션이 있으면 있는 세션 반환, 없으면 신규세션 생성
+        HttpSession session = request.getSession(); // 세션이 있으면 있는 세션 반환, 없으면 신규세션 생성
         session.setAttribute(LOGIN_MEMBER, loginUser);
 
         // HTTP 응답 헤더에 Set-Cookie 값 설정
         addCookieToResponse(session, response);
 
-        return ApiResponse.success(SUCCESS, new PostLoginRes(loginUser));
+        ApiResponse<PostLoginRes> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, new PostLoginRes(loginUser));
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PostMapping("/check-login")
-    public ApiResponse<PostLoginRes> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<PostLoginRes>> checkLogin(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            throw new UserUnauthorizedException();
+            ApiResponse<PostLoginRes> apiResponse = ApiResponse.fail(BaseResponseStatus.UNAUTHORIZED_USER, null);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
 
         User loginUser = (User) session.getAttribute(LOGIN_MEMBER);
-        return ApiResponse.success(SUCCESS, new PostLoginRes(loginUser));
+        ApiResponse<PostLoginRes> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, new PostLoginRes(loginUser));
+        return ResponseEntity.ok(apiResponse);
     }
 
-
     @PostMapping("/logout")
-    public ApiResponse<String> logout(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            throw new UserAlreadyLoggedoutException();
+            ApiResponse<Void> apiResponse = ApiResponse.fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
         }
 
         // 세션 무효화
         session.invalidate();
 
-        // Set-Cookie 헤더에 쿠키 만료 설정
+        // 쿠키 만료 설정
         ResponseCookie cookie = ResponseCookie.from("access_token", "")
                 .domain(".careersync.site")
                 .httpOnly(true)
                 .secure(true)
-                .maxAge(0) // 쿠키 즉시 만료
+                .maxAge(0)
                 .path("/")
                 .sameSite("None")
                 .build();
 
+        // HTTP 응답헤더에 쿠키 정보 추가
         response.addHeader("Set-Cookie", cookie.toString());
 
-        return ApiResponse.success(SUCCESS, "로그아웃 성공");
+        ApiResponse<Void> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, null);
+        return ResponseEntity.ok(apiResponse);
     }
 
 
