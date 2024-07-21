@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "test 도메인", description = "테스트 API") // swagger 접속: http://localhost:9000/swagger-ui/index.html
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/test")
+@RequestMapping("/v1/test")
 public class TestController {
 
     private final TestService testService;

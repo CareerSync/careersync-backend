@@ -33,7 +33,7 @@ import static org.springframework.http.HttpStatus.*;
 @Tag(name = "user 도메인", description = "회원가입 및 유저 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/app/v1/users")
+@RequestMapping("/v1/users")
 public class UserController {
 
     private final UserService userService;
@@ -117,13 +117,13 @@ public class UserController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(value = """
-                                    {
-                                       "apiVersion": "1.0.0",
-                                       "timestamp": "2024-07-21T23:41:23+09:00",
-                                       "status": "error",
-                                       "statusCode": 500,
-                                       "message": "예상치 못한 에러가 발생했습니다."
-                                     }
+                {
+                    "apiVersion": "1.0.0",
+                    "timestamp": "2023-07-01T12:34:56Z",
+                    "status": "fail",
+                    "statusCode": 500,
+                    "message": "예상치 못한 에러가 발생했습니다."
+                }
                 """)
                     )
             )

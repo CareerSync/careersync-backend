@@ -35,12 +35,13 @@ import java.util.UUID;
 
 import static com.example.demo.common.Constant.*;
 import static com.example.demo.common.response.BaseResponseStatus.*;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @Tag(name = "login 도메인", description = "로그인 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/app/v1/auth")
+@RequestMapping("/v1/auth")
 public class LoginController {
 
     private final LoginService loginService;
@@ -54,7 +55,7 @@ public class LoginController {
         String encryptedPW = new SHA256().encrypt(req.getPassword());
         User loginUser = loginService.login(req.getLoginId(), encryptedPW);
         if (loginUser == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.fail(NOT_FIND_USER, null));
+            return ResponseEntity.status(NOT_FOUND).body(ApiResponse.fail(NOT_FIND_USER, null));
         }
 
         HttpSession session = request.getSession(); // 세션이 존재하지 않을 시, 새로 생성
@@ -72,7 +73,7 @@ public class LoginController {
 
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
             ApiResponse<PostUserRes> apiResponse = ApiResponse.fail(BaseResponseStatus.UNAUTHORIZED_USER, null);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+            return ResponseEntity.status(UNAUTHORIZED).body(apiResponse);
         }
 
         // Assuming you need to fetch user details using user ID stored in session
@@ -88,7 +89,7 @@ public class LoginController {
         HttpSession session = getSessionFromCookie(request);
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
             ApiResponse<Void> apiResponse = ApiResponse.fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+            return ResponseEntity.status(BAD_REQUEST).body(apiResponse);
         }
 
         session.invalidate();
