@@ -24,7 +24,7 @@ public class CookieInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
 
         // Check if the request URI matches the specific endpoints
-        if ("/app/auth/login".equals(requestURI) || "/app/auth/google/login/callback".equals(requestURI)) {
+        if ("/v1/auth/login".equals(requestURI) || "/v1/auth/google/login/callback".equals(requestURI)) {
             String sessionId = request.getSession().getId();
             ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, sessionId)
                     .domain(DOMAIN_NAME)

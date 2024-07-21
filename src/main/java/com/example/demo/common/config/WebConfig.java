@@ -38,10 +38,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginCheckInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns(
-                        "/app/v1/auth/login",
-                        "/app/v1/auth/google/login",
-                        "/app/v1/auth/google/login/callback",
-                        "/app/v1/users/register",
+                        "/v1/auth/login",
+                        "/v1/auth/google/login",
+                        "/v1/auth/google/login/callback",
+                        "/v1/users/register",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         "/api-docs/**",

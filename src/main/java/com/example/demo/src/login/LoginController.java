@@ -52,6 +52,7 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<PostLoginRes>> login(@RequestBody PostLoginReq req, HttpServletRequest request, HttpServletResponse response) {
+
         String encryptedPW = new SHA256().encrypt(req.getPassword());
         User loginUser = loginService.login(req.getLoginId(), encryptedPW);
         if (loginUser == null) {
