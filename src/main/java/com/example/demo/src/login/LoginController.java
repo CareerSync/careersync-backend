@@ -40,7 +40,7 @@ import static com.example.demo.common.response.BaseResponseStatus.*;
 @Tag(name = "login 도메인", description = "로그인 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/app/auth")
+@RequestMapping("/app/v1/auth")
 public class LoginController {
 
     private final LoginService loginService;
