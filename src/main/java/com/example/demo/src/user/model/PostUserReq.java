@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -15,15 +16,15 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class PostUserReq {
 
-    @NotNull(message = "유저 이름은 null 일 수 없습니다.")
+    @NotBlank(message = "유저 이름은 null 혹은 빈 문자열 일 수 없습니다.")
     @Size(max = 10, message = "유저 이름은 10자 이내여야 합니다.")
     private String userName;
 
-    @NotNull(message = "유저 아이디는 null 일 수 없습니다.")
+    @NotBlank(message = "유저 아이디는 null 혹은 빈 문자열 일 수 없습니다.")
     @Size(max = 10, message = "유저 아이디는 10자 이내여야 합니다.")
     private String userId;
 
-    @NotNull(message = "유저 비밀번호는 null 일 수 없습니다.")
+    @NotBlank(message = "유저 비밀번호는 null 혹은 빈 문자열 일 수 없습니다.")
     @Size(max = 8, message = "유저 비밀번호는 8자 이내여야 합니다.")
     private String password;
 
