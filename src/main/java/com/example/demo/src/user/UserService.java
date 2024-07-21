@@ -33,18 +33,10 @@ public class UserService {
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
 
-        // 소셜 로그인인지 구분
-        Boolean oAuth = postUserReq.getIsOAuth();
-
-        // 소셜 로그인을 사용하기로 메세지 넘기기
-        if (oAuth) {
-            throw new BaseException(INVALID_LOGIN_METHOD);
-        }
-
-        //중복 체크
+        // 아이디 중복 체크
         Optional<User> checkUser = userRepository.findByUserIdAndState(postUserReq.getUserId(), ACTIVE);
         if (checkUser.isPresent()) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+            throw new BaseException(USER_ID_EXIST);
         }
 
         String encryptPwd;
