@@ -6,21 +6,43 @@ import com.example.demo.common.response.BaseResponseStatus;
 import com.google.protobuf.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.DataException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.example.demo.common.response.BaseResponseStatus.INVALID_REQUEST;
+import static org.springframework.http.HttpStatus.*;
 
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionAdvice {
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
+        return ResponseEntity.status(BAD_REQUEST).body(ApiResponse.fail(INVALID_REQUEST, errors));
+    }
+
     @ExceptionHandler(BaseException.class)
-    public ApiResponse<BaseResponseStatus> BaseExceptionHandle(BaseException exception) {
-        log.warn("BaseException. error message: {}", exception.getMessage());
-        return ApiResponse.fail(exception.getStatus(), null);
+    public ResponseEntity<ApiResponse<Object>> handleBaseException(BaseException ex) {
+        BaseResponseStatus status = ex.getStatus();
+
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+
+        ApiResponse<Object> response = ApiResponse.fail(status);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(status.getCode()));
     }
 
     @ExceptionHandler(SQLException.class)
