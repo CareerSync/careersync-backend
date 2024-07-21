@@ -9,5 +9,7 @@ public class Constant {
     }
 
     public static String AUTH_TOKEN_HEADER = "X-ACCESS-TOKEN";
+    public static String LOGIN_MEMBER = "loginMember";
+
 }
 

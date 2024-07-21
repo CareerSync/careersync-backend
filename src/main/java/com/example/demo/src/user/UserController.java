@@ -1,66 +1,140 @@
 package com.example.demo.src.user;
 
 
+import com.example.demo.common.Constant;
+import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.oauth.OAuthService;
+import com.example.demo.common.response.ApiResponse;
+import com.example.demo.common.response.BaseResponse;
+import com.example.demo.common.response.BaseResponseStatus;
+import com.example.demo.src.user.model.PostUserReq;
+import com.example.demo.src.user.model.PostUserRes;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.io.IOException;
+
+import static com.example.demo.common.Constant.*;
+import static com.example.demo.common.response.BaseResponseStatus.*;
+import static com.example.demo.utils.ValidationRegex.isRegexEmail;
+import static org.springframework.http.HttpStatus.*;
+
 @Slf4j
-@Tag(name = "user 도메인", description = "회원 API, 소셜 로그인 API")
+@Tag(name = "user 도메인", description = "회원가입 및 유저 API")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/app/users")
+@RequestMapping("/app/v1/users")
 public class UserController {
 
-//    private final UserService userService;
-//
-//    /**
-//     * 로그인 API
-//     * [POST] /app/users/logIn
-//     * @return BaseResponse<PostLoginRes>
-//     */
-//    @Operation(summary = "회원 로그인", description = "입력된 회원 이메일과 비밀번호에 해당하는 jwt 토큰 값을 반환받습니다.")
-//    @ResponseBody
-//    @PostMapping("/logIn")
-//    public BaseResponse<PostLoginRes> logIn(@RequestBody PostLoginReq postLoginReq){
-//        // TODO: 로그인 값들에 대한 형식적인 validation 처리해주셔야합니다!
-//        // TODO: 유저의 status ex) 비활성화된 유저, 탈퇴한 유저 등을 관리해주고 있다면 해당 부분에 대한 validation 처리도 해주셔야합니다.
-//        PostLoginRes postLoginRes = userService.logIn(postLoginReq);
-//        return new BaseResponse<>(postLoginRes, messageUtils.getMessage("SUCCESS"));
-//    }
-//
-//
-//    /**
-//     * 유저 소셜 가입, 로그인 인증으로 리다이렉트 해주는 url
-//     * [GET] /app/users/auth/:socialLoginType/login
-//     * @return void
-//     */
-//    @Operation(summary = "소셜 로그인", description = "소셜 로그인 타입에 따라 다른 종류의 소셜 로그인을 진행합니다. html 코드를 반환하므로, 브라우저에서 해당 주소로 접속하시길 바랍니다.")
-//    @GetMapping("/auth/{socialLoginType}/login")
-//    public void socialLoginRedirect(@PathVariable(name="socialLoginType") String SocialLoginPath) throws IOException {
-//        SocialLoginType socialLoginType= SocialLoginType.valueOf(SocialLoginPath.toUpperCase());
-//        oAuthService.accessRequest(socialLoginType);
-//    }
-//
-//
-//    /**
-//     * Social Login API Server 요청에 의한 callback 을 처리
-//     * @param socialLoginPath (GOOGLE, FACEBOOK, NAVER, KAKAO)
-//     * @param code API Server 로부터 넘어오는 code
-//     * @return SNS Login 요청 결과로 받은 Json 형태의 java 객체 (access_token, jwt_token, user_num 등)
-//     */
-//    @Operation(summary = "소셜 로그인 callback 처리", description = "인가 코드를 전달받고 설정한 리다이렉트 주소로 접속하였을 때 실행되는 API입니다.")
-//    @ResponseBody
-//    @GetMapping(value = "/auth/{socialLoginType}/login/callback")
-//    public BaseResponse<GetSocialOAuthRes> socialLoginCallback(
-//            @PathVariable(name = "socialLoginType") String socialLoginPath,
-//            @RequestParam(name = "code") String code) throws IOException, BaseException{
-//        log.info(">> 소셜 로그인 API 서버로부터 받은 code : {}", code);
-//        SocialLoginType socialLoginType = SocialLoginType.valueOf(socialLoginPath.toUpperCase());
-//        GetSocialOAuthRes getSocialOAuthRes = oAuthService.oAuthLoginOrJoin(socialLoginType, code);
-//        return new BaseResponse<>(getSocialOAuthRes, messageUtils.getMessage("SUCCESS"));
-//    }
+    private final UserService userService;
+
+    /**
+     * 회원가입 API
+     * [POST] /app/v1/users
+     * @return ResponseEntity<ApiResponse<PostUserRes>>
+     */
+
+    // Body
+    @Operation(summary = "회원가입", description = "입력된 회원 정보를 받아 회원을 생성합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "201",
+                    description = "유저 회원가입 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                {
+                    "apiVersion": "1.0.0",
+                    "timestamp": "2023-07-01T12:34:56Z",
+                    "status": "USER_CREATED",
+                    "statusCode": 201,
+                    "message": "유저 생성이 완료되었습니다",
+                    "data": {
+                        "userId": 1
+                    }
+                }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = """
+                        유저 회원가입 요청 데이터 중 오류가 발생할 수 있는 경우:
+                        1. 유저 회원가입 시, 중복되는 userId인 경우 오류 발생
+                        2. 유저 회원가입 요청 데이터 중, null이거나 길이에 맞지 않는 값이 있는 경우 오류 발생
+                    """,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "Duplicate userId", value = """
+                                            {
+                                               "apiVersion": "1.0.0",
+                                               "timestamp": "2024-07-21T23:41:01+09:00",
+                                               "status": "fail",
+                                               "statusCode": 400,
+                                               "message": "이미 존재하는 유저 아이디입니다."
+                                             }
+                """), @ExampleObject(name = "Validation Errors", value = """
+                                           {
+                                              "apiVersion": "1.0.0",
+                                              "timestamp": "2024-07-21T23:40:05+09:00",
+                                              "status": "fail",
+                                              "statusCode": 400,
+                                              "message": "INVALID_REQUEST",
+                                              "errors": [
+                                                {
+                                                  "field": "userId",
+                                                  "errorCode": "REQUIRED_FIELD",
+                                                  "message": "유저 아이디는 null 혹은 빈 문자열 일 수 없습니다."
+                                                },
+                                                {
+                                                  "field": "userName",
+                                                  "errorCode": "INVALID_SIZE",
+                                                  "message": "유저 이름은 10자 이내여야 합니다."
+                                                }
+                                              ]
+                                            }
+                """)
+                            }
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "INTERNAL_SERVER_ERROR",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                       "apiVersion": "1.0.0",
+                                       "timestamp": "2024-07-21T23:41:23+09:00",
+                                       "status": "error",
+                                       "statusCode": 500,
+                                       "message": "예상치 못한 에러가 발생했습니다."
+                                     }
+                """)
+                    )
+            )
+    })
+    @ResponseBody
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<PostUserRes>> createUser(@RequestBody @Valid PostUserReq postUserReq) {
+
+        PostUserRes postUserRes = userService.createUser(postUserReq);
+        return ResponseEntity.status(CREATED).body(ApiResponse.success(USER_CREATED, postUserRes));
+    }
 
 
 }

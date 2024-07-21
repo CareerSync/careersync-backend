@@ -5,15 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostUserRes {
-    private Long id;
-    private String jwt;
-
-    public PostUserRes(Long id) {
-        this.id = id;
-    }
+    private UUID id;
 }

@@ -3,40 +3,52 @@ package com.example.demo.src.user.entity;
 import com.example.demo.common.entity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
-import org.hibernate.envers.Audited;
+import org.hibernate.annotations.GenericGenerator;
+
 
 import javax.persistence.*;
+
+import java.util.UUID;
+
+import static com.example.demo.common.Constant.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity // 필수, Class 를 Database Table화 해주는 것이다
 @JsonAutoDetect(fieldVisibility = ANY)
-@Audited
 @Table(name = "TB_USER") // Table 이름을 명시해주지 않으면 class 이름을 Table 이름으로 대체한다.
 public class User extends BaseEntity {
 
     @Id // PK를 의미하는 어노테이션
-    @Column(name = "user_id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "tb_user_id", nullable = false, updatable = false, columnDefinition = "binary(16)")
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    private UUID id;
 
-    @Column(nullable = false, length = 100)
-    private String email;
+    @Column(name = "user_name", nullable = false, length = 10, columnDefinition = "nvarchar(10)")
+    private String userName;
 
-    @Column(nullable = false)
+    @Column(name = "user_id", nullable = false, length = 50, columnDefinition = "nvarchar(50)")
+    private String userId;
+
+    @Column(columnDefinition = "text")
     private String password;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "is_oauth", nullable = false, columnDefinition = "tinyint")
+    private Boolean isOAuth;
 
-    // 구글 로그인 전용 Builder
+    @Column(name = "social_login_type", length = 10, columnDefinition = "nvarchar(10)")
+    private SocialLoginType socialLoginType;
+
     @Builder
-    public User(Long id, String email, String password, String name) {
+    public User(UUID id, String userName, String userId, String password, Boolean isOAuth, SocialLoginType socialLoginType) {
         this.id = id;
-        this.email = email;
+        this.userName = userName;
+        this.userId = userId;
         this.password = password;
-        this.name = name;
+        this.isOAuth = isOAuth;
+        this.socialLoginType = socialLoginType;
     }
 
 }

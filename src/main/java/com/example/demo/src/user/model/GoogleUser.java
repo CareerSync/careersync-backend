@@ -25,9 +25,11 @@ public class GoogleUser {
 
     public User toEntity() {
         return User.builder()
-                .email(this.email)
+                .userId(this.email)
                 .password("NONE")
-                .name(this.name)
+                .userName(this.name)
+                .isOAuth(true)
+                .socialLoginType(GOOGLE)
                 .build();
     }
 }

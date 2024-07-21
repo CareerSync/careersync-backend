@@ -8,14 +8,15 @@ import lombok.Setter;
 @Setter
 public class BaseException extends RuntimeException {
     private BaseResponseStatus status;
+    private String message;
 
     public BaseException(BaseResponseStatus status) {
         super(status.getMessage());
         this.status = status;
     }
-
     public BaseException(BaseResponseStatus status, String message) {
         super(message);
         this.status = status;
+        this.message = message;
     }
 }

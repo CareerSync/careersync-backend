@@ -1,6 +1,8 @@
 package com.example.demo.src.user;
 
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.src.login.model.PostLoginReq;
+import com.example.demo.src.login.model.PostLoginRes;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
 import com.example.demo.utils.JwtService;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
@@ -30,18 +33,10 @@ public class UserService {
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
 
-        // 소셜 로그인인지 구분
-        Boolean oAuth = postUserReq.getIsOAuth();
-
-        // 소셜 로그인을 사용하기로 메세지 넘기기
-        if (oAuth) {
-            throw new BaseException(INVALID_LOGIN_METHOD);
-        }
-
-        //중복 체크
-        Optional<User> checkUser = userRepository.findByEmailAndState(postUserReq.getEmail(), ACTIVE);
+        // 아이디 중복 체크
+        Optional<User> checkUser = userRepository.findByUserIdAndState(postUserReq.getUserId(), ACTIVE);
         if (checkUser.isPresent()) {
-            throw new BaseException(POST_USERS_EXISTS_EMAIL);
+            throw new BaseException(USER_ID_EXIST);
         }
 
         String encryptPwd;
@@ -61,40 +56,35 @@ public class UserService {
     public PostUserRes createOAuthUser(User user) {
 
         User saveUser = userRepository.save(user);
-
-        // JWT 발급
-        String jwtToken = jwtService.createJwt(saveUser.getId());
-        return new PostUserRes(saveUser.getId(), jwtToken);
+        return new PostUserRes(saveUser.getId());
 
     }
 
 
-
-
-    public PostLoginRes logIn(PostLoginReq postLoginReq) {
-        User user = userRepository.findByEmailAndState(postLoginReq.getEmail(), ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-
-        if (user.getState().equals(INACTIVE)) {
-            throw new BaseException(USER_INACTIVE_ERROR);
-        }
-
-        String encryptPwd;
-        try {
-            encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
-        } catch (Exception exception) {
-            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
-        }
-
-        if(user.getPassword().equals(encryptPwd)){
-            Long userId = user.getId();
-            String jwt = jwtService.createJwt(userId);
-            return new PostLoginRes(userId, jwt);
-        } else{
-            throw new BaseException(FAILED_TO_LOGIN);
-        }
-
-    }
+//    public PostLoginRes logIn(PostLoginReq postLoginReq) {
+//        User user = userRepository.findByUserIdAndState(postLoginReq.getEmail(), ACTIVE)
+//                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+//
+//        if (user.getState().equals(INACTIVE)) {
+//            throw new BaseException(USER_INACTIVE_ERROR);
+//        }
+//
+//        String encryptPwd;
+//        try {
+//            encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
+//        } catch (Exception exception) {
+//            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
+//        }
+//
+//        if(user.getPassword().equals(encryptPwd)){
+//            UUID userId = user.getId();
+//            String jwt = jwtService.createJwt(userId);
+//            return new PostLoginRes(userId, jwt);
+//        } else{
+//            throw new BaseException(FAILED_TO_LOGIN);
+//        }
+//
+//    }
 
     // DELETE
     public void deleteUser(Long userId) {
@@ -113,8 +103,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<GetUserRes> getUsersByEmail(String email) {
-        List<GetUserRes> getUserResList = userRepository.findAllByEmailAndState(email, ACTIVE).stream()
+    public List<GetUserRes> getUsersByUserId(String userId) {
+        List<GetUserRes> getUserResList = userRepository.findAllByUserIdAndState(userId, ACTIVE).stream()
                 .map(GetUserRes::new)
                 .collect(Collectors.toList());
         return getUserResList;
@@ -129,15 +119,15 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public boolean checkUserByEmail(String email) {
-        Optional<User> result = userRepository.findByEmailAndState(email, ACTIVE);
+    public boolean checkUserByUserId(String userId) {
+        Optional<User> result = userRepository.findByUserIdAndState(userId, ACTIVE);
         if (result.isPresent()) return true;
         return false;
     }
 
     @Transactional(readOnly = true)
-    public GetUserRes getUserByEmail(String email) {
-        User user = userRepository.findByEmailAndState(email, ACTIVE)
+    public GetUserRes getUserByEmail(String userId) {
+        User user = userRepository.findByUserIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         return new GetUserRes(user);
     }

@@ -14,6 +14,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.UUID;
 
 import static com.example.demo.common.response.BaseResponseStatus.EMPTY_JWT;
 import static com.example.demo.common.response.BaseResponseStatus.INVALID_JWT;
@@ -30,7 +31,7 @@ public class JwtService {
     @param userId
     @return String
      */
-    public String createJwt(Long userId){
+    public String createJwt(UUID userId){
         Date now = new Date();
         return Jwts.builder()
                 .setHeaderParam("type","jwt")

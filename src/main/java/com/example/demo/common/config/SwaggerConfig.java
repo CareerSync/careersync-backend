@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.CookieValue;
 
 
 import java.util.ArrayList;
@@ -25,18 +26,18 @@ import static org.springframework.boot.context.properties.bind.Bindable.listOf;
         info = @Info(title = "CareerSync API 명세서",
                 description = "Swagger 기반 API 명세서",
                 version = "v1"),
-    servers = {
+        servers = {
                 @Server(url = "http://localhost:9000", description = "local server"),
                 @Server(url = "https://api.careersync.site", description = "dev server")
-    },
+        },
         security = {
-                @SecurityRequirement(name = "X-ACCESS-TOKEN")
+                @SecurityRequirement(name = "access-token")
         }
     )
 @RequiredArgsConstructor
 @SecurityScheme(
-        type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.HEADER,
-        name = "X-ACCESS-TOKEN", description = "Auth Token"
+        type = SecuritySchemeType.APIKEY, in = SecuritySchemeIn.COOKIE,
+        name = "access-token", description = "Access Token"
 )
 @Configuration
 public class SwaggerConfig {
