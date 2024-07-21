@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@Tag(name = "test 도메인", description = "메모 API, 코멘트 API") // swagger 접속: http://localhost:9000/swagger-ui/index.html
+@Tag(name = "test 도메인", description = "테스트 API") // swagger 접속: http://localhost:9000/swagger-ui/index.html
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/test")
@@ -29,7 +29,7 @@ public class TestController {
      * [GET] /test/log
      * @return String
      */
-    @Operation(summary = "테스트", description = "루트 주소 접속 시, 지정한 문자열을 반환합니다.")
+    @Operation(summary = "테스트", description = "/test/log 주소 접속 시, 지정한 문자열을 반환합니다.")
     @ResponseBody
     @GetMapping("/log")
     public String logTest() {
