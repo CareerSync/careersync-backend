@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Slf4j
-@WebFilter(urlPatterns = {"/app/auth/login", "/app/auth/google/login/callback"})
+@WebFilter(urlPatterns = {"/v1/auth/login", "/v1/auth/google/login/callback"})
 public class CookieFilter implements Filter {
 
         private static final String COOKIE_NAME = "access-token";

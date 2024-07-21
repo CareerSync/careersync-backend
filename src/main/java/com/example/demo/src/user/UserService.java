@@ -28,7 +28,6 @@ import static com.example.demo.common.response.BaseResponseStatus.*;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
-    private final JwtService jwtService;
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
@@ -59,32 +58,6 @@ public class UserService {
         return new PostUserRes(saveUser.getId());
 
     }
-
-
-//    public PostLoginRes logIn(PostLoginReq postLoginReq) {
-//        User user = userRepository.findByUserIdAndState(postLoginReq.getEmail(), ACTIVE)
-//                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
-//
-//        if (user.getState().equals(INACTIVE)) {
-//            throw new BaseException(USER_INACTIVE_ERROR);
-//        }
-//
-//        String encryptPwd;
-//        try {
-//            encryptPwd = new SHA256().encrypt(postLoginReq.getPassword());
-//        } catch (Exception exception) {
-//            throw new BaseException(PASSWORD_ENCRYPTION_ERROR);
-//        }
-//
-//        if(user.getPassword().equals(encryptPwd)){
-//            UUID userId = user.getId();
-//            String jwt = jwtService.createJwt(userId);
-//            return new PostLoginRes(userId, jwt);
-//        } else{
-//            throw new BaseException(FAILED_TO_LOGIN);
-//        }
-//
-//    }
 
     // DELETE
     public void deleteUser(Long userId) {
