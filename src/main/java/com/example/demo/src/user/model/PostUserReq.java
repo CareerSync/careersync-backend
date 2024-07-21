@@ -6,16 +6,26 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostUserReq {
 
+    @NotNull(message = "유저 이름은 null 일 수 없습니다.")
+    @Size(max = 10, message = "유저 이름은 10자 이내여야 합니다.")
     private String userName;
+
+    @NotNull(message = "유저 아이디는 null 일 수 없습니다.")
+    @Size(max = 10, message = "유저 아이디는 10자 이내여야 합니다.")
     private String userId;
+
+    @NotNull(message = "유저 비밀번호는 null 일 수 없습니다.")
+    @Size(max = 8, message = "유저 비밀번호는 8자 이내여야 합니다.")
     private String password;
-    private Boolean isOAuth;
 
     public User toEntity() {
         return User.builder()
