@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
-                                .antMatchers("/**").permitAll() // 모든 경로에 대해 인증 요구하지 않음
+                                .antMatchers("/**").permitAll()
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults());

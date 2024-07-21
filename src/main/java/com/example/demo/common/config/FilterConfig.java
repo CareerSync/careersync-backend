@@ -12,7 +12,7 @@ public class FilterConfig {
     public FilterRegistrationBean<CookieFilter> cookieFilter() {
         FilterRegistrationBean<CookieFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new CookieFilter());
-        registrationBean.addUrlPatterns("/app/auth/login", "/app/auth/google/login/callback");
+        registrationBean.addUrlPatterns("/app/v1/auth/login", "/app/v1/auth/google/login/callback");
         return registrationBean;
     }
 }
