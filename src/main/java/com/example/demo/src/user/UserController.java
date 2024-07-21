@@ -40,11 +40,9 @@ public class UserController {
 
     /**
      * 회원가입 API
-     * [POST] /app/v1/users
+     * [POST] /app/v1/users/register
      * @return ResponseEntity<ApiResponse<PostUserRes>>
      */
-
-    // Body
     @Operation(summary = "회원가입", description = "입력된 회원 정보를 받아 회원을 생성합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -57,7 +55,7 @@ public class UserController {
                 {
                     "apiVersion": "1.0.0",
                     "timestamp": "2023-07-01T12:34:56Z",
-                    "status": "USER_CREATED",
+                    "status": "success",
                     "statusCode": 201,
                     "message": "유저 생성이 완료되었습니다",
                     "data": {
