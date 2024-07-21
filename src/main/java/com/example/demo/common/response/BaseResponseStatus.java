@@ -24,7 +24,7 @@ public enum BaseResponseStatus {
     /**
      * 400 : Request, Response 오류
      */
-    INVALID_REQUEST("fail", BAD_REQUEST.value(), "BAD REQUEST"),
+    INVALID_REQUEST("fail", BAD_REQUEST.value(), "INVALID_REQUEST"),
     USER_ID_TOO_LONG("fail", BAD_REQUEST.value(), "유저 아이디가 너무 깁니다."),
     USER_EMPTY_ID("fail", BAD_REQUEST.value(), "아이디를 입력해주세요"),
     USER_EMPTY_NAME("fail", BAD_REQUEST.value(), "이름을 입력해주세요."),
