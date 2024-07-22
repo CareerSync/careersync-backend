@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 public class PostLoginReq {
 
     @NotBlank(message = "유저 아이디는 null 혹은 빈 문자열 일 수 없습니다.")
-    private String loginId;
+    private String userId;
 
     @NotBlank(message = "유저 비밀번호는 null 혹은 빈 문자열 일 수 없습니다.")
     private String password;

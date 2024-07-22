@@ -97,7 +97,7 @@ public class LoginController {
                                               "message": "INVALID_REQUEST",
                                               "errors": [
                                                 {
-                                                  "field": "loginId",
+                                                  "field": "userId",
                                                   "errorCode": "REQUIRED_FIELD",
                                                   "message": "유저 아이디는 null 혹은 빈 문자열 일 수 없습니다."
                                                 }
@@ -147,7 +147,7 @@ public class LoginController {
     public ResponseEntity<ApiResponse<PostLoginRes>> login(@RequestBody @Valid PostLoginReq req, HttpServletRequest request, HttpServletResponse response) {
 
         String encryptedPW = new SHA256().encrypt(req.getPassword());
-        User loginUser = loginService.login(req.getLoginId(), encryptedPW);
+        User loginUser = loginService.login(req.getUserId(), encryptedPW);
 
         HttpSession session = request.getSession(); // 세션이 존재하지 않을 시, 새로 생성
         session.setAttribute(LOGIN_MEMBER, loginUser.getId());
