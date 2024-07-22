@@ -96,7 +96,7 @@ public class LoginController {
                                               "statusCode": 400,
                                               "message": "INVALID_REQUEST",
                                               "errors": [
-                                                {
+                                               {
                                                   "field": "userId",
                                                   "errorCode": "REQUIRED_FIELD",
                                                   "message": "유저 아이디는 null 혹은 빈 문자열 일 수 없습니다."
