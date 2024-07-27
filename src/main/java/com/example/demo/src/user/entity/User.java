@@ -1,6 +1,8 @@
 package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.src.chat.entity.Chat;
+import com.example.demo.src.test.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -8,10 +10,14 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.example.demo.common.Constant.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -40,6 +46,11 @@ public class User extends BaseEntity {
 
     @Column(name = "social_login_type", length = 10, columnDefinition = "nvarchar(10)")
     private SocialLoginType socialLoginType;
+
+    // 양방향 매핑
+    // @BatchSize(size = 5) // BatchSize 설정 예제
+    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
+    List<Chat> chats = new ArrayList<>();
 
     @Builder
     public User(UUID id, String userName, String userId, String password, Boolean isOAuth, SocialLoginType socialLoginType) {
