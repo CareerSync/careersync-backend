@@ -1,6 +1,8 @@
 package com.example.demo.src.chat.entity;
 
 import com.example.demo.common.entity.BaseEntity;
+import com.example.demo.src.answer.entity.Answer;
+import com.example.demo.src.question.entity.Question;
 import com.example.demo.src.test.entity.Memo;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -12,9 +14,12 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,4 +42,9 @@ public class Chat extends BaseEntity {
     @JoinColumn(name = "tb_user_id")
     private User user;
 
+    @OneToMany(mappedBy = "chat", fetch = LAZY, cascade = ALL)
+    List<Question> questions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "chat", fetch = LAZY, cascade = ALL)
+    List<Answer> answers = new ArrayList<>();
 }
