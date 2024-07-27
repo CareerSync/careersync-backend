@@ -2,6 +2,7 @@ package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.chat.entity.Chat;
+import com.example.demo.src.recjobpost.entity.RecJobPost;
 import com.example.demo.src.test.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
@@ -51,6 +52,9 @@ public class User extends BaseEntity {
     // @BatchSize(size = 5) // BatchSize 설정 예제
     @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
     List<Chat> chats = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
+    List<RecJobPost> recJobPosts = new ArrayList<>();
 
     @Builder
     public User(UUID id, String userName, String userId, String password, Boolean isOAuth, SocialLoginType socialLoginType) {
