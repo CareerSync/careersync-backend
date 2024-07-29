@@ -2,7 +2,9 @@ package com.example.demo.src.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.chat.entity.Chat;
+import com.example.demo.src.jobpost.entity.JobPost;
 import com.example.demo.src.recjobpost.entity.RecJobPost;
+import com.example.demo.src.techstack.entity.TechStack;
 import com.example.demo.src.test.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
@@ -48,6 +50,12 @@ public class User extends BaseEntity {
     @Column(name = "social_login_type", length = 10, columnDefinition = "nvarchar(10)")
     private SocialLoginType socialLoginType;
 
+    @Column(nullable = false)
+    private int career;
+
+    @Column(nullable = false, length = 10, columnDefinition = "nvarchar(10)")
+    private String education;
+
     // 양방향 매핑
     // @BatchSize(size = 5) // BatchSize 설정 예제
     @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
@@ -55,6 +63,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
     List<RecJobPost> recJobPosts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
+    List<TechStack> techStacks = new ArrayList<>();
 
     @Builder
     public User(UUID id, String userName, String userId, String password, Boolean isOAuth, SocialLoginType socialLoginType) {
@@ -66,4 +77,14 @@ public class User extends BaseEntity {
         this.socialLoginType = socialLoginType;
     }
 
+    public void addChats(Chat chat) {
+        chats.add(chat);
+        chat.setUser(this);
+    }
+
+    public void addRecJobPosts(RecJobPost recJobPost) {
+        recJobPosts.add(recJobPost);
+        recJobPost.setUser(this);
+    }
 }
+
