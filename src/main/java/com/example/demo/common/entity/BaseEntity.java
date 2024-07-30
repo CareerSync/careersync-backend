@@ -12,6 +12,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static com.example.demo.common.entity.BaseEntity.State.*;
+
 
 @Getter
 @EntityListeners(AuditingEntityListener.class)
@@ -31,7 +33,7 @@ public class BaseEntity {
     @Enumerated(EnumType.STRING)
     @Audited
     @Column(name = "state", nullable = false, length = 10)
-    protected State state = State.ACTIVE;
+    protected State state = ACTIVE;
 
     public enum State {
         ACTIVE, INACTIVE;
