@@ -1,12 +1,10 @@
 package com.example.demo.src.techstack.entity;
 
+import com.example.demo.common.Constant;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -36,4 +34,11 @@ public class TechStack extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "tb_user_id")
     private User user;
+
+    @Builder
+    public TechStack(String name) {
+        this.name = name;
+    }
+
+
 }
