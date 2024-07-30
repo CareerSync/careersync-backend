@@ -52,18 +52,6 @@ public class UserService {
         // 일반 로그인
         User saveUser = userRepository.save(postUserReq.toEntity());
 
-        List<TechStack> techStacks = postUserReq.getTechStacks().stream()
-                .map(techStackName -> {
-                    TechStack techStack = TechStack.builder()
-                            .name(techStackName)
-                            .build();
-                    saveUser.addTechStacks(techStack);
-                    return techStack;
-                })
-                .collect(Collectors.toList());
-
-        techStackRepository.saveAll(techStacks);
-
         return new PostUserRes(saveUser.getId());
 
     }
@@ -73,6 +61,27 @@ public class UserService {
         User saveUser = userRepository.save(user);
         return new PostUserRes(saveUser.getId());
 
+    }
+
+    // PATCH
+    public PatchUserRes modifyUserInfo(UUID id, PatchUserInfoReq req) {
+        User user = userRepository.findByIdAndState(id, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+        user.setCareerAndEducation(req.getCareer(), req.getEducation());
+
+        List<TechStack> techStacks = req.getTechStacks().stream()
+                .map(techStackName -> {
+                    TechStack techStack = TechStack.builder()
+                            .name(techStackName)
+                            .build();
+                    user.addTechStacks(techStack);
+                    return techStack;
+                })
+                .collect(Collectors.toList());
+
+        techStackRepository.saveAll(techStacks);
+        return new PatchUserRes(id);
     }
 
     // DELETE
