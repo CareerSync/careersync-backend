@@ -68,16 +68,24 @@ public class User extends BaseEntity {
     List<TechStack> techStacks = new ArrayList<>();
 
     @Builder
-    public User(UUID id, String userName, String userId, String password, Boolean isOAuth, SocialLoginType socialLoginType) {
+    public User(UUID id, String userName, String userId, String password, Boolean isOAuth, SocialLoginType socialLoginType,
+                int career, String education) {
         this.id = id;
         this.userName = userName;
         this.userId = userId;
         this.password = password;
         this.isOAuth = isOAuth;
         this.socialLoginType = socialLoginType;
+        this.career = career;
+        this.education = education;
     }
 
-    public void addChats(Chat chat) {
+    public void addTechStacks(TechStack techStack) {
+        techStacks.add(techStack);
+        techStack.setUser(this);
+    }
+
+     public void addChats(Chat chat) {
         chats.add(chat);
         chat.setUser(this);
     }
