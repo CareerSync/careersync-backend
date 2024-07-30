@@ -16,6 +16,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.example.demo.common.Constant.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
@@ -50,10 +51,10 @@ public class User extends BaseEntity {
     @Column(name = "social_login_type", length = 10, columnDefinition = "nvarchar(10)")
     private SocialLoginType socialLoginType;
 
-    @Column(nullable = false)
+    @Column()
     private int career;
 
-    @Column(nullable = false, length = 10, columnDefinition = "nvarchar(10)")
+    @Column(length = 10, columnDefinition = "nvarchar(10)")
     private String education;
 
     // 양방향 매핑
@@ -76,6 +77,11 @@ public class User extends BaseEntity {
         this.password = password;
         this.isOAuth = isOAuth;
         this.socialLoginType = socialLoginType;
+        this.career = career;
+        this.education = education;
+    }
+
+    public void setCareerAndEducation(int career, String education) {
         this.career = career;
         this.education = education;
     }
