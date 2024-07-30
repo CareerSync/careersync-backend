@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static com.example.demo.common.Constant.*;
+import static com.example.demo.common.response.ApiResponse.*;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 import static com.example.demo.utils.ValidationRegex.isRegexEmail;
 import static org.springframework.http.HttpStatus.*;
@@ -134,7 +135,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<PostUserRes>> createUser(@RequestBody @Valid PostUserReq postUserReq) {
 
         PostUserRes postUserRes = userService.createUser(postUserReq);
-        return ResponseEntity.status(CREATED).body(ApiResponse.success(USER_CREATED, postUserRes));
+        return ResponseEntity.status(CREATED).body(success(USER_CREATED, postUserRes));
     }
 
     /**
@@ -257,7 +258,7 @@ public class UserController {
                                                                        @RequestBody @Valid PatchUserInfoReq patchUserInfoReq) {
 
         PatchUserRes patchUserRes = userService.modifyUserInfo(id, patchUserInfoReq);
-        return ResponseEntity.status(OK).body(ApiResponse.success(SUCCESS, patchUserRes));
+        return ResponseEntity.status(OK).body(success(SUCCESS, patchUserRes));
     }
 
 

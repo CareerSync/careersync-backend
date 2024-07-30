@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static com.example.demo.common.Constant.*;
+import static com.example.demo.common.response.ApiResponse.*;
 import static com.example.demo.utils.SessionService.addCookieToResponse;
 import static org.springframework.http.HttpStatus.*;
 
@@ -154,7 +155,7 @@ public class LoginController {
 
         addCookieToResponse(session, response);
 
-        ApiResponse<PostLoginRes> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, new PostLoginRes(loginUser));
+        ApiResponse<PostLoginRes> apiResponse = success(BaseResponseStatus.SUCCESS, new PostLoginRes(loginUser));
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -227,7 +228,7 @@ public class LoginController {
         HttpSession session = sessionService.getSessionFromCookie(request);
 
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            ApiResponse<PostUserRes> apiResponse = ApiResponse.fail(BaseResponseStatus.UNAUTHORIZED_USER, null);
+            ApiResponse<PostUserRes> apiResponse = fail(BaseResponseStatus.UNAUTHORIZED_USER, null);
             return ResponseEntity.status(UNAUTHORIZED).body(apiResponse);
         }
 
@@ -235,7 +236,7 @@ public class LoginController {
         UUID userId = (UUID) session.getAttribute(LOGIN_MEMBER);
         PostUserRes postUserRes = new PostUserRes(userId); // You might need to use a service to fetch user details if needed
 
-        ApiResponse<PostUserRes> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, postUserRes);
+        ApiResponse<PostUserRes> apiResponse = success(BaseResponseStatus.SUCCESS, postUserRes);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -308,7 +309,7 @@ public class LoginController {
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = sessionService.getSessionFromCookie(request);
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            ApiResponse<Void> apiResponse = ApiResponse.fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
+            ApiResponse<Void> apiResponse = fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
             return ResponseEntity.status(BAD_REQUEST).body(apiResponse);
         }
 
@@ -326,7 +327,7 @@ public class LoginController {
 
         response.addHeader("Set-Cookie", cookie.toString());
 
-        ApiResponse<Void> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, null);
+        ApiResponse<Void> apiResponse = success(BaseResponseStatus.SUCCESS, null);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -410,7 +411,7 @@ public class LoginController {
 
         addCookieToResponse(session, response);
 
-        ApiResponse<GetSocialOAuthRes> apiResponse = ApiResponse.success(BaseResponseStatus.SUCCESS, getSocialOAuthRes);
+        ApiResponse<GetSocialOAuthRes> apiResponse = success(BaseResponseStatus.SUCCESS, getSocialOAuthRes);
         return ResponseEntity.ok(apiResponse);
     }
 
