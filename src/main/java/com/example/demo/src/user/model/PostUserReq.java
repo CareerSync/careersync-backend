@@ -30,25 +30,12 @@ public class PostUserReq {
     @Size(min = 8, message = "유저 비밀번호는 8자 이상이어야 합니다.")
     private String password;
 
-    @NotNull(message = "유저 기술스택 리스트는 null 일 수 없습니다.")
-    @Size(min = 1, message = "유저 기술스택 리스트는 최소한 하나의 항목을 포함해야 합니다.")
-    private List<@NotBlank(message = "유저 기술스택은 null 혹은 빈 문자열 일 수 없습니다.") String> techStacks;
-
-    @NotNull(message = "유저 경력은 null 일 수 없습니다.")
-    @PositiveOrZero(message = "유저 경력 수치는 0 이상이어야 합니다.")
-    private int career;
-
-    @NotBlank(message = "유저 최종학력은 null 혹은 빈 문자열 일 수 없습니다.")
-    private String education;
-
     public User toEntity() {
         return User.builder()
                 .userName(this.userName)
                 .userId(this.userId)
                 .password(this.password)
                 .isOAuth(false)
-                .career(this.career)
-                .education(this.education)
                 .build();
     }
 }
