@@ -18,7 +18,7 @@ import java.util.List;
 public class PatchUserInfoReq {
 
     @NotNull(message = "유저 기술스택 리스트는 null 일 수 없습니다.")
-    @Size(min = 1, message = "유저 기술스택 리스트는 최소한 하나의 항목을 포함해야 합니다.")
+    @Size(min = 1, max = 5, message = "유저 기술스택은 최소 1개 최대 5개이어야 합니다.")
     private List<@NotBlank(message = "유저 기술스택은 null 혹은 빈 문자열 일 수 없습니다.") String> techStacks;
 
     @NotNull(message = "유저 경력은 null 일 수 없습니다.")

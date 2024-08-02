@@ -1,13 +1,9 @@
 package com.example.demo.src.user;
 
 import com.example.demo.common.exceptions.BaseException;
-import com.example.demo.src.login.model.PostLoginReq;
-import com.example.demo.src.login.model.PostLoginRes;
-import com.example.demo.src.techstack.TechStackRepository;
-import com.example.demo.src.techstack.entity.TechStack;
+import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
-import com.example.demo.utils.JwtService;
 import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +16,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
-import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 // Service Create, Update, Delete 의 로직 처리

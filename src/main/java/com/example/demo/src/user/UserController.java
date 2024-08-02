@@ -11,6 +11,7 @@ import com.example.demo.src.user.model.PatchUserInfoReq;
 import com.example.demo.src.user.model.PatchUserRes;
 import com.example.demo.src.user.model.PostUserReq;
 import com.example.demo.src.user.model.PostUserRes;
+import com.example.demo.utils.SessionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -23,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.UUID;
@@ -41,6 +43,7 @@ import static org.springframework.http.HttpStatus.*;
 public class UserController {
 
     private final UserService userService;
+    private final SessionService sessionService;
 
     /**
      * 회원가입 API
@@ -377,9 +380,9 @@ public class UserController {
     })
     @ResponseBody
     @PatchMapping("/info")
-    public ResponseEntity<ApiResponse<PatchUserRes>> modifyUserInfo (
-            @SessionAttribute(name = LOGIN_MEMBER, required = false) UUID id, @RequestBody @Valid PatchUserInfoReq patchUserInfoReq) {
+    public ResponseEntity<ApiResponse<PatchUserRes>> modifyUserInfo (HttpServletRequest request, @RequestBody @Valid PatchUserInfoReq patchUserInfoReq) {
 
+        UUID id = (UUID) sessionService.getUserIdFromSession(request);
         PatchUserRes patchUserRes = userService.modifyUserInfo(id, patchUserInfoReq);
         return ResponseEntity.status(OK).body(success(SUCCESS, patchUserRes));
     }

@@ -5,9 +5,11 @@ import com.example.demo.src.answer.AnswerRepository;
 import com.example.demo.src.answer.entity.Answer;
 import com.example.demo.src.chat.entity.Chat;
 import com.example.demo.src.chat.model.PostChatReq;
+import com.example.demo.src.chat.model.PostChatRes;
 import com.example.demo.src.jobpost.JobPostRepository;
 import com.example.demo.src.jobpost.JobPostTechStackRepository;
 import com.example.demo.src.jobpost.entity.JobPost;
+import com.example.demo.src.jobpost.entity.JobPostRes;
 import com.example.demo.src.jobpost.entity.JobPostTechStack;
 import com.example.demo.src.question.QuestionRepository;
 import com.example.demo.src.question.entity.Question;
@@ -20,10 +22,14 @@ import com.example.demo.utils.SHA256;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.units.qual.C;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -47,7 +53,7 @@ public class ChatService {
     private final JobPostTechStackRepository jobPostTechStackRepository;
 
     //POST
-    public PostUserRes createFirstChat(UUID id, PostChatReq postChatReq) {
+    public PostChatRes createFirstChat(UUID id, PostChatReq postChatReq) {
 
         // 유저 가져오기
         User user = getUserWithId(id);
@@ -69,8 +75,7 @@ public class ChatService {
        chat.addQuestions(question);
 
         // TODO 질문에 대한 대답을 AI 서버로부터 가져오기
-        handleQuestionResponse(chat);
-
+        return handleQuestionResponse(chat, questionStr);
     }
 
     private User getUserWithId(UUID id) {
@@ -78,12 +83,12 @@ public class ChatService {
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
     }
 
-    private void handleQuestionResponse(Chat chat) {
+    private PostChatRes handleQuestionResponse(Chat chat, String questionStr) {
 
         // 1. 채용공고를 묻는 질문이 아니라면 markdown 형식의 answer 답변만 반환
         // 2. 채용공고를 묻는 질문이면 jobPosts 데이터까지 모두 반환
 
-        boolean flag = true;
+        boolean flag = false;
         String answerStr;
 
         // fastapi 서버에서 받은 채용공고 결과 리스트
@@ -118,9 +123,10 @@ public class ChatService {
 
                         // 나중에는 value에서 추출
                         String title = "jobPost_title";
-                        String career = "jobPost_career";
+                        String career = "신입";
                         String companyName = "jobPost_coname";
-                        LocalDateTime endDate = LocalDateTime.parse("2025-01-01");
+                        LocalDateTime endDate = LocalDateTime.parse("2025-01-01T00:00:00");
+
                         String siteUrl = "http://test.com";
                         String imgUrl = "http://image.com";
                         List<String> techStacks = new ArrayList<>();
@@ -157,12 +163,12 @@ public class ChatService {
             jobPostRepository.saveAll(jobPosts);
         }
 
-        createResponseObject(chat, answerStr, jobPosts);
-
+        return createFirstChatResponseDto(questionStr, answerStr, jobPosts);
     }
 
-    private void createResponseObject(Chat chat, String answerStr, List<JobPost> jobPosts) {
-
+    private PostChatRes createFirstChatResponseDto(String questionStr, String answerStr, List<JobPost> jobPosts) {
+        List<JobPostRes> jobPostResList = JobPostRes.fromEntityList(jobPosts);
+        return new PostChatRes(questionStr, answerStr, jobPostResList);
     }
 
 }

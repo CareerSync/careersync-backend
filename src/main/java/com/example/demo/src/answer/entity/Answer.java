@@ -5,10 +5,7 @@ import com.example.demo.src.chat.entity.Chat;
 import com.example.demo.src.jobpost.entity.JobPost;
 import com.example.demo.src.question.entity.Question;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -44,5 +41,15 @@ public class Answer extends BaseEntity {
 
     @OneToMany(mappedBy = "answer", fetch = LAZY, cascade = ALL)
     List<JobPost> jobPosts = new ArrayList<>();
+
+    @Builder
+    public Answer(String answer_text) {
+        this.answer_text = answer_text;
+    }
+
+    public void addJobPosts(JobPost jobPost) {
+        jobPosts.add(jobPost);
+        jobPost.setAnswer(this);
+    }
 
 }
