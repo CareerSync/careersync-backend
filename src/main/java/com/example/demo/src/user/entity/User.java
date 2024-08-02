@@ -3,9 +3,6 @@ package com.example.demo.src.user.entity;
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.chat.entity.Chat;
 import com.example.demo.src.jobpost.entity.JobPost;
-import com.example.demo.src.recjobpost.entity.RecJobPost;
-import com.example.demo.src.techstack.entity.TechStack;
-import com.example.demo.src.test.entity.Comment;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -16,7 +13,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.example.demo.common.Constant.*;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
@@ -63,7 +59,7 @@ public class User extends BaseEntity {
     List<Chat> chats = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
-    List<RecJobPost> recJobPosts = new ArrayList<>();
+    List<JobPost> jobPosts = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = LAZY, cascade = ALL)
     List<TechStack> techStacks = new ArrayList<>();
@@ -96,9 +92,9 @@ public class User extends BaseEntity {
         chat.setUser(this);
     }
 
-    public void addRecJobPosts(RecJobPost recJobPost) {
-        recJobPosts.add(recJobPost);
-        recJobPost.setUser(this);
+    public void addJobPosts(JobPost jobPost) {
+        jobPosts.add(jobPost);
+        jobPost.setUser(this);
     }
 }
 

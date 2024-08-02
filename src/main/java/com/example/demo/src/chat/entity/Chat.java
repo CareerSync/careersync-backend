@@ -31,8 +31,8 @@ public class Chat extends BaseEntity {
 
     @Id // PK를 의미하는 어노테이션
     @Column(name = "tb_chat_id", nullable = false, updatable = false, columnDefinition = "binary(16)")
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    //@GeneratedValue(generator = "uuid2") -> chat id는 프론트 생성
+    //@GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
     @Column(name = "title", nullable = false, columnDefinition = "text")

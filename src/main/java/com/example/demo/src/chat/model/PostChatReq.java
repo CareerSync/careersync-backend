@@ -1,0 +1,33 @@
+package com.example.demo.src.chat.model;
+
+import com.example.demo.src.chat.entity.Chat;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.UUID;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class PostChatReq {
+
+    @NotNull(message = "대화 식별자는 null 일 수 없습니다.")
+    private UUID id;
+
+    @NotBlank(message = "질문은 null 혹은 빈 문자열 일 수 없습니다.")
+    private String question;
+
+    public Chat toEntity() {
+        return Chat.builder()
+                .id(this.id)
+                .title(this.question) // 첫 대화의
+                .build();
+    }
+
+}

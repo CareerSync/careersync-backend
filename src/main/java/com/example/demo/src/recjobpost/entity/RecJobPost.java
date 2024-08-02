@@ -20,7 +20,6 @@ import static javax.persistence.FetchType.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-@Entity
 @JsonAutoDetect(fieldVisibility = ANY)
 @Table(name = "TB_REC_JOB_POST")
 public class RecJobPost extends BaseEntity {

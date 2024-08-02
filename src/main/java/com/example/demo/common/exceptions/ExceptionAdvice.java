@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.example.demo.common.response.BaseResponseStatus.INVALID_REQUEST;
+import static com.example.demo.common.response.BaseResponseStatus.*;
 import static org.springframework.http.HttpStatus.*;
 
 
@@ -66,14 +66,15 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(SQLException.class)
-    public ApiResponse<BaseResponseStatus> sqlExceptionHandle(SQLException exception) {
+    public ResponseEntity<ApiResponse<BaseResponseStatus>> sqlExceptionHandle(SQLException exception) {
         log.warn("SQLException. error message: {}", exception.getMessage());
-        return ApiResponse.fail(BaseResponseStatus.SQL_ERROR, null);
+        return new ResponseEntity<>(ApiResponse.fail(BaseResponseStatus.SQL_ERROR, null), HttpStatus.valueOf(SQL_ERROR.getCode()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ApiResponse<BaseResponseStatus> ExceptionHandle(Exception exception) {
+    public ResponseEntity<ApiResponse<BaseResponseStatus>> ExceptionHandle(Exception exception) {
+
         log.error("Exception has occured. ", exception);
-        return ApiResponse.fail(BaseResponseStatus.UNEXPECTED_ERROR, null);
+        return new ResponseEntity<>(ApiResponse.fail(BaseResponseStatus.UNEXPECTED_ERROR, null), HttpStatus.valueOf(UNEXPECTED_ERROR.getCode()));
     }
 }

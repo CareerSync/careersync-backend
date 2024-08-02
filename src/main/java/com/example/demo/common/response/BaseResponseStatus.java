@@ -19,7 +19,8 @@ public enum BaseResponseStatus {
      * 201 : 요청 성공 및 새로운 리소스 생성
      */
     USER_CREATED("success", HttpStatus.CREATED.value(), "유저 생성이 완료되었습니다"),
-
+    CHAT_CREATED("success", HttpStatus.CREATED.value(), "대화 생성 및 질문에 대한 답변이 완료되었습니다"),
+    ANSWER_CREATED("success", HttpStatus.CREATED.value(), "추가 질문에 대한 답변이 완료되었습니다"),
 
     /**
      * 400 : Request, Response 오류
