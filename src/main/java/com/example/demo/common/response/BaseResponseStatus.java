@@ -31,6 +31,7 @@ public enum BaseResponseStatus {
     USER_EMPTY_NAME("fail", BAD_REQUEST.value(), "이름을 입력해주세요."),
     USER_EMPTY_PASSWORD("fail", BAD_REQUEST.value(), "비밀번호를 입력해주세요."),
     USER_ID_EXIST("fail", BAD_REQUEST.value(), "이미 존재하는 유저 아이디입니다."),
+    CHAT_ID_EXIST("fail", BAD_REQUEST.value(), "이미 존재하는 대화 식별자입니다."),
     USER_NAME_TOO_LONG("fail", BAD_REQUEST.value(), "유저 이름이 너무 깁니다."),
     USER_PW_TOO_LONG("fail", BAD_REQUEST.value(), "유저 비밀번호가 너무 깁니다."),
     USERS_EMPTY_EMAIL("fail", BAD_REQUEST.value(), "이메일을 입력해주세요."),
@@ -73,6 +74,7 @@ public enum BaseResponseStatus {
     NOT_FIND_BOARD("fail", NOT_FOUND.value(),"일치하는 게시물이 없습니다."),
     NOT_FIND_REPORT("fail", NOT_FOUND.value(),"일치하는 신고 내역이 없습니다."),
     NOT_FIND_ITEM("fail", NOT_FOUND.value(),"일치하는 상품이 없습니다."),
+    NOT_FIND_CHAT("fail", NOT_FOUND.value(),"일치하는 대화가 없습니다."),
 
     EMPTY_JWT("fail", UNAUTHORIZED.value(), "JWT를 입력해주세요."),
     INVALID_JWT("fail", UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
