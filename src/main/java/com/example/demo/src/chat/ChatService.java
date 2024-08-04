@@ -4,6 +4,8 @@ import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.src.answer.AnswerRepository;
 import com.example.demo.src.answer.entity.Answer;
 import com.example.demo.src.chat.entity.Chat;
+import com.example.demo.src.chat.model.PostAfterChatReq;
+import com.example.demo.src.chat.model.PostAfterChatRes;
 import com.example.demo.src.chat.model.PostChatReq;
 import com.example.demo.src.chat.model.PostChatRes;
 import com.example.demo.src.jobpost.JobPostRepository;
@@ -53,75 +55,94 @@ public class ChatService {
     private final JobPostTechStackRepository jobPostTechStackRepository;
 
     //POST
-    public PostChatRes createFirstChat(UUID id, PostChatReq postChatReq) {
+    public PostChatRes createChat(UUID userId, UUID chatId, PostChatReq postChatReq) {
+        // Fetch user
+        User user = getUserWithId(userId);
 
-        // 유저 가져오기
-        User user = getUserWithId(id);
+        // 이미 존재하는 대화 uuid면 400 에러 반환
+        validateChatExist(chatId);
 
-        // 대화 생성
-        Chat chat = Chat.builder()
-                .id(postChatReq.getId())
-                .title(postChatReq.getQuestion())
-                .build();
-
+        // Ensure chat is new or correctly detached if reused
+        Chat chat = postChatReq.toEntity(postChatReq);
+        chat = chatRepository.save(chat); // Ensures chat is managed in the session
         user.addChats(chat);
 
-        // 질문 추출
+        // First question as the chat title
         String questionStr = postChatReq.getQuestion();
+
+        // Create question entity and associate with chat
         Question question = Question.builder()
                 .question_text(questionStr)
                 .build();
+        // Persist question
+        questionRepository.save(question); // Ensures question is managed
+        chat.addQuestions(question);
 
-       chat.addQuestions(question);
 
-        // TODO 질문에 대한 대답을 AI 서버로부터 가져오기
-        return handleQuestionResponse(chat, questionStr);
+
+        // Handle question response
+        return handleQuestionResponse(user, chat, questionStr, true);
     }
 
-    private User getUserWithId(UUID id) {
-        return userRepository.findByIdAndState(id, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+
+    public PostChatRes addAnswerToChat(UUID userId, UUID chatId, PostAfterChatReq postAfterChatReq) {
+
+        User user = getUserWithId(userId);
+        // Fetch existing chat entity
+        Chat chat = getChatWithId(chatId);
+
+        String questionStr = postAfterChatReq.getQuestion();
+
+        // Create and add question to chat
+        Question question = Question.builder()
+                .question_text(questionStr)
+                .build();
+        // Persist question
+        questionRepository.save(question);
+
+        chat.addQuestions(question);
+
+        // Handle question response
+        return handleQuestionResponse(user, chat, questionStr, false);
     }
 
-    private PostChatRes handleQuestionResponse(Chat chat, String questionStr) {
-
-        // 1. 채용공고를 묻는 질문이 아니라면 markdown 형식의 answer 답변만 반환
-        // 2. 채용공고를 묻는 질문이면 jobPosts 데이터까지 모두 반환
-
-        boolean flag = false;
+    private PostChatRes handleQuestionResponse(User user, Chat chat, String questionStr, boolean isFirstChat) {
+        // Determine if the question requires job posts
+        boolean flag = true; // true: requires job posts, false: does not
         String answerStr;
 
-        // fastapi 서버에서 받은 채용공고 결과 리스트
-        // TODO AI 서버에서 응답 가져오는 로직 -> 추후 함수로 따로 빼기
+        // Placeholder for job post results from external server
         List<Object> exampleJobPostResult = new ArrayList<>();
         exampleJobPostResult.add("ex1");
         exampleJobPostResult.add("ex2");
 
         List<JobPost> jobPosts = new ArrayList<>();
 
-        if (flag) {
+        if (!flag) {
             answerStr = "sample_answer_from_fastapi_server_without_jobposts";
 
+            // Create and add answer
             Answer answer = Answer.builder()
                     .answer_text(answerStr)
                     .build();
 
-            chat.addAnswers(answer);
+            // Persist answer
+            answerRepository.save(answer);
 
+            chat.addAnswers(answer);
         } else {
             answerStr = "sample_answer_from_fastapi_server_with_jobposts";
 
+            // Create and add answer
             Answer answer = Answer.builder()
                     .answer_text(answerStr)
                     .build();
+            answerRepository.save(answer);
 
-            chat.addAnswers(answer);
-
-            // 채용 공고 DB에 저장 & 유저와 연관관계 매핑까지 완료
+            // Process job post results
             jobPosts = exampleJobPostResult.stream()
                     .map(value -> {
-
-                        // 나중에는 value에서 추출
+                        // Extract information for job post
                         String title = "jobPost_title";
                         String career = "신입";
                         String companyName = "jobPost_coname";
@@ -133,6 +154,7 @@ public class ChatService {
                         techStacks.add("python");
                         techStacks.add("java");
 
+                        // Create job post entity
                         JobPost jobPost = JobPost.builder()
                                 .title(title)
                                 .companyName(companyName)
@@ -142,7 +164,7 @@ public class ChatService {
                                 .imageUrl(imgUrl)
                                 .build();
 
-                        // 채용공고의 기술 스택 저장
+                        // Add tech stacks to job post
                         List<JobPostTechStack> jobPostTechStacks = techStacks.stream()
                                 .map(techStackName -> {
                                     JobPostTechStack techStack = JobPostTechStack.builder()
@@ -153,22 +175,52 @@ public class ChatService {
                                 })
                                 .toList();
 
+                        // Persist tech stacks
                         jobPostTechStackRepository.saveAll(jobPostTechStacks);
 
+                        // Associate job post with user and answer
+                        user.addJobPosts(jobPost);
                         answer.addJobPosts(jobPost);
                         return jobPost;
                     })
                     .toList();
 
+            // Persist job posts and answer
             jobPostRepository.saveAll(jobPosts);
+            chat.addAnswers(answer);
+
         }
 
-        return createFirstChatResponseDto(questionStr, answerStr, jobPosts);
+        // Return response DTO
+        return createChatResponseDto(questionStr, answerStr, jobPosts, isFirstChat);
     }
 
-    private PostChatRes createFirstChatResponseDto(String questionStr, String answerStr, List<JobPost> jobPosts) {
+
+    private PostChatRes createChatResponseDto(String questionStr, String answerStr, List<JobPost> jobPosts, boolean isFirstChat) {
         List<JobPostRes> jobPostResList = JobPostRes.fromEntityList(jobPosts);
-        return new PostChatRes(questionStr, answerStr, jobPostResList);
+
+        if (isFirstChat) {
+            return new PostChatRes(questionStr, answerStr, jobPostResList);
+        } else {
+            return new PostAfterChatRes(answerStr, jobPostResList);
+        }
+    }
+
+    private User getUserWithId(UUID id) {
+        return userRepository.findByIdAndState(id, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+    }
+
+    private Chat getChatWithId(UUID id) {
+        return chatRepository.findByIdAndState(id, ACTIVE)
+                .orElseThrow(() -> new BaseException(NOT_FIND_CHAT));
+    }
+
+    private void validateChatExist(UUID id) {
+        Optional<Chat> chatOptional = chatRepository.findByIdAndState(id, ACTIVE);
+        if (chatOptional.isPresent()) {
+            throw new BaseException(CHAT_ID_EXIST);
+        }
     }
 
 }
