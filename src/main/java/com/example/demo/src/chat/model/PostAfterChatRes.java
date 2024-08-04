@@ -7,19 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class PostChatRes {
+public class PostAfterChatRes extends PostChatRes {
 
-    private String title;
-    private String answer;
-    private List<JobPostRes> jobPosts;
-
-    public PostChatRes(String answer, List<JobPostRes> jobPosts) {
-        this.answer = answer;
-        this.jobPosts = jobPosts;
+    public PostAfterChatRes(String answer, List<JobPostRes> jobPosts) {
+        super(answer, jobPosts);
     }
 }
