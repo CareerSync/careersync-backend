@@ -17,16 +17,16 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PostChatReq {
 
-    @NotNull(message = "대화 식별자는 null 일 수 없습니다.")
+    @NotNull(message = "대화 id는 null 일 수 없습니다.")
     private UUID id;
 
     @NotBlank(message = "질문은 null 혹은 빈 문자열 일 수 없습니다.")
     private String question;
 
-    public Chat toEntity() {
+    public Chat toEntity(PostChatReq req) {
         return Chat.builder()
-                .id(this.id)
-                .title(this.question) // 첫 대화의
+                .id(req.getId())
+                .title(req.getQuestion())
                 .build();
     }
 
