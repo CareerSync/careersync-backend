@@ -69,4 +69,5 @@ public class Chat extends BaseEntity {
                 .flatMap(answer -> answer.getJobPosts().stream()) // Flatten the list of job posts from each answer
                 .collect(Collectors.toList()); // Collect into a single list
     }
+
 }

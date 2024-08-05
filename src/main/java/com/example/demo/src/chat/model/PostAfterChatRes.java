@@ -1,7 +1,6 @@
 package com.example.demo.src.chat.model;
 
-import com.example.demo.src.jobpost.entity.JobPostRes;
-import lombok.AllArgsConstructor;
+import com.example.demo.src.jobpost.model.JobPostRes;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

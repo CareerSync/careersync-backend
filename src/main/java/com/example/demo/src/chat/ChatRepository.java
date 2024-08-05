@@ -16,5 +16,4 @@ public interface ChatRepository extends JpaRepository<Chat, UUID> {
     Optional<Chat> findByIdAndState(UUID id, State state);
     Page<Chat> findByUserAndStateOrderByUpdatedAtDesc(User user, State state, Pageable pageable);
     Page<Chat> findByUserAndState(User user, State state, Pageable pageable);
-
 }

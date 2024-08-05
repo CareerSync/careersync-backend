@@ -6,20 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostChatRes {
-
-    private String title;
-    private String answer;
+public class QAItemDto {
+    private UUID id;
+    private String text;
+    private String createdAt;
+    private String type; // "question" or "answer"
     private List<JobPostRes> jobPosts;
-
-    public PostChatRes(String answer, List<JobPostRes> jobPosts) {
-        this.answer = answer;
-        this.jobPosts = jobPosts;
-    }
 }

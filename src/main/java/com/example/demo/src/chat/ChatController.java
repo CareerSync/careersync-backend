@@ -1,13 +1,7 @@
 package com.example.demo.src.chat;
 
 import com.example.demo.common.response.ApiResponse;
-import com.example.demo.src.chat.model.GetChatRes;
-import com.example.demo.src.chat.model.PostAfterChatReq;
-import com.example.demo.src.chat.model.PostChatReq;
-import com.example.demo.src.chat.model.PostChatRes;
-import com.example.demo.src.user.UserService;
-import com.example.demo.src.user.model.PatchUserInfoReq;
-import com.example.demo.src.user.model.PatchUserRes;
+import com.example.demo.src.chat.model.*;
 import com.example.demo.utils.SessionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -411,7 +404,7 @@ public class ChatController {
     /**
      * 대화 전체 조회 API
      * [GET] /v1/chats
-     * @return ResponseEntity<ApiResponse<GetChatRes>>
+     * @return ResponseEntity<ApiResponse<GetChatsRes>>
      */
     @Operation(summary = "대화 전체 조회 API", description = """
             지금까지 생성된 대화 내역을 모두 조회한다.  
@@ -500,14 +493,197 @@ public class ChatController {
     })
     @ResponseBody
     @GetMapping("")
-    public ResponseEntity<ApiResponse<GetChatRes>> getChats (HttpServletRequest request,
-                                                             @PageableDefault(size = 12, sort = "updatedAt",  direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ApiResponse<GetChatsRes>> getChats (HttpServletRequest request,
+                                                              @PageableDefault(size = 12, sort = "updatedAt",  direction = Sort.Direction.DESC) Pageable pageable) {
 
         UUID userId = (UUID) sessionService.getUserIdFromSession(request);
-        GetChatRes chats = chatService.getChats(userId, pageable);
+        GetChatsRes chats = chatService.getChats(userId, pageable);
         return ResponseEntity.status(OK).body(success(SUCCESS, chats));
 
     }
 
+    /**
+     * 대화 단건 조회 API
+     * [GET] /v1/chats/:chatId
+     * @return ResponseEntity<ApiResponse<GetChatRes>>
+     */
+    @Operation(summary = "대화 단건 조회 API", description = """
+            하나의 대화 내역을 조회한다.  
+            
+            각 대화에서 생성된 답변과 질문이 생성일자 기준으로 내림차순 정렬되어 반환된다.  
+            
+            답변에 채용공고 정보가 있다면 포함해서 반환된다.
+            """)
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = """
+                            대화 내역 단건 조회 성공
+                            """,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = {
+                                    @ExampleObject(value = """
+{
+  "apiVersion": "1.0.0",
+  "timestamp": "2024-08-05T23:00:04+09:00",
+  "status": "success",
+  "statusCode": 200,
+  "message": "요청에 성공하였습니다.",
+  "data": {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "title": "string",
+    "list": [
+      {
+        "id": "1ed50a05-a449-47a5-af53-ead43a4d48f2",
+        "text": "sample_answer_from_fastapi_server_with_jobposts",
+        "createdAt": "2024-08-05T22:59:56",
+        "type": "answer",
+        "jobPosts": [
+          {
+            "id": "1bdfb318-0837-4619-b2a9-5529e3440085",
+            "title": "jobPost_title",
+            "career": "신입",
+            "companyName": "jobPost_coname",
+            "endDate": "2025-01-01T00:00:00+09:00",
+            "techStacks": [
+              "python",
+              "java"
+            ],
+            "imgUrl": "http://image.com",
+            "siteUrl": "http://test.com"
+          },
+          {
+            "id": "5a1e82bb-1e34-412d-9df5-2a372da3bddd",
+            "title": "jobPost_title",
+            "career": "신입",
+            "companyName": "jobPost_coname",
+            "endDate": "2025-01-01T00:00:00+09:00",
+            "techStacks": [
+              "java",
+              "python"
+            ],
+            "imgUrl": "http://image.com",
+            "siteUrl": "http://test.com"
+          }
+        ]
+      },
+      {
+        "id": "6fe034ea-f265-492d-b8c9-bd58031bdf60",
+        "text": "string22",
+        "createdAt": "2024-08-05T22:59:56",
+        "type": "question",
+        "jobPosts": []
+      },
+      {
+        "id": "2dd04e8f-8107-457b-a1e9-1f9cf0c013ea",
+        "text": "sample_answer_from_fastapi_server_with_jobposts",
+        "createdAt": "2024-08-05T22:59:44",
+        "type": "answer",
+        "jobPosts": [
+          {
+            "id": "3ec32478-28c5-4b91-80d1-ab2a8379ddd1",
+            "title": "jobPost_title",
+            "career": "신입",
+            "companyName": "jobPost_coname",
+            "endDate": "2025-01-01T00:00:00+09:00",
+            "techStacks": [
+              "python",
+              "java"
+            ],
+            "imgUrl": "http://image.com",
+            "siteUrl": "http://test.com"
+          },
+          {
+            "id": "5d58d4cd-9db4-4952-a66e-97b70423c35d",
+            "title": "jobPost_title",
+            "career": "신입",
+            "companyName": "jobPost_coname",
+            "endDate": "2025-01-01T00:00:00+09:00",
+            "techStacks": [
+              "java",
+              "python"
+            ],
+            "imgUrl": "http://image.com",
+            "siteUrl": "http://test.com"
+          }
+        ]
+      },
+      {
+        "id": "ce7cd62c-a38a-40e2-bb5c-0fca9c066125",
+        "text": "string",
+        "createdAt": "2024-08-05T22:59:44",
+        "type": "question",
+        "jobPosts": []
+      }
+    ]
+  }
+}
+                """)
+
+                            }
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "로그인 된 사용자가 아닐 경우 에러 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-04T00:23:43+09:00",
+                                      "status": "fail",
+                                      "statusCode": 401,
+                                      "message": "로그인 된 사용자가 아닙니다."
+                                    }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 대화 내역인 경우 에러 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-05T23:02:10+09:00",
+                                      "status": "fail",
+                                      "statusCode": 404,
+                                      "message": "일치하는 대화가 없습니다."
+                                    }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "INTERNAL_SERVER_ERROR",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                {
+                    "apiVersion": "1.0.0",
+                    "timestamp": "2023-07-01T12:34:56Z",
+                    "status": "fail",
+                    "statusCode": 500,
+                    "message": "예상치 못한 에러가 발생했습니다."
+                }
+                """)
+                    )
+            )
+    })
+    @ResponseBody
+    @GetMapping("/{chatId}")
+    public ResponseEntity<ApiResponse<GetChatRes>> getChat (@PathVariable(name = "chatId") UUID chatId) {
+
+        GetChatRes chatRes = chatService.getChat(chatId);
+        return ResponseEntity.status(OK).body(success(SUCCESS, chatRes));
+
+    }
 
 }
