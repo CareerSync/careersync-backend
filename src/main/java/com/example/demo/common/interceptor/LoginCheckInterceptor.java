@@ -1,5 +1,6 @@
 package com.example.demo.common.interceptor;
 
+import com.example.demo.common.exceptions.unauthorized.user.UnauthorizedUserException;
 import com.example.demo.utils.SessionService;
 import com.example.demo.common.exceptions.BaseException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +25,11 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         HttpSession session = sessionService.getSessionFromCookie(request);
 
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            throw new BaseException(UNAUTHORIZED_USER);
+            throw new UnauthorizedUserException();
         }
 
         return true;
