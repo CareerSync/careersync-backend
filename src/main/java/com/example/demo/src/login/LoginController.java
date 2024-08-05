@@ -1,5 +1,6 @@
 package com.example.demo.src.login;
 
+import com.example.demo.common.exceptions.notfound.user.AlreadyLoggedOutUserException;
 import com.example.demo.utils.SessionService;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.oauth.OAuthService;
@@ -233,7 +234,7 @@ public class LoginController {
         }
 
         // Assuming you need to fetch user details using user ID stored in session
-        UUID userId = (UUID) session.getAttribute(LOGIN_MEMBER);
+        UUID userId = (UUID) sessionService.getUserIdFromSession(request);
         PostUserRes postUserRes = new PostUserRes(userId); // You might need to use a service to fetch user details if needed
 
         ApiResponse<PostUserRes> apiResponse = success(BaseResponseStatus.SUCCESS, postUserRes);
@@ -309,8 +310,9 @@ public class LoginController {
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = sessionService.getSessionFromCookie(request);
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            ApiResponse<Void> apiResponse = fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
-            return ResponseEntity.status(BAD_REQUEST).body(apiResponse);
+//            ApiResponse<Void> apiResponse = fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
+//            return ResponseEntity.status(BAD_REQUEST).body(apiResponse);
+            throw new AlreadyLoggedOutUserException();
         }
 
         session.invalidate();

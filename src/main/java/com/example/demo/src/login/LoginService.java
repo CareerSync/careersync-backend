@@ -2,6 +2,7 @@ package com.example.demo.src.login;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.exceptions.notfound.user.NotFoundUserException;
 import com.example.demo.common.response.ApiResponse;
 import com.example.demo.src.user.UserRepository;
 import com.example.demo.src.user.entity.User;
@@ -29,7 +30,7 @@ public class LoginService {
     public User login(String loginId, String password){
         return userRepository.findByUserIdAndState(loginId, ACTIVE)
                 .filter(m-> m.getPassword().equals(password))
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(NotFoundUserException::new);
     }
 
 }

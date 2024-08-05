@@ -47,7 +47,7 @@ public class UserController {
 
     /**
      * 회원가입 API
-     * [POST] /app/v1/users/register
+     * [POST] /v1/users/register
      * @return ResponseEntity<ApiResponse<PostUserRes>>
      */
     @Operation(summary = "회원가입", description = "입력된 회원 정보를 받아 회원을 생성합니다.")
@@ -143,7 +143,7 @@ public class UserController {
 
     /**
      * 유저 기술스택, 경력, 최종학력 입력 API
-     * [PATCH] /app/v1/users/{id}/info
+     * [PATCH] /v1/users/{id}/info
      * @return ResponseEntity<ApiResponse<PatchUserRes>>
      */
     @Operation(summary = "유저 추가 정보 입력 API", description = "유저 기술스택, 경력, 최종학력 정보를 받아 유저 정보를 수정합니다.")
@@ -266,7 +266,7 @@ public class UserController {
 
     /**
      * 유저 기술스택, 경력, 최종학력 입력 API
-     * [PATCH] /app/v1/users/info
+     * [PATCH] /v1/users/info
      * @return ResponseEntity<ApiResponse<PatchUserRes>>
      */
     @Operation(summary = "유저 추가 정보 입력 API", description = "유저 기술스택, 경력, 최종학력 정보를 받아 유저 정보를 수정합니다.")
@@ -337,8 +337,7 @@ public class UserController {
                                           "message": "유저 경력 수치는 0 이상이어야 합니다."
                                         }
                                       ]
-                                    } ]
-                                            }
+                                    }
                 """)
                             }
                     )

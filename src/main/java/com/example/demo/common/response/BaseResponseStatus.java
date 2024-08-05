@@ -31,6 +31,7 @@ public enum BaseResponseStatus {
     USER_EMPTY_NAME("fail", BAD_REQUEST.value(), "이름을 입력해주세요."),
     USER_EMPTY_PASSWORD("fail", BAD_REQUEST.value(), "비밀번호를 입력해주세요."),
     USER_ID_EXIST("fail", BAD_REQUEST.value(), "이미 존재하는 유저 아이디입니다."),
+    USER_NAME_EXIST("fail", BAD_REQUEST.value(), "이미 존재하는 유저 이름입니다."),
     CHAT_ID_EXIST("fail", BAD_REQUEST.value(), "이미 존재하는 대화 식별자입니다."),
     USER_NAME_TOO_LONG("fail", BAD_REQUEST.value(), "유저 이름이 너무 깁니다."),
     USER_PW_TOO_LONG("fail", BAD_REQUEST.value(), "유저 비밀번호가 너무 깁니다."),

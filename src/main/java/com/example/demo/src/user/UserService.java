@@ -1,6 +1,8 @@
 package com.example.demo.src.user;
 
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.exceptions.badrequest.user.AlreadyExistsUserIdException;
+import com.example.demo.common.exceptions.badrequest.user.AlreadyExistsUserNameException;
 import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -31,10 +33,10 @@ public class UserService {
     public PostUserRes createUser(PostUserReq postUserReq) {
 
         // 아이디 중복 체크
-        Optional<User> checkUser = userRepository.findByUserIdAndState(postUserReq.getUserId(), ACTIVE);
-        if (checkUser.isPresent()) {
-            throw new BaseException(USER_ID_EXIST);
-        }
+        validateUserId(postUserReq.getUserId());
+
+        // 이름 중복 체크
+        validateUserName(postUserReq.getUserName());
 
         String encryptPwd;
         try {
@@ -123,5 +125,19 @@ public class UserService {
         User user = userRepository.findByUserIdAndState(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         return new GetUserRes(user);
+    }
+
+    private void validateUserId(String userId) {
+        userRepository.findByUserIdAndState(userId, ACTIVE)
+                .ifPresent(user -> {
+                    throw new AlreadyExistsUserIdException();
+                });
+    }
+
+    private void validateUserName(String userName) {
+        userRepository.findByUserNameAndState(userName, ACTIVE)
+                .ifPresent(user -> {
+                    throw new AlreadyExistsUserNameException();
+                });
     }
 }

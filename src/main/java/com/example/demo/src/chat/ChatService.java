@@ -1,13 +1,13 @@
 package com.example.demo.src.chat;
 
 import com.example.demo.common.exceptions.BaseException;
+import com.example.demo.common.exceptions.badrequest.chat.AlreadyExistsChatIdException;
+import com.example.demo.common.exceptions.notfound.chat.NotFoundChatException;
+import com.example.demo.common.exceptions.notfound.user.NotFoundUserException;
 import com.example.demo.src.answer.AnswerRepository;
 import com.example.demo.src.answer.entity.Answer;
 import com.example.demo.src.chat.entity.Chat;
-import com.example.demo.src.chat.model.PostAfterChatReq;
-import com.example.demo.src.chat.model.PostAfterChatRes;
-import com.example.demo.src.chat.model.PostChatReq;
-import com.example.demo.src.chat.model.PostChatRes;
+import com.example.demo.src.chat.model.*;
 import com.example.demo.src.jobpost.JobPostRepository;
 import com.example.demo.src.jobpost.JobPostTechStackRepository;
 import com.example.demo.src.jobpost.entity.JobPost;
@@ -16,27 +16,20 @@ import com.example.demo.src.jobpost.entity.JobPostTechStack;
 import com.example.demo.src.question.QuestionRepository;
 import com.example.demo.src.question.entity.Question;
 import com.example.demo.src.user.UserRepository;
-import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
-import com.example.demo.src.user.model.PostUserReq;
-import com.example.demo.src.user.model.PostUserRes;
-import com.example.demo.utils.SHA256;
+import com.example.demo.utils.DateTimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.C;
-import org.springframework.security.core.parameters.P;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
@@ -53,6 +46,30 @@ public class ChatService {
     private final AnswerRepository answerRepository;
     private final JobPostRepository jobPostRepository;
     private final JobPostTechStackRepository jobPostTechStackRepository;
+
+
+    // GET
+    public GetChatRes getChats(UUID userId, Pageable pageable) {
+        // Fetch User
+        User user = getUserWithId(userId);
+
+        // Fetch chats with pagination
+        Page<Chat> chatPage = chatRepository.findByUserAndState(user, ACTIVE, pageable);
+
+        // Map each chat to a ChatInfo DTO
+        List<ChatInfo> chatInfoList = chatPage
+                .stream()
+                .map(chat -> {
+                    // Calculate the number of recommended job posts for this chat
+                    int recJobPostNum = chat.getJobPosts().size();
+
+                    // Return a new ChatInfo object
+                    return new ChatInfo(chat.getId(), chat.getTitle(), DateTimeFormatterUtil.LocalDateTimeToString(chat.getUpdatedAt()), recJobPostNum);
+                })
+                .toList();
+
+        return new GetChatRes(chatInfoList, pageable.getPageNumber(), pageable.getPageSize());
+    }
 
     //POST
     public PostChatRes createChat(UUID userId, UUID chatId, PostChatReq postChatReq) {
@@ -208,18 +225,18 @@ public class ChatService {
 
     private User getUserWithId(UUID id) {
         return userRepository.findByIdAndState(id, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(NotFoundUserException::new);
     }
 
     private Chat getChatWithId(UUID id) {
         return chatRepository.findByIdAndState(id, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_CHAT));
+                .orElseThrow(NotFoundChatException::new);
     }
 
     private void validateChatExist(UUID id) {
         Optional<Chat> chatOptional = chatRepository.findByIdAndState(id, ACTIVE);
         if (chatOptional.isPresent()) {
-            throw new BaseException(CHAT_ID_EXIST);
+            throw new AlreadyExistsChatIdException();
         }
     }
 
