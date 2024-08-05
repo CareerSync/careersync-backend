@@ -686,4 +686,104 @@ public class ChatController {
 
     }
 
+    /**
+     * 대화 제목 수정 API
+     * [PATCH] /v1/chats/:chatId
+     *
+     * RequestBody
+     * - title: 대화 제목
+     *
+     * @return ResponseEntity<ApiResponse<PatchChatRes>>
+     */
+    @Operation(summary = "대화 제목 수정 API", description = """
+            대화의 제목을 수정한다.
+            """)
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = """
+                            대화 제목 수정 성공
+                            """,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = {
+                                    @ExampleObject(value = """
+                                {
+                                  "apiVersion": "1.0.0",
+                                  "timestamp": "2024-08-05T23:22:32+09:00",
+                                  "status": "success",
+                                  "statusCode": 200,
+                                  "message": "요청에 성공하였습니다.",
+                                  "data": {
+                                    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                    "title": "string234"
+                                  }
+                                }
+                """)
+
+                            }
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "로그인 된 사용자가 아닐 경우 에러 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-04T00:23:43+09:00",
+                                      "status": "fail",
+                                      "statusCode": 401,
+                                      "message": "로그인 된 사용자가 아닙니다."
+                                    }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 대화 내역인 경우 에러 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-05T23:02:10+09:00",
+                                      "status": "fail",
+                                      "statusCode": 404,
+                                      "message": "일치하는 대화가 없습니다."
+                                    }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "INTERNAL_SERVER_ERROR",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                {
+                    "apiVersion": "1.0.0",
+                    "timestamp": "2023-07-01T12:34:56Z",
+                    "status": "fail",
+                    "statusCode": 500,
+                    "message": "예상치 못한 에러가 발생했습니다."
+                }
+                """)
+                    )
+            )
+    })
+    @ResponseBody
+    @PatchMapping("/{chatId}")
+    public ResponseEntity<ApiResponse<PatchChatRes>> modifyChatTitle (@PathVariable(name = "chatId") UUID chatId,
+                                                                 @RequestBody PatchChatReq patchChatReq) {
+
+        PatchChatRes patchChatRes = chatService.modifyChatTitle(chatId, patchChatReq.getTitle());
+        return ResponseEntity.status(OK).body(success(SUCCESS, patchChatRes));
+    }
+
 }

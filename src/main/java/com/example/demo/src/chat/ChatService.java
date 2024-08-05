@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +47,7 @@ public class ChatService {
 
 
     // GET
+    @Transactional(readOnly = true)
     public GetChatsRes getChats(UUID userId, Pageable pageable) {
         // Fetch User
         User user = getUserWithId(userId);
@@ -68,6 +70,7 @@ public class ChatService {
         return new GetChatsRes(chatInfoList, pageable.getPageNumber(), pageable.getPageSize());
     }
 
+    @Transactional(readOnly = true)
     public GetChatRes getChat(UUID chatId) {
         // chat 식별자로 대화 가져오기
         Chat chat = getChatWithId(chatId);
@@ -278,6 +281,14 @@ public class ChatService {
         } else {
             return new PostAfterChatRes(answerStr, jobPostResList);
         }
+    }
+
+    // PATCH
+    public PatchChatRes modifyChatTitle(UUID id, String title) {
+        Chat chat = getChatWithId(id);
+        chat.setTitle(title);
+
+        return new PatchChatRes(id, title);
     }
 
     private User getUserWithId(UUID id) {
