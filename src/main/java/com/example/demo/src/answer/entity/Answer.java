@@ -51,5 +51,4 @@ public class Answer extends BaseEntity {
         jobPosts.add(jobPost);
         jobPost.setAnswer(this);
     }
-
 }

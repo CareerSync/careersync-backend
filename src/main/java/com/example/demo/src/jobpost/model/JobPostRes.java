@@ -1,8 +1,9 @@
-package com.example.demo.src.jobpost.entity;
+package com.example.demo.src.jobpost.model;
 
+import com.example.demo.src.jobpost.entity.JobPost;
+import com.example.demo.src.jobpost.entity.JobPostTechStack;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;

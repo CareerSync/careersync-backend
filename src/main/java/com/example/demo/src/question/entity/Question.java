@@ -38,6 +38,4 @@ public class Question extends BaseEntity {
     public Question(String question_text) {
         this.question_text = question_text;
     }
-
-
 }
