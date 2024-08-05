@@ -2,9 +2,11 @@ package com.example.demo.src.jobpost.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import com.example.demo.src.answer.entity.Answer;
+import com.example.demo.src.chat.entity.Chat;
 import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import kotlin.Lazy;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
