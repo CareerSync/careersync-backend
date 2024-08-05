@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 
 @Transactional
 @RequiredArgsConstructor
@@ -284,11 +285,19 @@ public class ChatService {
     }
 
     // PATCH
-    public PatchChatRes modifyChatTitle(UUID id, String title) {
-        Chat chat = getChatWithId(id);
+    public PatchChatRes modifyChatTitle(UUID chatId, String title) {
+        Chat chat = getChatWithId(chatId);
         chat.setTitle(title);
 
-        return new PatchChatRes(id, title);
+        return new PatchChatRes(chatId, title);
+    }
+
+    // DELETE
+    public DeleteChatRes deleteChat(UUID chatId) {
+        Chat chat = getChatWithId(chatId);
+        chat.updateState(INACTIVE);
+
+        return new DeleteChatRes(chatId);
     }
 
     private User getUserWithId(UUID id) {
