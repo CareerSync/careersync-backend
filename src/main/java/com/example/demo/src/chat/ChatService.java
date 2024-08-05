@@ -1,6 +1,5 @@
 package com.example.demo.src.chat;
 
-import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.exceptions.badrequest.chat.AlreadyExistsChatIdException;
 import com.example.demo.common.exceptions.notfound.chat.NotFoundChatException;
 import com.example.demo.common.exceptions.notfound.user.NotFoundUserException;
@@ -11,7 +10,7 @@ import com.example.demo.src.chat.model.*;
 import com.example.demo.src.jobpost.JobPostRepository;
 import com.example.demo.src.jobpost.JobPostTechStackRepository;
 import com.example.demo.src.jobpost.entity.JobPost;
-import com.example.demo.src.jobpost.entity.JobPostRes;
+import com.example.demo.src.jobpost.model.JobPostRes;
 import com.example.demo.src.jobpost.entity.JobPostTechStack;
 import com.example.demo.src.question.QuestionRepository;
 import com.example.demo.src.question.entity.Question;
@@ -26,13 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
-import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @Transactional
 @RequiredArgsConstructor
@@ -49,7 +46,7 @@ public class ChatService {
 
 
     // GET
-    public GetChatRes getChats(UUID userId, Pageable pageable) {
+    public GetChatsRes getChats(UUID userId, Pageable pageable) {
         // Fetch User
         User user = getUserWithId(userId);
 
@@ -68,7 +65,13 @@ public class ChatService {
                 })
                 .toList();
 
-        return new GetChatRes(chatInfoList, pageable.getPageNumber(), pageable.getPageSize());
+        return new GetChatsRes(chatInfoList, pageable.getPageNumber(), pageable.getPageSize());
+    }
+
+    public GetChatRes getChat(UUID chatId) {
+        // chat 식별자로 대화 가져오기
+        Chat chat = getChatWithId(chatId);
+        return getChatResponseDto(chat);
     }
 
     //POST
@@ -210,6 +213,60 @@ public class ChatService {
 
         // Return response DTO
         return createChatResponseDto(questionStr, answerStr, jobPosts, isFirstChat);
+    }
+
+    private GetChatRes getChatResponseDto(Chat chat) {
+
+        // Create a new ChatDTO
+        GetChatRes chatRes = new GetChatRes(chat.getId(), chat.getTitle());
+
+        // Convert Questions to QAItemDTO
+        List<QAItemDto> questionDTOs = chat.getQuestions().stream()
+                .map(question -> new QAItemDto(
+                        question.getId(),
+                        question.getQuestion_text(),
+                        DateTimeFormatterUtil.LocalDateTimeToString(question.getCreatedAt()), // Format createdAt
+                        "question",
+                        new ArrayList<>())) // Empty list for jobPosts in questions
+                .toList();
+
+        // Convert Answers to QAItemDTO
+        List<QAItemDto> answerDTOs = chat.getAnswers().stream()
+                .map(answer -> new QAItemDto(
+                        answer.getId(),
+                        answer.getAnswer_text(),
+                        DateTimeFormatterUtil.LocalDateTimeToString(answer.getCreatedAt()), // Format createdAt
+                        "answer",
+                        JobPostRes.fromEntityList(answer.getJobPosts())))
+                .toList();
+
+        // Create an interleaved list
+        List<QAItemDto> interleavedQAItems = new ArrayList<>();
+        int i = 0, j = 0;
+        while (i < answerDTOs.size() && j < questionDTOs.size()) {
+            // Compare the createdAt timestamps to maintain the order
+            if (answerDTOs.get(i).getCreatedAt().compareTo(questionDTOs.get(j).getCreatedAt()) >= 0) {
+                interleavedQAItems.add(answerDTOs.get(i++));
+            } else {
+                interleavedQAItems.add(questionDTOs.get(j++));
+            }
+        }
+
+        // Add any remaining answers
+        while (i < answerDTOs.size()) {
+            interleavedQAItems.add(answerDTOs.get(i++));
+        }
+
+        // Add any remaining questions
+        while (j < questionDTOs.size()) {
+            interleavedQAItems.add(questionDTOs.get(j++));
+        }
+
+        // Add interleaved items to chatRes
+        interleavedQAItems.forEach(chatRes::addQAItem);
+
+        return chatRes;
+
     }
 
 
