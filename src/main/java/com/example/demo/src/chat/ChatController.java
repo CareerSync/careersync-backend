@@ -804,6 +804,32 @@ public class ChatController {
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = """
+                    path variable인 `chatId`에 UUID값을 넣지 않을 경우 에러 반환
+                    """,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(name = "METHOD_ARGUMENT_TYPE_MISMATCH", value = """
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-06T23:51:59+09:00",
+                                      "status": "fail",
+                                      "statusCode": 400,
+                                      "message": "INVALID_REQUEST",
+                                      "errors": [
+                                        {
+                                          "field": "parameter",
+                                          "errorCode": "INVALID_TYPE",
+                                          "message": "Invalid type for parameter 'chatId'. Expected type: 'UUID'. Error: Failed to convert value of type 'java.lang.String' to required type 'java.util.UUID'; nested exception is java.lang.IllegalArgumentException: Invalid UUID string: 123123"
+                                        }
+                                      ]
+                                    }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "401",
                     description = "로그인 된 사용자가 아닐 경우 에러 반환",
                     content = @Content(
