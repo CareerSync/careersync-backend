@@ -20,7 +20,9 @@ import com.example.demo.utils.DateTimeFormatterUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +78,20 @@ public class ChatService {
         // chat 식별자로 대화 가져오기
         Chat chat = getChatWithId(chatId);
         return getChatResponseDto(chat);
+    }
+
+    @Transactional(readOnly = true)
+    public List<JobPostRes> getTop3JobPostsFromChatAndUser(UUID chatId, UUID userId) {
+
+        // 존재하는 유저인지 체크
+        getUserWithId(userId);
+
+        // 존재하는 채팅인지 체크
+        getChatWithId(chatId);
+
+        Pageable pageable = PageRequest.of(0, 3, Sort.by("createdAt").descending());
+        List<JobPost> jobPosts = jobPostRepository.findTop3ByChatAndUserOrderByCreatedAtDesc(chatId, userId, pageable);
+        return JobPostRes.fromEntityList(jobPosts);
     }
 
     //POST
