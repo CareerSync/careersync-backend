@@ -62,7 +62,21 @@ public enum BaseResponseStatus {
     ALREADY_LOGGED_OUT_USER("fail", BAD_REQUEST.value(), "이미 로그아웃된 사용자입니다."),
     METHOD_ARGUMENT_TYPE_MISMATCH("fail", BAD_REQUEST.value(), "잘못된 인수 유형입니다."),
 
+    /**
+     * 401 : Unauthorized 오류
+     */
+    EMPTY_JWT("fail", UNAUTHORIZED.value(), "JWT를 입력해주세요."),
+    INVALID_JWT("fail", UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
+    UNAUTHORIZED_USER("fail", UNAUTHORIZED.value(), "로그인 된 사용자가 아닙니다."),
 
+    /**
+     * 403 : Forbidden 오류
+     */
+    INVALID_USER_JWT("fail", FORBIDDEN.value(),"권한이 없는 유저의 접근입니다."),
+
+    /**
+     * 404 : Not Found 오류
+     */
     INVALID_MEMO("fail", NOT_FOUND.value(), "존재하지 않는 메모입니다."),
     INVALID_USER("fail", NOT_FOUND.value(), "존재하지 않는 유저입니다."),
     INVALID_BOARD("fail", NOT_FOUND.value(), "존재하지 않는 게시글입니다."),
@@ -77,12 +91,6 @@ public enum BaseResponseStatus {
     NOT_FIND_REPORT("fail", NOT_FOUND.value(),"일치하는 신고 내역이 없습니다."),
     NOT_FIND_ITEM("fail", NOT_FOUND.value(),"일치하는 상품이 없습니다."),
     NOT_FIND_CHAT("fail", NOT_FOUND.value(),"일치하는 대화가 없습니다."),
-
-    EMPTY_JWT("fail", UNAUTHORIZED.value(), "JWT를 입력해주세요."),
-    INVALID_JWT("fail", UNAUTHORIZED.value(), "유효하지 않은 JWT입니다."),
-    UNAUTHORIZED_USER("fail", UNAUTHORIZED.value(), "로그인 된 사용자가 아닙니다."),
-
-    INVALID_USER_JWT("fail", FORBIDDEN.value(),"권한이 없는 유저의 접근입니다."),
 
     /**
      * 500 :  Database, Server 오류
