@@ -525,101 +525,142 @@ public class ChatController {
                             schema = @Schema(implementation = ApiResponse.class),
                             examples = {
                                     @ExampleObject(value = """
-{
-  "apiVersion": "1.0.0",
-  "timestamp": "2024-08-05T23:00:04+09:00",
-  "status": "success",
-  "statusCode": 200,
-  "message": "요청에 성공하였습니다.",
-  "data": {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "title": "string",
-    "list": [
-      {
-        "id": "1ed50a05-a449-47a5-af53-ead43a4d48f2",
-        "text": "sample_answer_from_fastapi_server_with_jobposts",
-        "createdAt": "2024-08-05T22:59:56",
-        "type": "answer",
-        "jobPosts": [
-          {
-            "id": "1bdfb318-0837-4619-b2a9-5529e3440085",
-            "title": "jobPost_title",
-            "career": "신입",
-            "companyName": "jobPost_coname",
-            "endDate": "2025-01-01T00:00:00+09:00",
-            "techStacks": [
-              "python",
-              "java"
-            ],
-            "imgUrl": "http://image.com",
-            "siteUrl": "http://test.com"
-          },
-          {
-            "id": "5a1e82bb-1e34-412d-9df5-2a372da3bddd",
-            "title": "jobPost_title",
-            "career": "신입",
-            "companyName": "jobPost_coname",
-            "endDate": "2025-01-01T00:00:00+09:00",
-            "techStacks": [
-              "java",
-              "python"
-            ],
-            "imgUrl": "http://image.com",
-            "siteUrl": "http://test.com"
-          }
-        ]
-      },
-      {
-        "id": "6fe034ea-f265-492d-b8c9-bd58031bdf60",
-        "text": "string22",
-        "createdAt": "2024-08-05T22:59:56",
-        "type": "question",
-        "jobPosts": []
-      },
-      {
-        "id": "2dd04e8f-8107-457b-a1e9-1f9cf0c013ea",
-        "text": "sample_answer_from_fastapi_server_with_jobposts",
-        "createdAt": "2024-08-05T22:59:44",
-        "type": "answer",
-        "jobPosts": [
-          {
-            "id": "3ec32478-28c5-4b91-80d1-ab2a8379ddd1",
-            "title": "jobPost_title",
-            "career": "신입",
-            "companyName": "jobPost_coname",
-            "endDate": "2025-01-01T00:00:00+09:00",
-            "techStacks": [
-              "python",
-              "java"
-            ],
-            "imgUrl": "http://image.com",
-            "siteUrl": "http://test.com"
-          },
-          {
-            "id": "5d58d4cd-9db4-4952-a66e-97b70423c35d",
-            "title": "jobPost_title",
-            "career": "신입",
-            "companyName": "jobPost_coname",
-            "endDate": "2025-01-01T00:00:00+09:00",
-            "techStacks": [
-              "java",
-              "python"
-            ],
-            "imgUrl": "http://image.com",
-            "siteUrl": "http://test.com"
-          }
-        ]
-      },
-      {
-        "id": "ce7cd62c-a38a-40e2-bb5c-0fca9c066125",
-        "text": "string",
-        "createdAt": "2024-08-05T22:59:44",
-        "type": "question",
-        "jobPosts": []
-      }
-    ]
-  }
-}
+                                            {
+                                               "apiVersion": "1.0.0",
+                                               "timestamp": "2024-08-06T22:17:17+09:00",
+                                               "status": "success",
+                                               "statusCode": 200,
+                                               "message": "요청에 성공하였습니다.",
+                                               "data": {
+                                                 "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                                                 "title": "string",
+                                                 "list": [
+                                                   {
+                                                     "id": "8949f309-9868-4548-80ce-388b471eda85",
+                                                     "text": "sample_answer_from_fastapi_server_with_jobposts",
+                                                     "createdAt": "2024-08-06T22:16:59",
+                                                     "type": "answer",
+                                                     "jobPosts": [
+                                                       {
+                                                         "id": "d789fc0e-1065-4101-b99b-1033196cad3d",
+                                                         "title": "jobPost_title",
+                                                         "career": "신입",
+                                                         "companyName": "jobPost_coname",
+                                                         "endDate": "2025-01-01T00:00:00+09:00",
+                                                         "techStacks": [
+                                                           "python",
+                                                           "java"
+                                                         ],
+                                                         "imgUrl": "http://image.com",
+                                                         "siteUrl": "http://test.com"
+                                                       },
+                                                       {
+                                                         "id": "d7f7afbd-38db-4788-be65-044c2029450c",
+                                                         "title": "jobPost_title",
+                                                         "career": "신입",
+                                                         "companyName": "jobPost_coname",
+                                                         "endDate": "2025-01-01T00:00:00+09:00",
+                                                         "techStacks": [
+                                                           "java",
+                                                           "python"
+                                                         ],
+                                                         "imgUrl": "http://image.com",
+                                                         "siteUrl": "http://test.com"
+                                                       }
+                                                     ]
+                                                   },
+                                                   {
+                                                     "id": "80ba8c07-f846-4a86-83fa-95788d0a529d",
+                                                     "text": "string223",
+                                                     "createdAt": "2024-08-06T22:16:59",
+                                                     "type": "question",
+                                                     "jobPosts": []
+                                                   },
+                                                   {
+                                                     "id": "2abe3de2-3e4a-4a53-a8e2-37cf5dc2699c",
+                                                     "text": "sample_answer_from_fastapi_server_with_jobposts",
+                                                     "createdAt": "2024-08-06T22:16:55",
+                                                     "type": "answer",
+                                                     "jobPosts": [
+                                                       {
+                                                         "id": "38af20dd-1f43-4f09-b397-7a8894ecef47",
+                                                         "title": "jobPost_title",
+                                                         "career": "신입",
+                                                         "companyName": "jobPost_coname",
+                                                         "endDate": "2025-01-01T00:00:00+09:00",
+                                                         "techStacks": [
+                                                           "python",
+                                                           "java"
+                                                         ],
+                                                         "imgUrl": "http://image.com",
+                                                         "siteUrl": "http://test.com"
+                                                       },
+                                                       {
+                                                         "id": "4c674bdd-2714-49de-8412-870a35a38a53",
+                                                         "title": "jobPost_title",
+                                                         "career": "신입",
+                                                         "companyName": "jobPost_coname",
+                                                         "endDate": "2025-01-01T00:00:00+09:00",
+                                                         "techStacks": [
+                                                           "python",
+                                                           "java"
+                                                         ],
+                                                         "imgUrl": "http://image.com",
+                                                         "siteUrl": "http://test.com"
+                                                       }
+                                                     ]
+                                                   },
+                                                   {
+                                                     "id": "515aa02f-502c-4623-b63e-04243f080230",
+                                                     "text": "string22",
+                                                     "createdAt": "2024-08-06T22:16:55",
+                                                     "type": "question",
+                                                     "jobPosts": []
+                                                   },
+                                                   {
+                                                     "id": "0746cf21-8528-43cb-8f9b-cef357e94200",
+                                                     "text": "sample_answer_from_fastapi_server_with_jobposts",
+                                                     "createdAt": "2024-08-06T22:16:42",
+                                                     "type": "answer",
+                                                     "jobPosts": [
+                                                       {
+                                                         "id": "4ca15891-b002-4333-bf48-a0fcff7c5f13",
+                                                         "title": "jobPost_title",
+                                                         "career": "신입",
+                                                         "companyName": "jobPost_coname",
+                                                         "endDate": "2025-01-01T00:00:00+09:00",
+                                                         "techStacks": [
+                                                           "python",
+                                                           "java"
+                                                         ],
+                                                         "imgUrl": "http://image.com",
+                                                         "siteUrl": "http://test.com"
+                                                       },
+                                                       {
+                                                         "id": "99d27edc-35b9-40bf-8ee1-5afe6bc75fc5",
+                                                         "title": "jobPost_title",
+                                                         "career": "신입",
+                                                         "companyName": "jobPost_coname",
+                                                         "endDate": "2025-01-01T00:00:00+09:00",
+                                                         "techStacks": [
+                                                           "java",
+                                                           "python"
+                                                         ],
+                                                         "imgUrl": "http://image.com",
+                                                         "siteUrl": "http://test.com"
+                                                       }
+                                                     ]
+                                                   },
+                                                   {
+                                                     "id": "77e44c07-4f59-477b-8858-e9f396f89524",
+                                                     "text": "string",
+                                                     "createdAt": "2024-08-06T22:16:42",
+                                                     "type": "question",
+                                                     "jobPosts": []
+                                                   }
+                                                 ]
+                                               }
+                                             }
                 """)
 
                             }
@@ -784,6 +825,100 @@ public class ChatController {
 
         PatchChatRes patchChatRes = chatService.modifyChatTitle(chatId, patchChatReq.getTitle());
         return ResponseEntity.status(OK).body(success(SUCCESS, patchChatRes));
+    }
+
+    /**
+     * 대화 삭제 API
+     * [DELETE] /v1/chats/:chatId
+     * @return ResponseEntity<ApiResponse<DeleteChatRes>>
+     */
+    @Operation(summary = "대화 삭제 API", description = """
+            대화의 상태를 활성(ACTIVE)에서 비활성(INACTIVE)으로 바꿔준다.
+            """)
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = """
+                            대화 제목 수정 성공
+                            """,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = {
+                                    @ExampleObject(value = """
+                                            {
+                                              "apiVersion": "1.0.0",
+                                              "timestamp": "2024-08-05T23:36:15+09:00",
+                                              "status": "success",
+                                              "statusCode": 200,
+                                              "message": "요청에 성공하였습니다.",
+                                              "data": {
+                                                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                                              }
+                                            }
+                """)
+
+                            }
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "로그인 된 사용자가 아닐 경우 에러 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-04T00:23:43+09:00",
+                                      "status": "fail",
+                                      "statusCode": 401,
+                                      "message": "로그인 된 사용자가 아닙니다."
+                                    }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "404",
+                    description = "존재하지 않는 대화 내역인 경우 에러 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-05T23:02:10+09:00",
+                                      "status": "fail",
+                                      "statusCode": 404,
+                                      "message": "일치하는 대화가 없습니다."
+                                    }
+                """)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "INTERNAL_SERVER_ERROR",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = """
+                {
+                    "apiVersion": "1.0.0",
+                    "timestamp": "2023-07-01T12:34:56Z",
+                    "status": "fail",
+                    "statusCode": 500,
+                    "message": "예상치 못한 에러가 발생했습니다."
+                }
+                """)
+                    )
+            )
+    })
+    @ResponseBody
+    @DeleteMapping("/{chatId}")
+    public ResponseEntity<ApiResponse<DeleteChatRes>> deleteChat (@PathVariable(name = "chatId") UUID chatId) {
+
+        DeleteChatRes deleteChatRes = chatService.deleteChat(chatId);
+        return ResponseEntity.status(OK).body(success(SUCCESS, deleteChatRes));
     }
 
 }

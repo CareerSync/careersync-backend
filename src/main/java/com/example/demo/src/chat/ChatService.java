@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
 
 @Transactional
 @RequiredArgsConstructor
@@ -231,6 +232,7 @@ public class ChatService {
                         DateTimeFormatterUtil.LocalDateTimeToString(question.getCreatedAt()), // Format createdAt
                         "question",
                         new ArrayList<>())) // Empty list for jobPosts in questions
+                .sorted(Comparator.comparing(QAItemDto::getCreatedAt).reversed()) // Sort questions by createdAt
                 .toList();
 
         // Convert Answers to QAItemDTO
@@ -241,35 +243,31 @@ public class ChatService {
                         DateTimeFormatterUtil.LocalDateTimeToString(answer.getCreatedAt()), // Format createdAt
                         "answer",
                         JobPostRes.fromEntityList(answer.getJobPosts())))
+                .sorted(Comparator.comparing(QAItemDto::getCreatedAt).reversed()) // Sort answers by createdAt
                 .toList();
 
-        // Create an interleaved list
-        List<QAItemDto> interleavedQAItems = new ArrayList<>();
-        int i = 0, j = 0;
-        while (i < answerDTOs.size() && j < questionDTOs.size()) {
-            // Compare the createdAt timestamps to maintain the order
-            if (answerDTOs.get(i).getCreatedAt().compareTo(questionDTOs.get(j).getCreatedAt()) >= 0) {
-                interleavedQAItems.add(answerDTOs.get(i++));
-            } else {
-                interleavedQAItems.add(questionDTOs.get(j++));
-            }
+        // Interleave the sorted lists
+        List<QAItemDto> interleavedList = new ArrayList<>();
+
+        // Use indices to track positions in both lists
+        int questionIndex = 0;
+        int answerIndex = 0;
+
+        // Merge lists by comparing timestamps
+        while (questionIndex < questionDTOs.size()) {
+            QAItemDto answer = answerDTOs.get(answerIndex);
+            interleavedList.add(answer);
+            answerIndex += 1;
+
+            QAItemDto question = questionDTOs.get(questionIndex);
+            interleavedList.add(question);
+            questionIndex += 1;
         }
 
-        // Add any remaining answers
-        while (i < answerDTOs.size()) {
-            interleavedQAItems.add(answerDTOs.get(i++));
-        }
-
-        // Add any remaining questions
-        while (j < questionDTOs.size()) {
-            interleavedQAItems.add(questionDTOs.get(j++));
-        }
-
-        // Add interleaved items to chatRes
-        interleavedQAItems.forEach(chatRes::addQAItem);
+        // Add the interleaved list to chatRes
+        chatRes.setList(interleavedList);
 
         return chatRes;
-
     }
 
 
@@ -284,11 +282,19 @@ public class ChatService {
     }
 
     // PATCH
-    public PatchChatRes modifyChatTitle(UUID id, String title) {
-        Chat chat = getChatWithId(id);
+    public PatchChatRes modifyChatTitle(UUID chatId, String title) {
+        Chat chat = getChatWithId(chatId);
         chat.setTitle(title);
 
-        return new PatchChatRes(id, title);
+        return new PatchChatRes(chatId, title);
+    }
+
+    // DELETE
+    public DeleteChatRes deleteChat(UUID chatId) {
+        Chat chat = getChatWithId(chatId);
+        chat.updateState(INACTIVE);
+
+        return new DeleteChatRes(chatId);
     }
 
     private User getUserWithId(UUID id) {
