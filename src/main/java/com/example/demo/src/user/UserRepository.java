@@ -14,14 +14,14 @@ import static com.example.demo.common.entity.BaseEntity.*;
 
 public interface UserRepository extends JpaRepository<User, UUID>{
 
-    Optional<User> findByIdAndState(Long id, State state);
-    Optional<User> findByIdAndState(UUID id, State state);
-    Optional<User> findByUserIdAndState(String userId, State state);
-    Optional<User> findByUserIdAndState(UUID userId, State state);
-    Optional<User> findByUserNameAndState(String userName, State state);
+    Optional<User> findByIdAndStatus(Long id, Status status);
+    Optional<User> findByIdAndStatus(UUID id, Status status);
+    Optional<User> findByUserIdAndStatus(String userId, Status status);
+    Optional<User> findByUserIdAndStatus(UUID userId, Status status);
+    Optional<User> findByUserNameAndStatus(String userName, Status status);
 
-    Optional<User> findAllByUserIdAndState(String userId, State state);
+    Optional<User> findAllByUserIdAndStatus(String userId, Status status);
 
-    List<User> findAllByState(State state);
+    List<User> findAllByStatus(Status status);
 
 }

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.example.demo.common.entity.BaseEntity.State.*;
+import static com.example.demo.common.entity.BaseEntity.Status.*;
 import static com.example.demo.common.response.BaseResponseStatus.NOT_FIND_USER;
 import static com.example.demo.common.response.BaseResponseStatus.USER_ID_EXIST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -28,7 +28,7 @@ public class LoginService {
      * 없으면 404 NOT FOUND error 반환
      */
     public User login(String loginId, String password){
-        return userRepository.findByUserIdAndState(loginId, ACTIVE)
+        return userRepository.findByUserIdAndStatus(loginId, ACTIVE)
                 .filter(m-> m.getPassword().equals(password))
                 .orElseThrow(NotFoundUserException::new);
     }

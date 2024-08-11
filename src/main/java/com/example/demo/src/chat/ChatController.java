@@ -1006,7 +1006,7 @@ public class ChatController {
      * @return ResponseEntity<ApiResponse<DeleteChatRes>>
      */
     @Operation(summary = "대화 삭제 API", description = """
-            대화의 상태를 활성(ACTIVE)에서 비활성(INACTIVE)으로 바꿔준다.
+            대화의 상태를 활성(ACTIVE)에서 삭제됨(DELETED)으로 바꿔준다.
             """)
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
