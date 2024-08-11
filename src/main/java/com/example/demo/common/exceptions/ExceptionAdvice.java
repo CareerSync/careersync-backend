@@ -1,5 +1,8 @@
 package com.example.demo.common.exceptions;
 
+import com.example.demo.common.exceptions.badrequest.BadRequestException;
+import com.example.demo.common.exceptions.badrequest.user.AlreadyExistsUserIdException;
+import com.example.demo.common.exceptions.badrequest.user.AlreadyExistsUserNameException;
 import com.example.demo.common.exceptions.notfound.chat.NotFoundChatException;
 import com.example.demo.common.exceptions.notfound.user.NotFoundUserException;
 import com.example.demo.common.exceptions.unauthorized.user.UnauthorizedUserException;
@@ -35,9 +38,30 @@ public class ExceptionAdvice {
     /**
      * 400 BAD_REQUEST
      */
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(BAD_REQUEST)
+    public ResponseEntity<ApiResponse<List<ValidationError>>> handleValidationExceptions(BadRequestException ex) {
+        log.warn("Invalid Request: {}", ex.getMessage());
+
+        // Error details
+        Map<String, Object> errorDetail = new HashMap<>();
+        errorDetail.put("errorCode", ex.getStatus().name());
+        errorDetail.put("message", ex.getStatus().getMessage());
+
+        // Response body
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", "error");
+        responseBody.put("statusCode", BAD_REQUEST.value());
+        responseBody.put("message", GlobalErrorCode.INVALID_REQUEST.getMessage());
+        responseBody.put("errors", List.of(errorDetail));
+
+        // Return response entity
+        return ResponseEntity.status(BAD_REQUEST).body(ApiResponse.fail(responseBody));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(BAD_REQUEST)
-    public ResponseEntity<ApiResponse<List<ValidationError>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<List<ValidationError>>> handleMethodArgumentNotValidExceptionExceptions(MethodArgumentNotValidException ex) {
         List<ValidationError> errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> new ValidationError(
                         error.getField(),
