@@ -1,7 +1,7 @@
 package com.example.demo.src.chat;
 
 import com.example.demo.common.entity.BaseEntity;
-import com.example.demo.common.entity.BaseEntity.State;
+import com.example.demo.common.entity.BaseEntity.Status;
 import com.example.demo.src.chat.entity.Chat;
 import com.example.demo.src.jobpost.entity.JobPost;
 import com.example.demo.src.user.entity.User;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ChatRepository extends JpaRepository<Chat, UUID> {
-    Optional<Chat> findByIdAndState(UUID id, State state);
-    Page<Chat> findByUserAndStateOrderByUpdatedAtDesc(User user, State state, Pageable pageable);
-    Page<Chat> findByUserAndState(User user, State state, Pageable pageable);
+    Optional<Chat> findByIdAndStatus(UUID id, Status status);
+    Page<Chat> findByUserAndStatusOrderByUpdatedAtDesc(User user, Status status, Pageable pageable);
+    Page<Chat> findByUserAndStatus(User user, Status status, Pageable pageable);
 }

@@ -1,8 +1,7 @@
 package com.example.demo.common.entity;
 
 import lombok.Getter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,7 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static com.example.demo.common.entity.BaseEntity.State.*;
+import static com.example.demo.common.entity.BaseEntity.Status.ACTIVE;
 
 
 @Getter
@@ -32,10 +31,10 @@ public class BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Audited
-    @Column(name = "state", nullable = false, length = 10)
-    protected State state = ACTIVE;
+    @Column(name = "status", nullable = false, length = 10)
+    protected Status status = ACTIVE;
 
-    public enum State {
-        ACTIVE, INACTIVE;
+    public enum Status {
+        ACTIVE, INACTIVE, DELETED;
     }
 }

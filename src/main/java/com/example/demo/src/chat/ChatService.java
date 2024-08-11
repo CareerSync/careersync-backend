@@ -23,17 +23,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
-import static com.example.demo.common.entity.BaseEntity.State.INACTIVE;
+import static com.example.demo.common.entity.BaseEntity.Status.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.Status.DELETED;
 
 @Transactional
 @RequiredArgsConstructor
@@ -56,7 +53,7 @@ public class ChatService {
         User user = getUserWithId(userId);
 
         // Fetch chats with pagination
-        Page<Chat> chatPage = chatRepository.findByUserAndState(user, ACTIVE, pageable);
+        Page<Chat> chatPage = chatRepository.findByUserAndStatus(user, ACTIVE, pageable);
 
         // Map each chat to a ChatInfo DTO
         List<ChatInfo> chatInfoList = chatPage
@@ -308,23 +305,23 @@ public class ChatService {
     // DELETE
     public DeleteChatRes deleteChat(UUID chatId) {
         Chat chat = getChatWithId(chatId);
-        chat.updateState(INACTIVE);
+        chat.updateState(DELETED);
 
         return new DeleteChatRes(chatId);
     }
 
     private User getUserWithId(UUID id) {
-        return userRepository.findByIdAndState(id, ACTIVE)
+        return userRepository.findByIdAndStatus(id, ACTIVE)
                 .orElseThrow(NotFoundUserException::new);
     }
 
     private Chat getChatWithId(UUID id) {
-        return chatRepository.findByIdAndState(id, ACTIVE)
+        return chatRepository.findByIdAndStatus(id, ACTIVE)
                 .orElseThrow(NotFoundChatException::new);
     }
 
     private void validateChatExist(UUID id) {
-        Optional<Chat> chatOptional = chatRepository.findByIdAndState(id, ACTIVE);
+        Optional<Chat> chatOptional = chatRepository.findByIdAndStatus(id, ACTIVE);
         if (chatOptional.isPresent()) {
             throw new AlreadyExistsChatIdException();
         }

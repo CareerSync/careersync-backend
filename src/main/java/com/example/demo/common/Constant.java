@@ -11,5 +11,8 @@ public class Constant {
     public static String AUTH_TOKEN_HEADER = "X-ACCESS-TOKEN";
     public static final String LOGIN_MEMBER = "loginMember";
 
+
+
+
 }
 

@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.Status.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 // Service Create, Update, Delete 의 로직 처리
@@ -62,7 +62,7 @@ public class UserService {
 
     // PATCH
     public PatchUserRes modifyUserInfo(UUID id, PatchUserInfoReq req) {
-        User user = userRepository.findByIdAndState(id, ACTIVE)
+        User user = userRepository.findByIdAndStatus(id, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
 
         user.setCareerAndEducation(req.getCareer(), req.getEducation());
@@ -83,7 +83,7 @@ public class UserService {
 
     // DELETE
     public void deleteUser(Long userId) {
-        User user = userRepository.findByIdAndState(userId, ACTIVE)
+        User user = userRepository.findByIdAndStatus(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         userRepository.delete(user);
     }
@@ -91,7 +91,7 @@ public class UserService {
     // GET
     @Transactional(readOnly = true)
     public List<GetUserRes> getUsers() {
-        List<GetUserRes> getUserResList = userRepository.findAllByState(ACTIVE).stream()
+        List<GetUserRes> getUserResList = userRepository.findAllByStatus(ACTIVE).stream()
                 .map(GetUserRes::new)
                 .collect(Collectors.toList());
         return getUserResList;
@@ -99,7 +99,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<GetUserRes> getUsersByUserId(String userId) {
-        List<GetUserRes> getUserResList = userRepository.findAllByUserIdAndState(userId, ACTIVE).stream()
+        List<GetUserRes> getUserResList = userRepository.findAllByUserIdAndStatus(userId, ACTIVE).stream()
                 .map(GetUserRes::new)
                 .collect(Collectors.toList());
         return getUserResList;
@@ -108,34 +108,34 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public GetUserRes getUser(Long userId) {
-        User user = userRepository.findByIdAndState(userId, ACTIVE)
+        User user = userRepository.findByIdAndStatus(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         return new GetUserRes(user);
     }
 
     @Transactional(readOnly = true)
     public boolean checkUserByUserId(String userId) {
-        Optional<User> result = userRepository.findByUserIdAndState(userId, ACTIVE);
+        Optional<User> result = userRepository.findByUserIdAndStatus(userId, ACTIVE);
         if (result.isPresent()) return true;
         return false;
     }
 
     @Transactional(readOnly = true)
     public GetUserRes getUserByEmail(String userId) {
-        User user = userRepository.findByUserIdAndState(userId, ACTIVE)
+        User user = userRepository.findByUserIdAndStatus(userId, ACTIVE)
                 .orElseThrow(() -> new BaseException(NOT_FIND_USER));
         return new GetUserRes(user);
     }
 
     private void validateUserId(String userId) {
-        userRepository.findByUserIdAndState(userId, ACTIVE)
+        userRepository.findByUserIdAndStatus(userId, ACTIVE)
                 .ifPresent(user -> {
                     throw new AlreadyExistsUserIdException();
                 });
     }
 
     private void validateUserName(String userName) {
-        userRepository.findByUserNameAndState(userName, ACTIVE)
+        userRepository.findByUserNameAndStatus(userName, ACTIVE)
                 .ifPresent(user -> {
                     throw new AlreadyExistsUserNameException();
                 });

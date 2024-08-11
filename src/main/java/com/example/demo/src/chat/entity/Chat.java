@@ -70,8 +70,8 @@ public class Chat extends BaseEntity {
                 .collect(Collectors.toList()); // Collect into a single list
     }
 
-    public void updateState(State state) {
-        this.state = state;
+    public void updateState(Status status) {
+        this.status = status;
     }
 
 }

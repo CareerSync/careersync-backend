@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.demo.common.entity.BaseEntity.State.ACTIVE;
+import static com.example.demo.common.entity.BaseEntity.Status.ACTIVE;
 import static com.example.demo.common.response.BaseResponseStatus.*;
 
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class TestService {
     @Transactional(readOnly = true)
     public int checkMemo(String memo){
 
-        List<Memo> memoList = memoRepository.findByMemoAndState(memo, ACTIVE);
+        List<Memo> memoList = memoRepository.findByMemoAndStatus(memo, ACTIVE);
         return memoList.size();
 
     }
@@ -45,7 +45,7 @@ public class TestService {
 
         // 페이징 예제
         PageRequest pageRequest = PageRequest.of(startPage, 5, Sort.by(Sort.Direction.DESC, "id"));
-        Slice<Memo> memoSlice = memoRepository.findAllByState(ACTIVE, pageRequest);
+        Slice<Memo> memoSlice = memoRepository.findAllByStatus(ACTIVE, pageRequest);
         Slice<GetMemoDto> getMemoDtoSlice = memoSlice.map(GetMemoDto::new);
         List<GetMemoDto> getMemoDtoList = getMemoDtoSlice.getContent();
 
@@ -58,7 +58,7 @@ public class TestService {
         if(checkMemo(memoDto.getMemo()) >= 1){
             throw new BaseException(POST_TEST_EXISTS_MEMO);
         }
-        Memo memo = memoRepository.findByIdAndState(memoId, ACTIVE)
+        Memo memo = memoRepository.findByIdAndStatus(memoId, ACTIVE)
                 .orElseThrow(() -> new BaseException(MODIFY_FAIL_MEMO));
 
         memo.updateMemo(memoDto);
@@ -66,7 +66,7 @@ public class TestService {
     }
 
     public void createComment(PostCommentDto postCommentDto){
-        Memo memo = memoRepository.findByIdAndState(postCommentDto.getMemoId(), ACTIVE).
+        Memo memo = memoRepository.findByIdAndStatus(postCommentDto.getMemoId(), ACTIVE).
                 orElseThrow(() -> new BaseException(INVALID_MEMO));
         commentRepository.save(postCommentDto.toEntity(memo));
     }
