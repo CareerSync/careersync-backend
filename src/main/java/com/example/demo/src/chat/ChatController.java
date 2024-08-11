@@ -4,6 +4,7 @@ import com.example.demo.common.response.ApiResponse;
 import com.example.demo.src.chat.model.*;
 import com.example.demo.src.jobpost.model.JobPostRes;
 import com.example.demo.utils.SessionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -211,7 +212,7 @@ public class ChatController {
     })
     @ResponseBody
     @PostMapping("")
-    public ResponseEntity<ApiResponse<?>> createChat (HttpServletRequest request, @RequestBody @Valid PostChatReq postChatReq) {
+    public ResponseEntity<ApiResponse<?>> createChat (HttpServletRequest request, @RequestBody @Valid PostChatReq postChatReq) throws JsonProcessingException {
 
         UUID userId = (UUID) sessionService.getUserIdFromSession(request);
         UUID chatId = postChatReq.getId();
@@ -393,7 +394,7 @@ public class ChatController {
     @ResponseBody
     @PostMapping("/{chatId}")
     public ResponseEntity<ApiResponse<?>> addAnswerToChat (HttpServletRequest request, @RequestParam(name = "chatId") UUID chatId,
-                                                           @RequestBody @Valid PostAfterChatReq postAfterChatReq) {
+                                                           @RequestBody @Valid PostAfterChatReq postAfterChatReq) throws JsonProcessingException {
 
         UUID userId = (UUID) sessionService.getUserIdFromSession(request);
 
@@ -722,11 +723,12 @@ public class ChatController {
     })
     @ResponseBody
     @GetMapping("/{chatId}")
-    public ResponseEntity<ApiResponse<GetChatRes>> getChat (@PathVariable(name = "chatId") UUID chatId) {
+    public ResponseEntity<ApiResponse<GetChatRes>> getChat (HttpServletRequest request,
+                                                            @PathVariable(name = "chatId") UUID chatId) throws JsonProcessingException {
 
-        GetChatRes chatRes = chatService.getChat(chatId);
+        UUID userId = (UUID) sessionService.getUserIdFromSession(request);
+        GetChatRes chatRes = chatService.getChat(userId, chatId);
         return ResponseEntity.status(OK).body(success(SUCCESS, chatRes));
-
     }
 
     /**
