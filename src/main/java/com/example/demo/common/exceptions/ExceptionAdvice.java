@@ -104,7 +104,7 @@ public class ExceptionAdvice {
         log.warn("User not found: {}", ex.getMessage());
 
         Map<String, Object> errorDetail = new HashMap<>();
-        errorDetail.put("errorCode", GlobalErrorCode.RESOURCE_NOT_FOUND.name());
+        errorDetail.put("errorCode", NOT_FIND_USER.name());
         errorDetail.put("message", GlobalErrorCode.RESOURCE_NOT_FOUND.getMessage());
 
         Map<String, Object> responseBody = new HashMap<>();
@@ -122,7 +122,7 @@ public class ExceptionAdvice {
         log.warn("Chat not found: {}", ex.getMessage());
 
         Map<String, Object> errorDetail = new HashMap<>();
-        errorDetail.put("errorCode", GlobalErrorCode.RESOURCE_NOT_FOUND.name());
+        errorDetail.put("errorCode", NOT_FIND_CHAT.name());
         errorDetail.put("message", GlobalErrorCode.RESOURCE_NOT_FOUND.getMessage());
 
         Map<String, Object> responseBody = new HashMap<>();
