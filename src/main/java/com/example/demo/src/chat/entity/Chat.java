@@ -35,7 +35,7 @@ public class Chat extends BaseEntity {
     @Column(name = "tb_chat_id", nullable = false, updatable = false, columnDefinition = "binary(16)")
     private UUID id;
 
-    @Column(name = "title", nullable = false, columnDefinition = "text")
+    @Column(name = "title", nullable = false, columnDefinition = "nvarchar(255)")
     private String title;
 
     @ManyToOne(fetch = LAZY)
