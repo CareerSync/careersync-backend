@@ -1,5 +1,8 @@
 package com.example.demo.common.exceptions;
 
+import com.example.demo.common.exceptions.notfound.chat.NotFoundChatException;
+import com.example.demo.common.exceptions.notfound.user.NotFoundUserException;
+import com.example.demo.common.exceptions.unauthorized.user.UnauthorizedUserException;
 import com.example.demo.common.response.ApiResponse;
 import com.example.demo.common.response.BaseResponse;
 import com.example.demo.common.response.BaseResponseStatus;
@@ -29,6 +32,9 @@ import static org.springframework.http.HttpStatus.*;
 @RestControllerAdvice
 public class ExceptionAdvice {
 
+    /**
+     * 400 BAD_REQUEST
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ApiResponse<List<ValidationError>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -41,39 +47,8 @@ public class ExceptionAdvice {
         return ResponseEntity.status(BAD_REQUEST).body(ApiResponse.fail(INVALID_REQUEST, errors));
     }
 
-    private String getErrorCode(String code) {
-        switch (code) {
-            case "NotNull":
-            case "NotEmpty":
-            case "NotBlank":
-                return "REQUIRED_FIELD";
-            case "Email":
-                return "INVALID_EMAIL";
-            case "Size":
-                return "INVALID_SIZE";
-            default:
-                return "INVALID_VALUE";
-        }
-    }
-
-    @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ApiResponse<Object>> handleBaseException(BaseException ex) {
-        BaseResponseStatus status = ex.getStatus();
-
-        Map<String, String> errors = new HashMap<>();
-        errors.put("error", ex.getMessage());
-
-        ApiResponse<Object> response = ApiResponse.fail(status);
-        return new ResponseEntity<>(response, valueOf(status.getCode()));
-    }
-
-    @ExceptionHandler(SQLException.class)
-    public ResponseEntity<ApiResponse<BaseResponseStatus>> sqlExceptionHandle(SQLException exception) {
-        log.warn("SQLException. error message: {}", exception.getMessage());
-        return new ResponseEntity<>(ApiResponse.fail(SQL_ERROR, null), valueOf(SQL_ERROR.getCode()));
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(BAD_REQUEST)
     public ResponseEntity<ApiResponse<BaseResponseStatus>> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("IllegalArgumentException. error message: {}", ex.getMessage());
         return ResponseEntity.status(BAD_REQUEST).body(ApiResponse.fail(INVALID_REQUEST, null));
@@ -93,10 +68,77 @@ public class ExceptionAdvice {
                 "INVALID_TYPE",
                 errorMessage)));
 
-        return new ResponseEntity<>(response, BAD_REQUEST);
+        return ResponseEntity.status(BAD_REQUEST).body(response);
     }
 
+    /**
+     * 401 UNAUTHORIZED
+     */
+    @ExceptionHandler(UnauthorizedUserException.class)
+    @ResponseStatus(UNAUTHORIZED)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleUnauthorizedUserException(UnauthorizedUserException ex) {
+        log.warn("Unauthorized access attempt: {}", ex.getMessage());
+
+        // Error details
+        Map<String, Object> errorDetail = new HashMap<>();
+        errorDetail.put("errorCode", GlobalErrorCode.AUTHENTICATION_ERROR.name());
+        errorDetail.put("message", GlobalErrorCode.AUTHENTICATION_ERROR.getMessage());
+
+        // Response body
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", "error");
+        responseBody.put("statusCode", HttpStatus.UNAUTHORIZED.value());
+        responseBody.put("message", UNAUTHORIZED_USER.getMessage());
+        responseBody.put("errors", List.of(errorDetail));
+
+        // Return response entity
+        return ResponseEntity.status(UNAUTHORIZED).body(ApiResponse.fail(responseBody));
+    }
+
+    /**
+     * 404 NOT_FOUND
+     */
+    @ExceptionHandler(NotFoundUserException.class)
+    @ResponseStatus(NOT_FOUND)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleNotFoundUserException(NotFoundUserException ex) {
+        log.warn("User not found: {}", ex.getMessage());
+
+        Map<String, Object> errorDetail = new HashMap<>();
+        errorDetail.put("errorCode", GlobalErrorCode.RESOURCE_NOT_FOUND.name());
+        errorDetail.put("message", GlobalErrorCode.RESOURCE_NOT_FOUND.getMessage());
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", BaseResponseStatus.NOT_FIND_USER.getStatus());
+        responseBody.put("statusCode", BaseResponseStatus.NOT_FIND_USER.getCode());
+        responseBody.put("message", BaseResponseStatus.NOT_FIND_USER.getMessage());
+        responseBody.put("errors", List.of(errorDetail));
+
+        return ResponseEntity.status(NOT_FOUND).body(ApiResponse.fail(responseBody));
+    }
+
+    @ExceptionHandler(NotFoundChatException.class)
+    @ResponseStatus(NOT_FOUND)
+    public ResponseEntity<ApiResponse<Map<String, Object>>> handleNotFoundChatException(NotFoundChatException ex) {
+        log.warn("Chat not found: {}", ex.getMessage());
+
+        Map<String, Object> errorDetail = new HashMap<>();
+        errorDetail.put("errorCode", GlobalErrorCode.RESOURCE_NOT_FOUND.name());
+        errorDetail.put("message", GlobalErrorCode.RESOURCE_NOT_FOUND.getMessage());
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", BaseResponseStatus.NOT_FIND_CHAT.getStatus());
+        responseBody.put("statusCode", BaseResponseStatus.NOT_FIND_CHAT.getCode());
+        responseBody.put("message", BaseResponseStatus.NOT_FIND_CHAT.getMessage());
+        responseBody.put("errors", List.of(errorDetail));
+
+        return ResponseEntity.status(NOT_FOUND).body(ApiResponse.fail(responseBody));
+    }
+
+    /**
+     * 500 INTERNAL_SERVER_ERROR
+     */
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
     public ResponseEntity<ApiResponse<Map<String, Object>>> ExceptionHandle(Exception exception) {
         log.error("Exception has occurred: ", exception);
 
@@ -109,9 +151,41 @@ public class ExceptionAdvice {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("status", "error");
         responseBody.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        responseBody.put("message", "Internal server error");
+        responseBody.put("message", UNEXPECTED_ERROR.getMessage());
         responseBody.put("errors", List.of(errorDetail));
 
-        return new ResponseEntity<>(ApiResponse.fail(responseBody), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(ApiResponse.fail(responseBody));
+    }
+
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<ApiResponse<Object>> handleBaseException(BaseException ex) {
+        BaseResponseStatus status = ex.getStatus();
+
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", ex.getMessage());
+
+        ApiResponse<Object> response = ApiResponse.fail(status);
+        return ResponseEntity.status(status.getCode()).body(response);
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<ApiResponse<BaseResponseStatus>> sqlExceptionHandle(SQLException exception) {
+        log.warn("SQLException. error message: {}", exception.getMessage());
+        return ResponseEntity.status(SQL_ERROR.getCode()).body(ApiResponse.fail(SQL_ERROR, null));
+    }
+
+    private String getErrorCode(String code) {
+        switch (code) {
+            case "NotNull":
+            case "NotEmpty":
+            case "NotBlank":
+                return "REQUIRED_FIELD";
+            case "Email":
+                return "INVALID_EMAIL";
+            case "Size":
+                return "INVALID_SIZE";
+            default:
+                return "INVALID_VALUE";
+        }
     }
 }

@@ -146,6 +146,7 @@ public class UserController {
      * [PATCH] /v1/users/{id}/info
      * @return ResponseEntity<ApiResponse<PatchUserRes>>
      */
+    @Deprecated
     @Operation(summary = "유저 추가 정보 입력 API", description = "유저 기술스택, 경력, 최종학력 정보를 받아 유저 정보를 수정합니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
