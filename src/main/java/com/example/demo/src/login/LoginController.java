@@ -1,6 +1,7 @@
 package com.example.demo.src.login;
 
 import com.example.demo.common.exceptions.notfound.user.AlreadyLoggedOutUserException;
+import com.example.demo.utils.RedisService;
 import com.example.demo.utils.SessionService;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.oauth.OAuthService;
@@ -12,6 +13,7 @@ import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.GetSocialOAuthRes;
 import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.SHA256;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -48,6 +50,7 @@ public class LoginController {
     private final LoginService loginService;
     private final OAuthService oAuthService;
     private final SessionService sessionService;
+    private final RedisService redisService;
 
     private static final String COOKIE_NAME = "access-token";
 
@@ -146,7 +149,7 @@ public class LoginController {
     })
     @ResponseBody
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<PostLoginRes>> login(@RequestBody @Valid PostLoginReq req, HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<PostLoginRes>> login(@RequestBody @Valid PostLoginReq req, HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
 
         String encryptedPW = new SHA256().encrypt(req.getPassword());
         User loginUser = loginService.login(req.getUserId(), encryptedPW);
@@ -155,6 +158,8 @@ public class LoginController {
         session.setAttribute(LOGIN_MEMBER, loginUser.getId());
 
         addCookieToResponse(session, response);
+
+        redisService.addUserTechStackToRedis(loginUser.getId());
 
         ApiResponse<PostLoginRes> apiResponse = success(BaseResponseStatus.SUCCESS, new PostLoginRes(loginUser));
         return ResponseEntity.ok(apiResponse);
@@ -307,13 +312,17 @@ public class LoginController {
             )
     })
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         HttpSession session = sessionService.getSessionFromCookie(request);
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
 //            ApiResponse<Void> apiResponse = fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
 //            return ResponseEntity.status(BAD_REQUEST).body(apiResponse);
             throw new AlreadyLoggedOutUserException();
         }
+
+        // Redis 데이터 삭제
+        UUID userId = (UUID) sessionService.getUserIdFromSession(request);
+        redisService.deleteUserChatAndTechStacks(userId);
 
         session.invalidate();
 
@@ -328,6 +337,9 @@ public class LoginController {
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
+
+        // 유저 기술 스택 업데이트
+        redisService.addUserTechStackToRedis(userId);
 
         ApiResponse<Void> apiResponse = success(BaseResponseStatus.SUCCESS, null);
         return ResponseEntity.ok(apiResponse);
@@ -412,6 +424,8 @@ public class LoginController {
         session.setAttribute(LOGIN_MEMBER, getSocialOAuthRes.getId());
 
         addCookieToResponse(session, response);
+
+        redisService.addUserTechStackToRedis(getSocialOAuthRes.getId());
 
         ApiResponse<GetSocialOAuthRes> apiResponse = success(BaseResponseStatus.SUCCESS, getSocialOAuthRes);
         return ResponseEntity.ok(apiResponse);

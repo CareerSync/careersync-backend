@@ -40,5 +40,4 @@ public class TechStack extends BaseEntity {
         this.name = name;
     }
 
-
 }

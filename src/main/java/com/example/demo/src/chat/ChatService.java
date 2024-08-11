@@ -14,15 +14,20 @@ import com.example.demo.src.jobpost.model.JobPostRes;
 import com.example.demo.src.jobpost.entity.JobPostTechStack;
 import com.example.demo.src.question.QuestionRepository;
 import com.example.demo.src.question.entity.Question;
+import com.example.demo.src.user.TechStackRepository;
 import com.example.demo.src.user.UserRepository;
+import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.utils.DateTimeFormatterUtil;
+import com.example.demo.utils.RedisService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +42,8 @@ import static com.example.demo.common.entity.BaseEntity.Status.DELETED;
 @Service
 @Slf4j
 public class ChatService {
+
+    private final RedisService redisService;
 
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
@@ -71,7 +78,10 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public GetChatRes getChat(UUID chatId) {
+    public GetChatRes getChat(UUID userId, UUID chatId) throws JsonProcessingException {
+
+        redisService.addUserChatToRedis(userId, chatId);
+
         // chat 식별자로 대화 가져오기
         Chat chat = getChatWithId(chatId);
         return getChatResponseDto(chat);
@@ -92,7 +102,11 @@ public class ChatService {
     }
 
     //POST
-    public PostChatRes createChat(UUID userId, UUID chatId, PostChatReq postChatReq) {
+    public PostChatRes createChat(UUID userId, UUID chatId, PostChatReq postChatReq) throws JsonProcessingException {
+
+        // Update Redis
+        redisService.addUserChatToRedis(userId, chatId);
+
         // Fetch user
         User user = getUserWithId(userId);
 
@@ -115,14 +129,15 @@ public class ChatService {
         questionRepository.save(question); // Ensures question is managed
         chat.addQuestions(question);
 
-
-
         // Handle question response
         return handleQuestionResponse(user, chat, questionStr, true);
     }
 
 
-    public PostChatRes addAnswerToChat(UUID userId, UUID chatId, PostAfterChatReq postAfterChatReq) {
+    public PostChatRes addAnswerToChat(UUID userId, UUID chatId, PostAfterChatReq postAfterChatReq) throws JsonProcessingException {
+
+        // Update Redis
+        redisService.addUserChatToRedis(userId, chatId);
 
         User user = getUserWithId(userId);
         // Fetch existing chat entity
@@ -143,7 +158,7 @@ public class ChatService {
         return handleQuestionResponse(user, chat, questionStr, false);
     }
 
-    private PostChatRes handleQuestionResponse(User user, Chat chat, String questionStr, boolean isFirstChat) {
+    private PostChatRes handleQuestionResponse(User user, Chat chat, String questionStr, boolean isFirstChat) throws JsonProcessingException {
         // Determine if the question requires job posts
         boolean flag = true; // true: requires job posts, false: does not
         String answerStr;
@@ -188,8 +203,13 @@ public class ChatService {
                         String siteUrl = "http://test.com";
                         String imgUrl = "http://image.com";
                         List<String> techStacks = new ArrayList<>();
+
                         techStacks.add("python");
                         techStacks.add("java");
+
+                        for (String techStack : techStacks) {
+                            user.addTechStacks(new TechStack(techStack));
+                        }
 
                         // Create job post entity
                         JobPost jobPost = JobPost.builder()
@@ -227,6 +247,10 @@ public class ChatService {
             chat.addAnswers(answer);
 
         }
+
+        // Update Redis
+        redisService.addUserChatToRedis(user.getId(), chat.getId());
+        redisService.addUserTechStackToRedis(user.getId());
 
         // Return response DTO
         return createChatResponseDto(questionStr, answerStr, jobPosts, isFirstChat);
