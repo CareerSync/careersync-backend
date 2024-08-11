@@ -1,5 +1,6 @@
 package com.example.demo.common.response;
 
+import com.example.demo.common.exceptions.GlobalErrorCode;
 import com.example.demo.common.exceptions.ValidationError;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -32,6 +33,7 @@ public class ApiResponse<T> {
     private T data;
     private List<ValidationError> errors;
 
+    // Constructors for standard responses
     private ApiResponse(BaseResponseStatus baseResponseStatus) {
         this.apiVersion = "1.0.0";
         this.timestamp = ZonedDateTime.now();
@@ -58,25 +60,41 @@ public class ApiResponse<T> {
         this.errors = errors;
     }
 
+    // Constructor for custom error details in the form of a Map
+    private ApiResponse(Map<String, Object> errorDetails) {
+        this.apiVersion = "1.0.0";
+        this.timestamp = ZonedDateTime.now();
+        this.status = (String) errorDetails.get("status");
+        this.statusCode = (int) errorDetails.get("statusCode");
+        this.message = (String) errorDetails.get("message");
 
+        if (errorDetails.containsKey("errors")) {
+            this.errors = (List<ValidationError>) errorDetails.get("errors");
+        }
+    }
+
+    // Success response with data
     public static <T> ApiResponse<T> success(BaseResponseStatus baseResponseStatus, T data) {
-        return new ApiResponse<T>(baseResponseStatus, data);
+        return new ApiResponse<>(baseResponseStatus, data);
     }
 
+    // Success response without data
     public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<T>(BaseResponseStatus.SUCCESS, data);
+        return new ApiResponse<>(BaseResponseStatus.SUCCESS, data);
     }
 
+    // Failure response with a list of validation errors
     public static <T> ApiResponse<T> fail(BaseResponseStatus baseResponseStatus, List<ValidationError> errors) {
-        return new ApiResponse<T>(baseResponseStatus, errors);
+        return new ApiResponse<>(baseResponseStatus, errors);
     }
 
+    // Failure response without additional data
     public static <T> ApiResponse<T> fail(BaseResponseStatus baseResponseStatus) {
-        return new ApiResponse<T>(baseResponseStatus);
+        return new ApiResponse<>(baseResponseStatus);
     }
 
-//    public static <T> ApiResponse<T> fail(ResponseCode responseCode, T data) {
-//        return new ApiResponse<T>(new ApiHeader(responseCode.getHttpStatusCode(), responseCode.getMessage()), data, responseCode.getMessage());
-//    }
-
+    // Failure response with custom error details in the form of a Map
+    public static <T> ApiResponse<T> fail(Map<String, Object> errorDetails) {
+        return new ApiResponse<>(errorDetails);
+    }
 }

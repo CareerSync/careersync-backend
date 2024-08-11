@@ -97,9 +97,21 @@ public class ExceptionAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<BaseResponseStatus>> ExceptionHandle(Exception exception) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> ExceptionHandle(Exception exception) {
+        log.error("Exception has occurred: ", exception);
 
-        log.error("Exception has occured. ", exception);
-        return new ResponseEntity<>(ApiResponse.fail(UNEXPECTED_ERROR, null), valueOf(UNEXPECTED_ERROR.getCode()));
+        GlobalErrorCode errorCode = GlobalErrorCode.INTERNAL_SERVER_ERROR;
+
+        Map<String, Object> errorDetail = new HashMap<>();
+        errorDetail.put("errorCode", errorCode.name());
+        errorDetail.put("message", errorCode.getMessage());
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("status", "error");
+        responseBody.put("statusCode", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseBody.put("message", "Internal server error");
+        responseBody.put("errors", List.of(errorDetail));
+
+        return new ResponseEntity<>(ApiResponse.fail(responseBody), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
