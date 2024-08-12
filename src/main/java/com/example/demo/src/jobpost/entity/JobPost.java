@@ -35,7 +35,7 @@ public class JobPost extends BaseEntity {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(nullable = false, columnDefinition = "nvarchar(255)")
     private String title;
 
     @Column(columnDefinition = "nvarchar(2)")
@@ -47,10 +47,10 @@ public class JobPost extends BaseEntity {
     @Column(name = "end_date", nullable = false, columnDefinition = "datetime2")
     private LocalDateTime endDate;
 
-    @Column(name = "site_url", columnDefinition = "text")
+    @Column(name = "site_url", columnDefinition = "nvarchar(255)")
     private String siteUrl;
 
-    @Column(name = "img_url", columnDefinition = "text")
+    @Column(name = "img_url", columnDefinition = "nvarchar(255)")
     private String imageUrl;
 
     @ManyToOne(fetch = LAZY)

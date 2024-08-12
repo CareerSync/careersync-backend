@@ -27,7 +27,7 @@ public class Question extends BaseEntity {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @Column(name = "question_text", nullable = false, columnDefinition = "text")
+    @Column(name = "question_text", nullable = false, columnDefinition = "nvarchar(255)")
     private String question_text;
 
     @ManyToOne(fetch = LAZY)

@@ -32,7 +32,7 @@ public class Answer extends BaseEntity {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @Column(name = "answer_text", nullable = false, columnDefinition = "text")
+    @Column(name = "answer_text", nullable = false, columnDefinition = "nvarchar(255)")
     private String answer_text;
 
     @ManyToOne(fetch = LAZY)
