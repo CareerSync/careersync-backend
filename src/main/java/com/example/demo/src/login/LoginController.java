@@ -1,6 +1,7 @@
 package com.example.demo.src.login;
 
 import com.example.demo.common.exceptions.notfound.user.AlreadyLoggedOutUserException;
+import com.example.demo.src.chat.model.CheckLoginRes;
 import com.example.demo.utils.RedisService;
 import com.example.demo.utils.SessionService;
 import com.example.demo.common.exceptions.BaseException;
@@ -168,7 +169,7 @@ public class LoginController {
     /**
      * 로그인 체크 API
      * [POST] /v1/auth/check-login
-     * @return ResponseEntity<ApiResponse<PostUserRes>>
+     * @return ResponseEntity<ApiResponse<CheckLoginRes>>
      */
     @Operation(summary = "로그인 체크", description = """
             현재 유저가 로그인한 상태인지 확인한다.
@@ -181,16 +182,17 @@ public class LoginController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
                             examples = @ExampleObject(value = """
-                            {
-                                "apiVersion": "1.0.0",
-                                "timestamp": "2024-07-22T01:08:41+09:00",
-                                "status": "success",
-                                "statusCode": 200,
-                                "message": "요청에 성공하였습니다.",
-                                "data": {
-                                    "id": "1"
-                                }
-                            }
+                                    {
+                                      "apiVersion": "1.0.0",
+                                      "timestamp": "2024-08-12T19:00:01+09:00",
+                                      "status": "success",
+                                      "statusCode": 200,
+                                      "message": "요청에 성공하였습니다.",
+                                      "data": {
+                                        "id": "cfbc0f80-78c0-4c1c-a2d5-28719364dd48",
+                                        "userName": "string"
+                                      }
+                                    }
                     """)
                     )
             ),
@@ -230,19 +232,19 @@ public class LoginController {
             )
     })
     @PostMapping("/check-login")
-    public ResponseEntity<ApiResponse<PostUserRes>> checkLogin(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<CheckLoginRes>> checkLogin(HttpServletRequest request) {
         HttpSession session = sessionService.getSessionFromCookie(request);
 
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-            ApiResponse<PostUserRes> apiResponse = fail(BaseResponseStatus.UNAUTHORIZED_USER, null);
+            ApiResponse<CheckLoginRes> apiResponse = fail(BaseResponseStatus.UNAUTHORIZED_USER, null);
             return ResponseEntity.status(UNAUTHORIZED).body(apiResponse);
         }
 
         // Assuming you need to fetch user details using user ID stored in session
         UUID userId = (UUID) sessionService.getUserIdFromSession(request);
-        PostUserRes postUserRes = new PostUserRes(userId); // You might need to use a service to fetch user details if needed
 
-        ApiResponse<PostUserRes> apiResponse = success(BaseResponseStatus.SUCCESS, postUserRes);
+        CheckLoginRes checkLoginRes = loginService.checkIsLogin(userId);
+        ApiResponse<CheckLoginRes> apiResponse = success(BaseResponseStatus.SUCCESS, checkLoginRes);
         return ResponseEntity.ok(apiResponse);
     }
 
