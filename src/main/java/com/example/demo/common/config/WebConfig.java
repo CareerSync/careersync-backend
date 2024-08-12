@@ -25,7 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // 모든 경로에 앞으로 만들 모든 CORS 정보를 적용한다
         registry.addMapping("/**")
-                .allowedOrigins("https://local.careersync.site", "https://careersync.site")
+                .allowedOrigins("https://local.careersync.site", "https://careersync.site", "https://www.careersync.site")
                 .allowedMethods("GET", "POST", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .exposedHeaders("Set-Cookie")
