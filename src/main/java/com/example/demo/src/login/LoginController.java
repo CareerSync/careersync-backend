@@ -1,6 +1,8 @@
 package com.example.demo.src.login;
 
 import com.example.demo.common.exceptions.notfound.user.AlreadyLoggedOutUserException;
+import com.example.demo.common.response.common.CommonApiResponse;
+import com.example.demo.common.response.login.LoginApiResponse;
 import com.example.demo.src.chat.model.CheckLoginRes;
 import com.example.demo.utils.RedisService;
 import com.example.demo.utils.SessionService;
@@ -71,45 +73,19 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                       "apiVersion": "1.0.0",
-                                       "timestamp": "2024-07-22T00:31:29+09:00",
-                                       "status": "success",
-                                       "statusCode": 200,
-                                       "message": "요청에 성공하였습니다.",
-                                       "data": {
-                                         "id": "40832c72-6e48-46d8-b053-fe5c7454fa6a",
-                                         "userId": "string",
-                                         "userName": "string"
-                                       }
-                                     }
-                """)
+                            examples = @ExampleObject(value = LoginApiResponse.LOGIN_SUCCESS)
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "유저 아이디 혹은 비밀번호가 빈 값인 경우 에러 반환",
+                    description = "유저 아이디 혹은 비밀번호가 빈 값인 경우, 혹은 비밀번호가 8자 미만일 경우 에러 반환",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
                             examples = {
-                                    @ExampleObject(value = """
-                                            {
-                                              "apiVersion": "1.0.0",
-                                              "timestamp": "2024-07-22T00:49:58+09:00",
-                                              "status": "fail",
-                                              "statusCode": 400,
-                                              "message": "INVALID_REQUEST",
-                                              "errors": [
-                                               {
-                                                  "field": "userId",
-                                                  "errorCode": "REQUIRED_FIELD",
-                                                  "message": "유저 아이디는 null 혹은 빈 문자열 일 수 없습니다."
-                                                }
-                                              ]
-                                            }
-                """)
+                                    @ExampleObject(name = "LoginId Empty", value = LoginApiResponse.LOGIN_ID_EMPTY),
+                                    @ExampleObject(name = "LoginPW Empty", value = LoginApiResponse.LOGIN_PW_EMPTY),
+                                    @ExampleObject(name = "LoginPW too short", value = LoginApiResponse.LOGIN_PW_TOO_SHORT)
                             }
                     )
             ),
@@ -119,15 +95,7 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "apiVersion": "1.0.0",
-                                      "timestamp": "2024-07-22T00:54:21+09:00",
-                                      "status": "fail",
-                                      "statusCode": 404,
-                                      "message": "일치하는 유저가 없습니다."
-                                    }
-                """)
+                            examples = @ExampleObject(value = LoginApiResponse.NOT_FIND_USER)
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -136,15 +104,7 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                {
-                    "apiVersion": "1.0.0",
-                    "timestamp": "2023-07-01T12:34:56Z",
-                    "status": "fail",
-                    "statusCode": 500,
-                    "message": "예상치 못한 에러가 발생했습니다."
-                }
-                """)
+                            examples = @ExampleObject(value = CommonApiResponse.INTERNAL_SERVER_ERROR)
                     )
             )
     })
@@ -181,19 +141,7 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                      "apiVersion": "1.0.0",
-                                      "timestamp": "2024-08-12T19:00:01+09:00",
-                                      "status": "success",
-                                      "statusCode": 200,
-                                      "message": "요청에 성공하였습니다.",
-                                      "data": {
-                                        "id": "cfbc0f80-78c0-4c1c-a2d5-28719364dd48",
-                                        "userName": "string"
-                                      }
-                                    }
-                    """)
+                            examples = @ExampleObject(value = LoginApiResponse.CHECK_LOGIN_SUCCESS)
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -202,15 +150,7 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                            {
-                                "apiVersion": "1.0.0",
-                                "timestamp": "2024-07-22T01:08:59+09:00",
-                                "status": "fail",
-                                "statusCode": 401,
-                                "message": "로그인 된 사용자가 아닙니다."
-                            }
-                    """)
+                            examples = @ExampleObject(value = CommonApiResponse.AUTHENTICATION_ERROR)
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -219,15 +159,7 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-            {
-                "apiVersion": "1.0.0",
-                "timestamp": "2023-07-01T12:34:56Z",
-                "status": "fail",
-                "statusCode": 500,
-                "message": "예상치 못한 에러가 발생했습니다."
-            }
-            """)
+                            examples = @ExampleObject(value = CommonApiResponse.INTERNAL_SERVER_ERROR)
                     )
             )
     })
@@ -265,15 +197,7 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                        "apiVersion": "1.0.0",
-                                        "timestamp": "2024-07-22T01:00:55+09:00",
-                                        "status": "success",
-                                        "statusCode": 200,
-                                        "message": "요청에 성공하였습니다."
-                                    }
-                """)
+                            examples = @ExampleObject(value = LoginApiResponse.LOGOUT_SUCCESS)
                     )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -283,15 +207,7 @@ public class LoginController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
                             examples = {
-                                    @ExampleObject(value = """
-                                            {
-                                                "apiVersion": "1.0.0",
-                                                "timestamp": "2024-07-22T01:00:56+09:00",
-                                                "status": "fail",
-                                                "statusCode": 401,
-                                                "message": "로그인 된 사용자가 아닙니다."
-                                            }
-                """)
+                                    @ExampleObject(value = CommonApiResponse.AUTHENTICATION_ERROR)
                             }
                     )
             ),
@@ -301,15 +217,7 @@ public class LoginController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                {
-                    "apiVersion": "1.0.0",
-                    "timestamp": "2023-07-01T12:34:56Z",
-                    "status": "fail",
-                    "statusCode": 500,
-                    "message": "예상치 못한 에러가 발생했습니다."
-                }
-                """)
+                            examples = @ExampleObject(value = CommonApiResponse.INTERNAL_SERVER_ERROR)
                     )
             )
     })
@@ -317,8 +225,6 @@ public class LoginController {
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) throws JsonProcessingException {
         HttpSession session = sessionService.getSessionFromCookie(request);
         if (session == null || session.getAttribute(LOGIN_MEMBER) == null) {
-//            ApiResponse<Void> apiResponse = fail(BaseResponseStatus.ALREADY_LOGGED_OUT_USER, null);
-//            return ResponseEntity.status(BAD_REQUEST).body(apiResponse);
             throw new AlreadyLoggedOutUserException();
         }
 
@@ -359,42 +265,12 @@ public class LoginController {
         """)
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "유저 식별자와 구글 OAuth 서비스에서 제공한 Bearer Token 반환",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                                    {
-                                        "apiVersion": "1.0.0",
-                                        "timestamp": "2024-07-22T01:17:08+09:00",
-                                        "status": "success",
-                                        "statusCode": 200,
-                                        "message": "요청에 성공하였습니다.",
-                                        "data": {
-                                            "id": "1",
-                                            "accessToken": "ya29RASFQHGX2MiZVA0MIDVuh-JogCFIEV4tg0170",
-                                            "tokenType": "Bearer"
-                                        }
-                                    }
-                """)
-                    )
-            ),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "500",
                     description = "INTERNAL_SERVER_ERROR",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiResponse.class),
-                            examples = @ExampleObject(value = """
-                {
-                    "apiVersion": "1.0.0",
-                    "timestamp": "2023-07-01T12:34:56Z",
-                    "status": "fail",
-                    "statusCode": 500,
-                    "message": "예상치 못한 에러가 발생했습니다."
-                }
-                """)
+                            examples = @ExampleObject(value = CommonApiResponse.INTERNAL_SERVER_ERROR)
                     )
             )
     })
@@ -410,6 +286,26 @@ public class LoginController {
      * @return ResponseEntity<ApiResponse<GetSocialOAuthRes>>
      */
     @Operation(summary = "소셜 로그인 callback 처리", description = "인가 코드를 전달받고 설정한 리다이렉트 주소로 접속하였을 때 실행되는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "유저 식별자와 구글 OAuth 서비스에서 제공한 Bearer Token 반환",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = LoginApiResponse.SOCIAL_LOGIN_SUCCESS)
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "500",
+                    description = "INTERNAL_SERVER_ERROR",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiResponse.class),
+                            examples = @ExampleObject(value = CommonApiResponse.INTERNAL_SERVER_ERROR)
+                    )
+            )
+    })
     @ResponseBody
     @GetMapping("/{socialLoginType}/login/callback")
     public ResponseEntity<ApiResponse<GetSocialOAuthRes>> socialLoginCallback(
@@ -432,39 +328,6 @@ public class LoginController {
         ApiResponse<GetSocialOAuthRes> apiResponse = success(BaseResponseStatus.SUCCESS, getSocialOAuthRes);
         return ResponseEntity.ok(apiResponse);
     }
-
-//    public static void addCookieToResponse(HttpSession session, HttpServletResponse response) {
-//        // 커스텀 쿠키 설정
-//        ResponseCookie cookie = ResponseCookie.from(COOKIE_NAME, session.getId())
-//                .domain(".careersync.site")
-//                .httpOnly(true)
-//                .secure(true)
-//                .maxAge(7 * 24 * 60 * 60) // 1 week
-//                .path("/")
-//                .sameSite("None")
-//                .build();
-//
-//        log.info("Set-Cookie : {}", cookie);
-//        response.addHeader("Set-Cookie", cookie.toString());
-//    }
-
-//    private HttpSession getSessionFromCookie(HttpServletRequest request) {
-//        if (request.getCookies() != null) {
-//            for (Cookie cookie : request.getCookies()) {
-//                if (COOKIE_NAME.equals(cookie.getName())) {
-//                    String sessionId = cookie.getValue();
-//                    log.info("cookie의 sessionID: {}", sessionId);
-//                    // 세션에 해당하는 ID가 있을 경우에만 세션 반환, 아닐 경우엔 null
-//                    HttpSession session = request.getSession(false);
-//
-//                    if (session != null && session.getId().equals(sessionId)) {
-//                        return session;
-//                    }
-//                }
-//            }
-//        }
-//        return null;
-//    }
 }
 
 
