@@ -3,6 +3,7 @@ package com.example.demo.src.user;
 import com.example.demo.common.exceptions.BaseException;
 import com.example.demo.common.exceptions.badrequest.user.AlreadyExistsUserIdException;
 import com.example.demo.common.exceptions.badrequest.user.AlreadyExistsUserNameException;
+import com.example.demo.common.exceptions.notfound.user.NotFoundUserException;
 import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
@@ -62,8 +63,7 @@ public class UserService {
 
     // PATCH
     public PatchUserRes modifyUserInfo(UUID id, PatchUserInfoReq req) {
-        User user = userRepository.findByIdAndStatus(id, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+        User user = getUserById(id);
 
         user.setCareerAndEducation(req.getCareer(), req.getEducation());
 
@@ -123,8 +123,13 @@ public class UserService {
     @Transactional(readOnly = true)
     public GetUserRes getUserByEmail(String userId) {
         User user = userRepository.findByUserIdAndStatus(userId, ACTIVE)
-                .orElseThrow(() -> new BaseException(NOT_FIND_USER));
+                .orElseThrow(NotFoundUserException::new);
         return new GetUserRes(user);
+    }
+
+    private User getUserById(UUID id) {
+        return userRepository.findByIdAndStatus(id, ACTIVE)
+                .orElseThrow(NotFoundUserException::new);
     }
 
     private void validateUserId(String userId) {
