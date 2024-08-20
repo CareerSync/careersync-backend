@@ -121,6 +121,7 @@ public class LoginController {
         addCookieToResponse(session, response);
 
         redisService.addUserTechStackToRedis(loginUser.getId());
+        redisService.addUserChatToRedis(loginUser.getId());
 
         ApiResponse<PostLoginRes> apiResponse = success(BaseResponseStatus.SUCCESS, new PostLoginRes(loginUser));
         return ResponseEntity.ok(apiResponse);
@@ -247,7 +248,7 @@ public class LoginController {
         response.addHeader("Set-Cookie", cookie.toString());
 
         // 유저 기술 스택 업데이트
-        redisService.addUserTechStackToRedis(userId);
+        // redisService.addUserTechStackToRedis(userId);
 
         ApiResponse<Void> apiResponse = success(BaseResponseStatus.SUCCESS, null);
         return ResponseEntity.ok(apiResponse);
@@ -324,6 +325,7 @@ public class LoginController {
         addCookieToResponse(session, response);
 
         redisService.addUserTechStackToRedis(getSocialOAuthRes.getId());
+        redisService.addUserChatToRedis(getSocialOAuthRes.getId());
 
         ApiResponse<GetSocialOAuthRes> apiResponse = success(BaseResponseStatus.SUCCESS, getSocialOAuthRes);
         return ResponseEntity.ok(apiResponse);
