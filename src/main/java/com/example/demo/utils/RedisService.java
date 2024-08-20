@@ -1,8 +1,10 @@
 package com.example.demo.utils;
 
+import com.example.demo.src.answer.AnswerRepository;
 import com.example.demo.src.answer.entity.Answer;
 import com.example.demo.src.chat.ChatRepository;
 import com.example.demo.src.chat.entity.Chat;
+import com.example.demo.src.question.QuestionRepository;
 import com.example.demo.src.question.entity.Question;
 import com.example.demo.src.user.TechStackRepository;
 import com.example.demo.src.user.entity.TechStack;
@@ -26,7 +28,22 @@ public class RedisService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final TechStackRepository techStackRepository;
-    private final ChatRepository chatRepository;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+
+    public void addUserTechStackToRedisInit(UUID key, List<String> techStacks) throws JsonProcessingException {
+        // Convert UUID to string
+        String keyString = key.toString();
+
+        // Convert the list to a JSON string
+        String jsonTechStacks = new ObjectMapper().writeValueAsString(techStacks);
+
+        // Store the JSON string in Redis
+        redisTemplate.opsForValue().set(keyString, jsonTechStacks);
+
+        // Log the operation
+        log.info("Tech stacks for user '{}' have been added to Redis: {}", keyString, jsonTechStacks);
+    }
 
     public void addUserTechStackToRedis(UUID key) throws JsonProcessingException {
 
@@ -51,12 +68,24 @@ public class RedisService {
         log.info("Tech stacks for user '{}' have been added to Redis: {}", keyString, jsonTechStacks);
     }
 
-    public void addUserChatToRedis(UUID userId, UUID chatId) throws JsonProcessingException {
+    public void addUserChatToRedis(UUID userId) throws JsonProcessingException {
         // Get the top 5 latest questions and answers for the chat
         Pageable pageable = PageRequest.of(0, 5);
 
-        List<Question> latestQuestions = chatRepository.findTop5LatestQuestionsByChatId(chatId, pageable);
-        List<Answer> latestAnswers = chatRepository.findTop5LatestAnswersByChatId(chatId, pageable);
+        List<Question> latestQuestions = questionRepository.findTop5LatestQuestionsByUserId(userId, pageable);
+        List<Answer> latestAnswers = answerRepository.findTop5LatestAnswersByUserId(userId, pageable);
+
+        // Get chatId from latestQuestions
+        UUID chatId = null;
+        if (!latestQuestions.isEmpty()) {
+            chatId = latestQuestions.get(0).getChat().getId();
+        } else if (!latestAnswers.isEmpty()) {
+            chatId = latestAnswers.get(0).getChat().getId();
+        }
+
+        if (chatId == null) { // 만약 대화기록 없으면 대화 저장하지 않는다
+            return;
+        }
 
         // Initialize a list to store the combined data
         List<Map<String, String>> chatData = new ArrayList<>();

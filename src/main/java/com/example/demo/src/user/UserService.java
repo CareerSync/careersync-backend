@@ -7,7 +7,9 @@ import com.example.demo.common.exceptions.notfound.user.NotFoundUserException;
 import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.src.user.model.*;
+import com.example.demo.utils.RedisService;
 import com.example.demo.utils.SHA256;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ import static com.example.demo.common.response.BaseResponseStatus.*;
 public class UserService {
     private final UserRepository userRepository;
     private final TechStackRepository techStackRepository;
+    private final RedisService redisService;
 
     //POST
     public PostUserRes createUser(PostUserReq postUserReq) {
@@ -62,10 +65,15 @@ public class UserService {
     }
 
     // PATCH
-    public PatchUserRes modifyUserInfo(UUID id, PatchUserInfoReq req) {
+    public PatchUserRes modifyUserInfo(UUID id, PatchUserInfoReq req) throws JsonProcessingException {
         User user = getUserById(id);
 
         user.setCareerAndEducation(req.getCareer(), req.getEducation());
+
+        // Remove all existing TechStacks
+        techStackRepository.deleteAll(user.getTechStacks());
+        user.getTechStacks().clear();
+
 
         List<TechStack> techStacks = req.getTechStacks().stream()
                 .map(techStackName -> {
@@ -78,6 +86,15 @@ public class UserService {
                 .collect(Collectors.toList());
 
         techStackRepository.saveAll(techStacks);
+
+        List<String> strings = techStacks
+                .stream()
+                .map(TechStack::getName)
+                .toList();
+
+        // 유저 기술 스택 정보 -> 레디스에 저장
+        redisService.addUserTechStackToRedisInit(user.getId(), strings);
+
         return new PatchUserRes(id);
     }
 

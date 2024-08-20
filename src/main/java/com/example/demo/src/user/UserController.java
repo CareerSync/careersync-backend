@@ -14,6 +14,7 @@ import com.example.demo.src.user.model.PatchUserRes;
 import com.example.demo.src.user.model.PostUserReq;
 import com.example.demo.src.user.model.PostUserRes;
 import com.example.demo.utils.SessionService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -160,7 +161,7 @@ public class UserController {
     })
     @ResponseBody
     @PatchMapping("/info")
-    public ResponseEntity<ApiResponse<PatchUserRes>> modifyUserInfo (HttpServletRequest request, @RequestBody @Valid PatchUserInfoReq patchUserInfoReq) {
+    public ResponseEntity<ApiResponse<PatchUserRes>> modifyUserInfo (HttpServletRequest request, @RequestBody @Valid PatchUserInfoReq patchUserInfoReq) throws JsonProcessingException {
 
         UUID id = (UUID) sessionService.getUserIdFromSession(request);
         PatchUserRes patchUserRes = userService.modifyUserInfo(id, patchUserInfoReq);
@@ -286,7 +287,7 @@ public class UserController {
     @ResponseBody
     @PatchMapping("/{id}/info")
     public ResponseEntity<ApiResponse<PatchUserRes>> modifyUserInfoWithId(@PathVariable(name = "id") UUID id,
-                                                                       @RequestBody @Valid PatchUserInfoReq patchUserInfoReq) {
+                                                                       @RequestBody @Valid PatchUserInfoReq patchUserInfoReq) throws JsonProcessingException {
 
         PatchUserRes patchUserRes = userService.modifyUserInfo(id, patchUserInfoReq);
         return ResponseEntity.status(OK).body(success(SUCCESS, patchUserRes));
