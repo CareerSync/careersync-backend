@@ -2,6 +2,7 @@ package com.example.demo.common.entity;
 
 import lombok.Getter;
 
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,6 +16,7 @@ import static com.example.demo.common.entity.BaseEntity.Status.ACTIVE;
 
 
 @Getter
+@Setter
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public class BaseEntity {
