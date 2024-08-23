@@ -14,6 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +58,7 @@ public class Chat extends BaseEntity {
     public void addQuestions(Question question) {
         questions.add(question);
         question.setChat(this);
+
     }
 
     public void addAnswers(Answer answer) {
@@ -68,6 +70,10 @@ public class Chat extends BaseEntity {
         return answers.stream()
                 .flatMap(answer -> answer.getJobPosts().stream()) // Flatten the list of job posts from each answer
                 .collect(Collectors.toList()); // Collect into a single list
+    }
+
+    public void updateChatDate(LocalDateTime dateTime) {
+        setUpdatedAt(dateTime);
     }
 
     public void updateState(Status status) {

@@ -150,7 +150,6 @@ public class ChatService {
         // Persist question
         questionRepository.save(question);
 
-        chat.addQuestions(question);
 
         // Handle question response
         return handleQuestionResponse(user, chat, questionStr, false);
@@ -249,6 +248,9 @@ public class ChatService {
         // Update Redis
         // redisService.addUserChatToRedis(user.getId(), chat.getId());
         // redisService.addUserTechStackToRedis(user.getId());
+
+        // save로 대화 업데이트 해야, 더티체킹하면서 udpatedAt 컬럼 갱신됨
+        chat.updateChatDate(LocalDateTime.now());
 
         // Return response DTO
         return createChatResponseDto(questionStr, answerStr, jobPosts, isFirstChat);

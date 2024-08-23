@@ -197,7 +197,7 @@ public class ChatController {
     })
     @ResponseBody
     @PostMapping("/{chatId}")
-    public ResponseEntity<ApiResponse<?>> addAnswerToChat (HttpServletRequest request, @RequestParam(name = "chatId") UUID chatId,
+    public ResponseEntity<ApiResponse<?>> addAnswerToChat (HttpServletRequest request, @PathVariable(name = "chatId") UUID chatId,
                                                            @RequestBody @Valid PostAfterChatReq postAfterChatReq) throws JsonProcessingException {
 
         UUID userId = (UUID) sessionService.getUserIdFromSession(request);
