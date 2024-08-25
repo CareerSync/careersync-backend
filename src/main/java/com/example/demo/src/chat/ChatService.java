@@ -149,7 +149,7 @@ public class ChatService {
                 .build();
         // Persist question
         questionRepository.save(question);
-
+        chat.addQuestions(question);
 
         // Handle question response
         return handleQuestionResponse(user, chat, questionStr, false);
