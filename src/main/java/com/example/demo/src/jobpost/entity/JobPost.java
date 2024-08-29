@@ -38,20 +38,23 @@ public class JobPost extends BaseEntity {
     @Column(nullable = false, columnDefinition = "nvarchar(255)")
     private String title;
 
-    @Column(columnDefinition = "nvarchar(2)")
+    @Column(columnDefinition = "nvarchar(30)")
     private String career;
 
     @Column(name = "company_name", nullable = false, columnDefinition = "nvarchar(30)")
     private String companyName;
 
-    @Column(name = "end_date", nullable = false, columnDefinition = "datetime2")
-    private LocalDateTime endDate;
+    @Column(name = "end_date", nullable = false, columnDefinition = "nvarchar(30)")
+    private String endDate;
 
     @Column(name = "site_url", columnDefinition = "nvarchar(255)")
     private String siteUrl;
 
     @Column(name = "img_url", columnDefinition = "nvarchar(255)")
     private String imageUrl;
+
+    @Column(name = "education", columnDefinition = "nvarchar(30)")
+    private String education;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "tb_answer_id")
@@ -65,13 +68,14 @@ public class JobPost extends BaseEntity {
     List<JobPostTechStack> jobPostTechStacks = new ArrayList<>();
 
     @Builder
-    public JobPost(String title, String career, String companyName, LocalDateTime endDate, String siteUrl, String imageUrl) {
+    public JobPost(String title, String career, String companyName, String endDate, String siteUrl, String imageUrl, String education) {
         this.title = title;
         this.career = career;
         this.companyName = companyName;
         this.endDate = endDate;
         this.siteUrl = siteUrl;
         this.imageUrl = imageUrl;
+        this.education = education;
     }
 
     public void addJobPostTechStacks(JobPostTechStack techStack) {
