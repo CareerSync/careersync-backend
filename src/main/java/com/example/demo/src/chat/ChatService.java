@@ -7,6 +7,9 @@ import com.example.demo.src.answer.AnswerRepository;
 import com.example.demo.src.answer.entity.Answer;
 import com.example.demo.src.chat.entity.Chat;
 import com.example.demo.src.chat.model.*;
+import com.example.demo.src.chat.model.ai_server.AiServerJobPost;
+import com.example.demo.src.chat.model.ai_server.AiServerReq;
+import com.example.demo.src.chat.model.ai_server.AiServerRes;
 import com.example.demo.src.jobpost.JobPostRepository;
 import com.example.demo.src.jobpost.JobPostTechStackRepository;
 import com.example.demo.src.jobpost.entity.JobPost;
@@ -14,22 +17,22 @@ import com.example.demo.src.jobpost.model.JobPostRes;
 import com.example.demo.src.jobpost.entity.JobPostTechStack;
 import com.example.demo.src.question.QuestionRepository;
 import com.example.demo.src.question.entity.Question;
-import com.example.demo.src.user.TechStackRepository;
 import com.example.demo.src.user.UserRepository;
-import com.example.demo.src.user.entity.TechStack;
 import com.example.demo.src.user.entity.User;
 import com.example.demo.utils.DateTimeFormatterUtil;
-import com.example.demo.utils.RedisService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -49,6 +52,9 @@ public class ChatService {
     private final AnswerRepository answerRepository;
     private final JobPostRepository jobPostRepository;
     private final JobPostTechStackRepository jobPostTechStackRepository;
+
+    private RestTemplate restTemplate = new RestTemplate();
+    private final String ai_server_url = "http://20.196.65.98:8080/chatbot/chat";
 
 
     // GET
@@ -127,8 +133,13 @@ public class ChatService {
         questionRepository.save(question); // Ensures question is managed
         chat.addQuestions(question);
 
+        String user_id = userId.toString();
+        String chat_uuid = chatId.toString();
+
+        AiServerRes answerFromAiServer = getAnswerFromAiServer(user_id, chat_uuid, questionStr);
+
         // Handle question response
-        return handleQuestionResponse(user, chat, questionStr, true);
+        return handleQuestionResponse(answerFromAiServer, user, chat, questionStr, true);
     }
 
 
@@ -151,24 +162,60 @@ public class ChatService {
         questionRepository.save(question);
         chat.addQuestions(question);
 
+        String user_id = userId.toString();
+        String chat_uuid = chatId.toString();
+
+        AiServerRes answerFromAiServer = getAnswerFromAiServer(user_id, chat_uuid, questionStr);
+
         // Handle question response
-        return handleQuestionResponse(user, chat, questionStr, false);
+        return handleQuestionResponse(answerFromAiServer, user, chat, questionStr, false);
     }
 
-    private PostChatRes handleQuestionResponse(User user, Chat chat, String questionStr, boolean isFirstChat) throws JsonProcessingException {
+    private AiServerRes getAnswerFromAiServer(String user_id, String chat_uuid, String question) {
+
+        AiServerReq aiServerReq = new AiServerReq(user_id, chat_uuid, question);
+        AiServerRes aiServerRes = null;
+        List<JobPost> jobPosts = null;
+
+        try {
+            aiServerRes = restTemplate.postForEntity("http://20.196.65.98:8080/chatbot/chat", aiServerReq, AiServerRes.class).getBody();
+
+            assert aiServerRes != null;
+            log.info("answer : {}", aiServerRes.getAnswer());
+
+            for (AiServerJobPost jobPost : aiServerRes.getJobPosts()) {
+                log.info(jobPost.getTitle());
+            }
+
+        } catch (HttpServerErrorException e) {
+            log.error("HTTP Status Code: " + e.getStatusCode());
+            log.error("HTTP Response Body: " + e.getResponseBodyAsString());
+            log.error("Error Message: " + e.getMessage());
+            // Handle exception or rethrow
+        } catch (Exception e) {
+            log.error("An unexpected error occurred: " + e.getMessage());
+        }
+
+        return aiServerRes;
+
+    }
+
+    private PostChatRes handleQuestionResponse(AiServerRes aiServerRes, User user, Chat chat, String questionStr, boolean isFirstChat) throws JsonProcessingException {
         // Determine if the question requires job posts
         boolean flag = true; // true: requires job posts, false: does not
         String answerStr;
 
         // Placeholder for job post results from external server
-        List<Object> exampleJobPostResult = new ArrayList<>();
-        exampleJobPostResult.add("ex1");
-        exampleJobPostResult.add("ex2");
+//        List<Object> exampleJobPostResult = new ArrayList<>();
+//        exampleJobPostResult.add("ex1");
+//        exampleJobPostResult.add("ex2");
+
+        List<AiServerJobPost> jobPostsFromAiServer = aiServerRes.getJobPosts();
 
         List<JobPost> jobPosts = new ArrayList<>();
 
         if (!flag) {
-            answerStr = "sample_answer_from_fastapi_server_without_jobposts";
+            answerStr = aiServerRes.getAnswer();
 
             // Create and add answer
             Answer answer = Answer.builder()
@@ -180,7 +227,7 @@ public class ChatService {
 
             chat.addAnswers(answer);
         } else {
-            answerStr = "sample_answer_from_fastapi_server_with_jobposts";
+            answerStr = aiServerRes.getAnswer();
 
             // Create and add answer
             Answer answer = Answer.builder()
@@ -189,20 +236,21 @@ public class ChatService {
             answerRepository.save(answer);
 
             // Process job post results
-            jobPosts = exampleJobPostResult.stream()
+            jobPosts = jobPostsFromAiServer.stream()
                     .map(value -> {
                         // Extract information for job post
-                        String title = "jobPost_title";
-                        String career = "신입";
-                        String companyName = "jobPost_coname";
-                        LocalDateTime endDate = LocalDateTime.parse("2025-01-01T00:00:00");
+                        String title = value.getTitle();
+                        String career = value.getWorkHistory();
+                        String companyName = value.getCompanyName();
+                        String education = value.getEducation();
+                        String endDate = value.getEndDate();
 
-                        String siteUrl = "http://test.com";
-                        String imgUrl = "http://image.com";
-                        List<String> techStacks = new ArrayList<>();
-
-                        techStacks.add("python");
-                        techStacks.add("java");
+                        String siteUrl = value.getSiteUrl();
+                        String imgUrl = value.getImgUrl();
+//                        List<String> techStacks = new ArrayList<>();
+//
+//                        techStacks.add("python");
+//                        techStacks.add("java");
 
 //                        for (String techStack : techStacks) {
 //                            user.addTechStacks(new TechStack(techStack));
@@ -216,21 +264,22 @@ public class ChatService {
                                 .endDate(endDate)
                                 .siteUrl(siteUrl)
                                 .imageUrl(imgUrl)
+                                .education(education)
                                 .build();
 
                         // Add tech stacks to job post
-                        List<JobPostTechStack> jobPostTechStacks = techStacks.stream()
-                                .map(techStackName -> {
-                                    JobPostTechStack techStack = JobPostTechStack.builder()
-                                            .name(techStackName)
-                                            .build();
-                                    jobPost.addJobPostTechStacks(techStack);
-                                    return techStack;
-                                })
-                                .toList();
+//                        List<JobPostTechStack> jobPostTechStacks = techStacks.stream()
+//                                .map(techStackName -> {
+//                                    JobPostTechStack techStack = JobPostTechStack.builder()
+//                                            .name(techStackName)
+//                                            .build();
+//                                    jobPost.addJobPostTechStacks(techStack);
+//                                    return techStack;
+//                                })
+//                                .toList();
 
                         // Persist tech stacks
-                        jobPostTechStackRepository.saveAll(jobPostTechStacks);
+                        //jobPostTechStackRepository.saveAll(jobPostTechStacks);
 
                         // Associate job post with user and answer
                         user.addJobPosts(jobPost);
@@ -306,7 +355,6 @@ public class ChatService {
 
         return chatRes;
     }
-
 
     private PostChatRes createChatResponseDto(String questionStr, String answerStr, List<JobPost> jobPosts, boolean isFirstChat) {
         List<JobPostRes> jobPostResList = JobPostRes.fromEntityList(jobPosts);
