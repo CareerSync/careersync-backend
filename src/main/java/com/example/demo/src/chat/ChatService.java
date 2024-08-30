@@ -508,6 +508,85 @@ public class ChatService {
         // Update chat in Redis (commented out in the original code)
         // redisService.addUserChatToRedis(user.getId());
 
+        // dummy data
+        // List<JobPost> 생성
+        List<JobPost> dummyJobPosts = new ArrayList<>();
+
+// jobPost4
+        JobPost jobPost4 = JobPost.builder()
+                .title("[핀테크 기업] Java 백엔드 개발자(Senior)")
+                .siteUrl("https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48814269&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495")
+                .imageUrl("https://picsum.photos/id/60/200/300")
+                .endDate("2024-08-25")
+                .education("대졸(2,3년제) 이상")
+                .career("경력 8~13년")
+                .companyName("(주)에스유스카우트")
+                .build();
+        dummyJobPosts.add(jobPost4);
+
+// jobPost5
+        JobPost jobPost5 = JobPost.builder()
+                .title("양자기술TF 소프트웨어 파트 백엔드 개발자 채용")
+                .siteUrl("https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48815679&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495")
+                .imageUrl("https://picsum.photos/id/119/200/300")
+                .endDate("2024-09-13")
+                .education("대졸(4년제) 이상")
+                .career("경력 5~10년")
+                .companyName("에스디티(주)")
+                .build();
+        dummyJobPosts.add(jobPost5);
+
+// jobPost6
+        JobPost jobPost6 = JobPost.builder()
+                .title("[헬스케어서비스기업 ] JAVA 시스템 개발 대리 과장급 채용")
+                .siteUrl("https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48898284&location=ts&searchType=search&paid_fl=n&search_uuid=685189c8-e868-4a5f-8923-e773fd5b0c4b")
+                .imageUrl("https://picsum.photos/id/180/200/300")
+                .endDate("채용시")
+                .education("학력무관")
+                .career("경력 5~8년")
+                .companyName("(주)베스트에치알 (Best HR)")
+                .build();
+        dummyJobPosts.add(jobPost6);
+
+// jobPost7
+        JobPost jobPost7 = JobPost.builder()
+                .title("백엔드 개발자 채용[나주지사]")
+                .siteUrl("https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48812950&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495")
+                .imageUrl("https://picsum.photos/id/201/200/300")
+                .endDate("2024-09-17")
+                .education("대졸(4년제) 이상")
+                .career("경력 2~10년")
+                .companyName("비엠텍시스템(주)")
+                .build();
+        dummyJobPosts.add(jobPost7);
+
+// jobPost8
+        JobPost jobPost8 = JobPost.builder()
+                .title("[JAVA SI 서울] HR시스템 개발, PL급, 분석,설계, 고급이상 (1)")
+                .siteUrl("https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48906743&location=ts&searchType=search&paid_fl=n&search_uuid=928f362e-8c93-4f39-a70c-8e31f50db019")
+                .imageUrl("https://picsum.photos/id/357/200/300")
+                .endDate("2024-09-04")
+                .education("대졸(2,3년제) 이상")
+                .career("경력 9년 ↑")
+                .companyName("(주)제이투이")
+                .build();
+        dummyJobPosts.add(jobPost8);
+
+// jobPost9
+        JobPost jobPost9 = JobPost.builder()
+                .title("[자바프로그램개발자] 웹개발 경력직 채용")
+                .siteUrl("https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48898024&location=ts&searchType=search&paid_fl=n&search_uuid=685189c8-e868-4a5f-8923-e773fd5b0c4b")
+                .imageUrl("https://picsum.photos/id/367/200/300")
+                .endDate("2024-09-26")
+                .education("대졸(2,3년제) 이상")
+                .career("경력 3년 ↑")
+                .companyName("(주)라운드원")
+                .build();
+        dummyJobPosts.add(jobPost9);
+
+// 더미 데이터 jobRepository에 삽입
+        jobPostRepository.saveAll(dummyJobPosts);
+
         // Update chat date to reflect activity
         chat.updateChatDate(LocalDateTime.now());
 
