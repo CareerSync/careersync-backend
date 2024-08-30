@@ -120,8 +120,8 @@ public class LoginController {
 
         addCookieToResponse(session, response);
 
-        redisService.addUserTechStackToRedis(loginUser.getId());
-        redisService.addUserChatToRedis(loginUser.getId());
+        //redisService.addUserTechStackToRedis(loginUser.getId());
+        //redisService.addUserChatToRedis(loginUser.getId());
 
         ApiResponse<PostLoginRes> apiResponse = success(BaseResponseStatus.SUCCESS, new PostLoginRes(loginUser));
         return ResponseEntity.ok(apiResponse);
@@ -324,8 +324,8 @@ public class LoginController {
 
         addCookieToResponse(session, response);
 
-        redisService.addUserTechStackToRedis(getSocialOAuthRes.getId());
-        redisService.addUserChatToRedis(getSocialOAuthRes.getId());
+        //redisService.addUserTechStackToRedis(getSocialOAuthRes.getId());
+        //redisService.addUserChatToRedis(getSocialOAuthRes.getId());
 
         ApiResponse<GetSocialOAuthRes> apiResponse = success(BaseResponseStatus.SUCCESS, getSocialOAuthRes);
         return ResponseEntity.ok(apiResponse);

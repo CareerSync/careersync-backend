@@ -28,7 +28,7 @@ public class TechStack extends BaseEntity {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(nullable = false, columnDefinition = "nvarchar(1000)")
     private String name;
 
     @ManyToOne(fetch = LAZY)

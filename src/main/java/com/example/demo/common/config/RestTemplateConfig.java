@@ -17,6 +17,7 @@ public class RestTemplateConfig {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
+                .rootUri("http://20.196.65.98:8080")
                 .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
                 .additionalMessageConverters(new StringHttpMessageConverter(StandardCharsets.UTF_8))
                 .build();

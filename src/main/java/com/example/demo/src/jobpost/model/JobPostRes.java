@@ -34,15 +34,12 @@ public class JobPostRes {
                 .map(JobPostTechStack::getName)
                 .collect(Collectors.toList());
 
-        ZonedDateTime zonedEndDate = jobPost.getEndDate().atZone(ZoneId.of("Asia/Seoul"));
-        String endDateString = zonedEndDate.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-
         return new JobPostRes(
                 jobPost.getId(),
                 jobPost.getTitle(),
                 jobPost.getCareer(),
                 jobPost.getCompanyName(),
-                endDateString,
+                jobPost.getEndDate(),
                 techStackNames,
                 jobPost.getImageUrl(),
                 jobPost.getSiteUrl()
