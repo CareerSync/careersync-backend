@@ -291,7 +291,7 @@ public class ChatService {
         AiServerJobPost jobPost1 = new AiServerJobPost(
                 "JAVA Spring 개발자(인천 청라)",
                 "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48895077&location=ts&searchType=search&paid_fl=n&search_uuid=b15a5fff-4b3d-4a3b-82e6-0c7f1bd65002",
-                "https://picsum.photos/id/1/200/300",
+                "https://picsum.photos/id/1/150/150",
                 "2024-09-02",
                 "대졸(4년제) 이상",
                 "경력 3~15년",
@@ -302,7 +302,7 @@ public class ChatService {
         AiServerJobPost jobPost2 = new AiServerJobPost(
                 "Java기반 Front/Backend 시스템 개발 및 운영 - 셀럽중개",
                 "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48828617&location=ts&searchType=search&paid_fl=n&search_uuid=6c36fbe5-0f81-4148-8560-c7880ecdc2c5",
-                "https://picsum.photos/id/20/200/300",
+                "https://picsum.photos/id/20/150/150",
                 "2024-09-17",
                 "학력무관",
                 "경력 5~15년",
@@ -313,7 +313,7 @@ public class ChatService {
         AiServerJobPost jobPost3 = new AiServerJobPost(
                 "[삼성케어플러스] Java/Spring Back-end 개발자를 모십니다.",
                 "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48892247&location=ts&searchType=search&paid_fl=n&search_uuid=b15a5fff-4b3d-4a3b-82e6-0c7f1bd65002",
-                "https://picsum.photos/id/48/200/300",
+                "https://picsum.photos/id/48/150/150",
                 "채용시",
                 "학력무관",
                 "경력 3년 ↑",
@@ -321,71 +321,71 @@ public class ChatService {
         );
         jobPosts.add(jobPost3);
 
-        AiServerJobPost jobPost4 = new AiServerJobPost(
-                "[핀테크 기업] Java 백엔드 개발자(Senior)",
-                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48814269&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495",
-                "https://picsum.photos/id/60/200/300",
-                "2024-08-25",
-                "대졸(2,3년제) 이상",
-                "경력 8~13년",
-                "(주)에스유스카우트"
-        );
-        jobPosts.add(jobPost4);
-
-        AiServerJobPost jobPost5 = new AiServerJobPost(
-                "양자기술TF 소프트웨어 파트 백엔드 개발자 채용",
-                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48815679&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495",
-                "https://picsum.photos/id/119/200/300",
-                "2024-09-13",
-                "대졸(4년제) 이상",
-                "경력 5~10년",
-                "에스디티(주)"
-        );
-        jobPosts.add(jobPost5);
-
-        AiServerJobPost jobPost6 = new AiServerJobPost(
-                "[헬스케어서비스기업 ] JAVA 시스템 개발 대리 과장급 채용",
-                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48898284&location=ts&searchType=search&paid_fl=n&search_uuid=685189c8-e868-4a5f-8923-e773fd5b0c4b",
-                "https://picsum.photos/id/180/200/300",
-                "채용시",
-                "학력무관",
-                "경력 5~8년",
-                "(주)베스트에치알 (Best HR)"
-        );
-        jobPosts.add(jobPost6);
-
-        AiServerJobPost jobPost7 = new AiServerJobPost(
-                "백엔드 개발자 채용[나주지사]",
-                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48812950&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495",
-                "https://picsum.photos/id/201/200/300",
-                "2024-09-17",
-                "대졸(4년제) 이상",
-                "경력 2~10년",
-                "비엠텍시스템(주)"
-        );
-        jobPosts.add(jobPost7);
-
-        AiServerJobPost jobPost8 = new AiServerJobPost(
-                "[JAVA SI 서울] HR시스템 개발, PL급, 분석,설계, 고급이상 (1)",
-                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48906743&location=ts&searchType=search&paid_fl=n&search_uuid=928f362e-8c93-4f39-a70c-8e31f50db019",
-                "https://picsum.photos/id/357/200/300",
-                "2024-09-04",
-                "대졸(2,3년제) 이상",
-                "경력 9년 ↑",
-                "(주)제이투이"
-        );
-        jobPosts.add(jobPost8);
-
-        AiServerJobPost jobPost9 = new AiServerJobPost(
-                "[자바프로그램개발자] 웹개발 경력직 채용",
-                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48898024&location=ts&searchType=search&paid_fl=n&search_uuid=685189c8-e868-4a5f-8923-e773fd5b0c4b",
-                "https://picsum.photos/id/367/200/300",
-                "2024-09-26",
-                "대졸(2,3년제) 이상",
-                "경력 3년 ↑",
-                "(주)라운드원"
-        );
-        jobPosts.add(jobPost9);
+//        AiServerJobPost jobPost4 = new AiServerJobPost(
+//                "[핀테크 기업] Java 백엔드 개발자(Senior)",
+//                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48814269&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495",
+//                "https://picsum.photos/id/60/200/300",
+//                "2024-08-25",
+//                "대졸(2,3년제) 이상",
+//                "경력 8~13년",
+//                "(주)에스유스카우트"
+//        );
+//        jobPosts.add(jobPost4);
+//
+//        AiServerJobPost jobPost5 = new AiServerJobPost(
+//                "양자기술TF 소프트웨어 파트 백엔드 개발자 채용",
+//                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48815679&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495",
+//                "https://picsum.photos/id/119/200/300",
+//                "2024-09-13",
+//                "대졸(4년제) 이상",
+//                "경력 5~10년",
+//                "에스디티(주)"
+//        );
+//        jobPosts.add(jobPost5);
+//
+//        AiServerJobPost jobPost6 = new AiServerJobPost(
+//                "[헬스케어서비스기업 ] JAVA 시스템 개발 대리 과장급 채용",
+//                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48898284&location=ts&searchType=search&paid_fl=n&search_uuid=685189c8-e868-4a5f-8923-e773fd5b0c4b",
+//                "https://picsum.photos/id/180/200/300",
+//                "채용시",
+//                "학력무관",
+//                "경력 5~8년",
+//                "(주)베스트에치알 (Best HR)"
+//        );
+//        jobPosts.add(jobPost6);
+//
+//        AiServerJobPost jobPost7 = new AiServerJobPost(
+//                "백엔드 개발자 채용[나주지사]",
+//                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48812950&location=ts&searchType=search&paid_fl=n&search_uuid=82624d93-e021-41e0-a5e3-6002fa997495",
+//                "https://picsum.photos/id/201/200/300",
+//                "2024-09-17",
+//                "대졸(4년제) 이상",
+//                "경력 2~10년",
+//                "비엠텍시스템(주)"
+//        );
+//        jobPosts.add(jobPost7);
+//
+//        AiServerJobPost jobPost8 = new AiServerJobPost(
+//                "[JAVA SI 서울] HR시스템 개발, PL급, 분석,설계, 고급이상 (1)",
+//                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48906743&location=ts&searchType=search&paid_fl=n&search_uuid=928f362e-8c93-4f39-a70c-8e31f50db019",
+//                "https://picsum.photos/id/357/200/300",
+//                "2024-09-04",
+//                "대졸(2,3년제) 이상",
+//                "경력 9년 ↑",
+//                "(주)제이투이"
+//        );
+//        jobPosts.add(jobPost8);
+//
+//        AiServerJobPost jobPost9 = new AiServerJobPost(
+//                "[자바프로그램개발자] 웹개발 경력직 채용",
+//                "https://www.saramin.co.kr/zf_user/jobs/relay/view?view_type=search&rec_idx=48898024&location=ts&searchType=search&paid_fl=n&search_uuid=685189c8-e868-4a5f-8923-e773fd5b0c4b",
+//                "https://picsum.photos/id/367/200/300",
+//                "2024-09-26",
+//                "대졸(2,3년제) 이상",
+//                "경력 3년 ↑",
+//                "(주)라운드원"
+//        );
+//        jobPosts.add(jobPost9);
 
         answerFromAiServer.setJobPosts(jobPosts);
 
