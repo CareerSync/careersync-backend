@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,7 @@ public class RedisService {
         log.info("Tech stacks for user '{}' have been added to Redis: {}", keyString, jsonTechStacks);
     }
 
-    public void addUserTechStackToRedis(UUID key) throws JsonProcessingException {
+    public void addUserTechStackToRedis(UUID key) {
 
         // userId로 이미 존재하는 유저 기술 스택 가져오기
         Optional<List<TechStack>> result = techStackRepository.findAllByUserId(key);
@@ -55,17 +56,20 @@ public class RedisService {
                 .map(TechStack::getName)
                 .collect(Collectors.toList());
 
-        // Convert UUID to string
+        // Convert UUID to string to use as the Redis key
         String keyString = key.toString();
 
-        // Convert the list to a JSON string
-        String jsonTechStacks = new ObjectMapper().writeValueAsString(techStacks);
+        // Use Redis List operations to store the techStacks list
+        ListOperations<String, String> listOps = redisTemplate.opsForList();
 
-        // Store the JSON string in Redis
-        redisTemplate.opsForValue().set(keyString, jsonTechStacks);
+        // Remove any existing list with the same key to prevent duplicates
+        redisTemplate.delete(keyString);
+
+        // Push all tech stack items to the Redis list
+        listOps.rightPushAll(keyString, techStacks);
 
         // Log the operation
-        log.info("Tech stacks for user '{}' have been added to Redis: {}", keyString, jsonTechStacks);
+        log.info("Tech stacks for user '{}' have been added to Redis as a list: {}", keyString, techStacks);
     }
 
     public void addUserChatToRedis(UUID userId) throws JsonProcessingException {
@@ -83,7 +87,7 @@ public class RedisService {
             chatId = latestAnswers.get(0).getChat().getId();
         }
 
-        if (chatId == null) { // 만약 대화기록 없으면 대화 저장하지 않는다
+        if (chatId == null) { // If no chat history exists, do not store anything
             return;
         }
 
@@ -98,17 +102,24 @@ public class RedisService {
             chatPair.put("answer", latestAnswers.get(i).getAnswer_text());       // Adjust according to your method name
             chatData.add(chatPair);
         }
-        // Convert the combined list to a JSON string
-        String jsonChatData = new ObjectMapper().writeValueAsString(chatData);
 
-        // Create the Redis key using userId and chatId
+        // Convert UUIDs to strings to use as Redis keys
         String keyString = userId.toString() + ":" + chatId.toString();
 
-        // Store the JSON string in Redis
-        redisTemplate.opsForValue().set(keyString, jsonChatData);
+        // Use Redis List operations to store each map entry as a JSON string
+        ListOperations<String, String> listOps = redisTemplate.opsForList();
+
+        // Clear any existing data with the same key to prevent duplicates
+        redisTemplate.delete(keyString);
+
+        // Serialize each Map<String, String> to JSON and push into the Redis list
+        for (Map<String, String> entry : chatData) {
+            String jsonEntry = new ObjectMapper().writeValueAsString(entry);
+            listOps.rightPush(keyString, jsonEntry);
+        }
 
         // Log the operation
-        log.info("Chat data for user '{}' and chat '{}' have been added to Redis: {}", userId, chatId, jsonChatData);
+        log.info("Chat data for user '{}' and chat '{}' have been added to Redis as a list: {}", userId, chatId, chatData);
     }
 
 

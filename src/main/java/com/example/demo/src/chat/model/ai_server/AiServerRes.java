@@ -14,4 +14,5 @@ import java.util.List;
 public class AiServerRes {
     private String answer;
     private List<AiServerJobPost> jobPosts;
+    private boolean is_true;
 }
