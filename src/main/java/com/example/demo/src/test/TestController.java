@@ -34,7 +34,7 @@ public class TestController {
     @GetMapping("/log")
     public String logTest() {
         log.info("테스트");
-        return "API test";
+        return "API test for Azure Container Apps";
     }
 
     /**
