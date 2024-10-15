@@ -54,7 +54,7 @@ jobs:
           # 애플리케이션 소스 경로
           appSourcePath: ${{ github.workspace }}
           # Dockerfile 경로 (환경 변수로 지정 필요 시 업데이트)
-          _dockerfilePathKey_: _dockerfilePath_
+          dockerfilePath: ./Dockerfile  # Update to your Dockerfile's path
           # Docker 레지스트리 URL
           registryUrl: docker.io
           # Docker 레지스트리 사용자 이름
