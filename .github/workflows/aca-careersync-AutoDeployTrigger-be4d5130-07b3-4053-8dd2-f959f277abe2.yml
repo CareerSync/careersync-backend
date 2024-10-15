@@ -1,29 +1,44 @@
 name: Trigger auto deployment for aca-careersync
 
-# When this action will be executed
+# 워크플로우 실행 조건
 on:
-  # Automatically trigger it when detected changes in repo
+  # `develop` 브랜치에 변경 사항이 생기면 자동으로 트리거
   push:
     branches: 
       [ develop ]
     paths:
     - '**'
     - '.github/workflows/aca-careersync-AutoDeployTrigger-be4d5130-07b3-4053-8dd2-f959f277abe2.yml'
-
-  # Allow manual trigger 
-  workflow_dispatch:      
+  # 수동으로 워크플로우 트리거할 수 있도록 설정
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+      id-token: write # OIDC JWT 토큰 요청에 필요
+      contents: read # 개인 레포지토리에 접근하기 위해 GitHub 토큰 사용 시 필요
 
     steps:
+      # 1. 브랜치 체크아웃
       - name: Checkout to the branch
         uses: actions/checkout@v2
 
+      # 2. JDK 17 설정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
+      # 3. gradlew 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      # 4. 프로젝트 빌드 (.jar 파일 생성)
+      - name: Build the project
+        run: ./gradlew clean build -x test
+
+      # 5. Azure 로그인
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -31,18 +46,29 @@ jobs:
           tenant-id: ${{ secrets.ACACAREERSYNC_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.ACACAREERSYNC_AZURE_SUBSCRIPTION_ID }}
 
+      # 6. 컨테이너 이미지 빌드 및 레지스트리에 푸시
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
         with:
+          # 애플리케이션 소스 경로
           appSourcePath: ${{ github.workspace }}
+          # Dockerfile 경로 (환경 변수로 지정 필요 시 업데이트)
           _dockerfilePathKey_: _dockerfilePath_
+          # Docker 레지스트리 URL
           registryUrl: docker.io
+          # Docker 레지스트리 사용자 이름
           registryUsername: ${{ secrets.ACACAREERSYNC_REGISTRY_USERNAME }}
+          # Docker 레지스트리 비밀번호
           registryPassword: ${{ secrets.ACACAREERSYNC_REGISTRY_PASSWORD }}
+          # Azure 컨테이너 앱 이름
           containerAppName: aca-careersync
+          # Azure 리소스 그룹 이름
           resourceGroup: careersync
+          # 빌드할 이미지 이름
           imageToBuild: gdsc-solution-challenge-team4-pointer/aca-careersync:${{ github.sha }}
+          # 빌드 인수 (필요 시 지정)
           _buildArgumentsKey_: |
             _buildArgumentsValues_
+
 
 
