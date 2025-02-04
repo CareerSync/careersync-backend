@@ -1,54 +1,41 @@
-# CareerSync Backend
+# CareerSync - RAG 기술을 활용한 채용정보제공 챗봇 서비스
 
-## ✨Common
-### REST API
-REST API를 처리하는 SpringBoot 프로젝트   
-동작하는 기본 구성 원리를 반드시 숙지하자.
-
-### Folder Structure
-- `src`: 메인 로직
-  `src`에는 도메인 별로 패키지를 구성하도록 했다. **도메인**이란 회원(User), 게시글(Feed), 댓글(Comment), 주문(Order) 등 소프트웨어에 대한 요구사항 혹은 문제 영역이라고 생각하면 된다. 각자 설계할 APP을 분석하고 필요한 도메인을 도출하여 `src` 폴더를 구성하자.
-- `common`: 메인 로직은 아니지만 `src` 에서 필요한 부차적인 파일들을 모아놓은 폴더
-  - `config`: 설정 파일 관련 폴더
-  - `entity`: 공통 Entity 관리 폴더
-  - `exceptions`: 예외처리 관리 폴더
-  - `oauth`: Oauth 인증에 필요한 파일 관리 폴더
-  - `response`: baseResponse를 관리하는 폴더
-  - `secret`: 보안과 관련된 파일 관리 폴더(차후 환경 변수로 분리 추천)
-  - `Constant`: 상수와 관련된 내용  
+![image](https://github.com/user-attachments/assets/2272a29a-9bbb-4e8f-8800-b00c8c773ded)
 
 
-- 도메인 폴더 구조
-> Controller - Service - Repository
 
-- `Controller`: Request를 처리하고 Response 해주는 곳. (Service에 넘겨주고 다시 받아온 결과값을 형식화), 형식적 Validation
-- `Service`: 비즈니스 로직 처리, 논리적 Validation
-- `Repository`: Spring Data JPA Interface를 상속받아 DB 처리를 가능하게 해준다.
+## ✨Introduction
 
 
-### Request & Response Process
-다음과 같이 Request에 대해 DB 단까지 거친 뒤, 다시 Controller로 돌아와 Response 해주는 구조를 갖는다. 구조를 먼저 이해하고 템플릿을 사용하자.
+https://github.com/user-attachments/assets/fe06ff3b-98a2-41d8-a053-b602f6415344
 
-#### SpringBoot (빌드 도구 = Gradle)
-> Request(시작) / Response(끝) ⇄ Controller ⇄ Service  ⇄ Repository (DB)
 
-### Validation
-서버 API 구성의 기본은 Validation을 잘 처리하는 것이다. 외부에서 어떤 값을 날리든 Validation을 잘 처리하여 서버가 터지는 일이 없도록 유의하자.
-값, 형식, 길이 등의 형식적 Validation은 Controller에서,
-DB에서 검증해야 하는 의미적 Validation은 Service에서 처리하면 된다.
-
-### JPA
-자바 진영의 표준 ORM 기술이다.  
-어노테이션을 통해 Entity 및 연관관계를 매핑하고, DAO에서 EntityManager를 DI(의존성주입) 받아서 사용한다.
-
-### Spring Data JPA
-Spring에서 JPA를 보다 편리하게 사용할 수 있게 제공해주는 라이브러리이다.  
-Spring Data JPA는 JpaRepository를 상속받는 인터페이스만 구현해주면 곧바로 활용할 수 있다.  
-JpaRepository 인터페이스는 기본적인 CRUD 및 필요한 메서드를 제공해준다.  
-자세한 코드는 `test 도메인`을 참고하자.
 
 ## ✨ERD
 ![gridgetest-server-erd](https://github.com/shinsj4653/2024-Server-Gridge-Test/assets/49470452/7ab71972-7a3c-47f6-a92b-64eeb48c684c)  
+
+
+## 💻Service Architecture
+
+![image](https://github.com/user-attachments/assets/a23466bd-5e37-4ba1-8203-79990ce850db)
+
+## ✨Flowchart
+
+![image](https://github.com/user-attachments/assets/ba5ceaa9-726a-4f49-8a76-62c7bb6ee118)
+
+## 🛠️Tech Stack
+
+Framework - <img src="https://camo.githubusercontent.com/521688401a8b06ccebdbd83ab34f6e5014d171bf3ed456cb7e17767c15305ae9/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f537072696e6720426f6f742d3644423333463f7374796c653d666f722d7468652d736f6369616c266c6f676f3d537072696e6720426f6f74266c6f676f436f6c6f723d7768697465"/>  <img src="https://camo.githubusercontent.com/c09043d941dfefe085df9bd68836e0fc40d87541011bce983602c279bb904435/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f477261646c652d3032333033413f7374796c653d666f722d7468652d736f6369616c266c6f676f3d477261646c65266c6f676f436f6c6f723d7768697465" />
+
+Database - `Azure SQL Database`, `CosmosDB`, `Redis for Azure`    
+
+ORM - <img src="https://camo.githubusercontent.com/ec87dc323254d71bfd22eb2f61ac85f317147df89b0e9376bee5bf5fb07c27d7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f537072696e672044617461204a50412d3644423333463f7374796c653d666f722d7468652d736f6369616c266c6f676f3d44617461627269636b73266c6f676f436f6c6f723d7768697465" />  
+
+Deploy - <img src="https://camo.githubusercontent.com/928f6ed384cb7ea730bcfae1b95c96be89f9948f46032eed6a9b5976b0d93cf1/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f47697468756220416374696f6e732d3230383846463f7374796c653d666f722d7468652d736f6369616b266c6f676f3d676974687562616374696f6e73266c6f676f436f6c6f723d7768697465" /> <img src="https://camo.githubusercontent.com/aea28cb501aa5c1f2141edba7d130c5c1100de39b25b1ab21fc12e3c9dbc2f88/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f446f636b65722d3234393645443f7374796c653d666f722d7468652d736f6369616b266c6f676f3d646f636b6572266c6f676f436f6c6f723d7768697465" />   
+
+Logging - <img src="https://camo.githubusercontent.com/0eb1ba481971344198bae714d48c419626b3f02e38760c4989bc1fb6c9ccd884/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4c6f676261636b2d323541313632" />     
+
+API Docs - <img src="https://camo.githubusercontent.com/aa961b7feeb5d94eb02518040ba87db1a546bb9f20af29399ad4de9101f91b04/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f537072696e67446f63205377616767657220332d3835454132443f7374796c653d666f722d7468652d736f6369616b266c6f676f3d73776167676572266c6f676f436f6c6f723d7768697465" />        
 
 
 ## ✨Structure
@@ -174,168 +161,3 @@ build.gradle // gradle 빌드시에 필요한 dependency 설정하는 곳
 .gitignore // git 에 포함되지 않아야 하는 폴더, 파일들을 작성 해놓는 곳
 
 ```
-## ✨Description
-
-
-### Annotation
-스프링 부트는 `어노테이션`을 다양하게 아는 것이 중요하다. SpringBoot의 시작점을 알리는 `@SpringBootApplication` 어노테이션 뿐만 아니라 `스프링부트 어노테이션` 등의 키워드로 구글링 해서 **스프링 부트에서 자주 사용되는 다양한 어노테이션을 이해하고 외워두자.**
-
-### Lombok
-Java 라이브러리로 반복되는 getter, setter, toString 등의 메서드 작성 코드를 줄여주는 라이브러리이다. 기본적으로 각 도메인의 model 폴더 내에 생성하는 클래스에 lombok을 사용하여 코드를 효율적으로 짤 수 있도록 구성했다. 자세한 내용은 구글링과 model > PostUser, User를 통해 이해하자.
-
-### common - config
-프로젝트 동작에 필요한 라이브러리 설정 값 등을 정의하는 클래스들을 모아 놓은 패키지
-
-### @ExceptionHandler
-스프링 내부에서 발생한 예외를 잡아서 처리해주는 어노테이션이다.  
-기본적으로 Controller에 정의하여 처리할 수 있으며, @ControllerAdvice를 통해 통합적으로 관리할 수 있다.
-
-### common - oauth
-소셜 로그인과 관련된 처리를 하는 코드를 작성하는 패키지.  
-예제 코드는 Google OAuth를 기반으로 작성되어 있다.
-
-
-### src - main - resources
-템플릿은 크게 log 폴더와 src 폴더로 나뉜다. log는 통신 시에 발생하는 오류들을 기록하는 곳이다. 실제 메인 코드는 src에 담겨있다. src > main > resources를 먼저 살펴보자.
-
-`application.yml`
-
-에서 **포트 번호를 정의**하고 **DataBase 연동**을 위한 값을 설정한다.  
-또한, 공통 설정 값들은 common, 로컬 서버에서 필요한 값들은 dev, 그리고 개발 서버에서 필요한 값들은 prod로 profile값을 설정한다.
-
-
-### src - main - java
-
-`com.example.demo` 패키지에는 크게 `common` 폴더, `src` 폴더와 이 프로젝트의 시작점인 `DemoApplication.java`가 있다.
-
-`DemoApplication.java` 은 스프링 부트 프로젝트의 시작을 알리는 `@SpringBootApplication` 어노테이션을 사용하고 있다. (구글링 통해 `@SpringBootApplication`의 다른 기능도 살펴보자.)
-
-`src`폴더에는 실제 **API가 동작하는 프로세스**를 담았고 `common` 폴더에는 `src`에서 필요한 Base 클래스, 상수 클래스를, `util` 폴더에는 정규표현식 등의 클래스를 모아놨다.
-
-`src`를 자세하게 살펴보자. `src`는 각 **도메인**별로 패키지를 구분해 놓는다. 현재는 `user` 도메인과 `test` 도메인이 있다. **도메인**이란 게시글, 댓글, 회원, 정산, 결제 등 소프트웨어에 대한 요구사항 혹은 문제 영역이라고 생각하면 된다.
-
-이 도메인들은 API 통신에서 어떤 프로세스로 처리되는가? API 통신의 기본은 Request → Response이다. 스프링 부트에서 **어떻게 Request를 받아서, 어떻게 처리하고, 어떻게 Response 하는지**를 중점적으로 살펴보자. 전반적인 API 통신 프로세스는 다음과 같다.
-
-> **Request** → `XXXController.java` → `Service`(=Business Logic) → `Repository` (DB) → **Response**
-
-#### 1. Controller / `UserController.java`, `TestController.java`  / @RestController
-
-> 1) API 통신의 **Routing** 처리
-> 2) Request를 다른 계층에 넘기고 처리된 결과 값을 Response 해주는 로직
->  + Request의 **형식적 Validation** 처리 (DB를 거치지 않고도 검사할 수 있는)
-
-**1) `@AllArgsConstructor`**
-
-UserController의 생성자에 `@AllArgsConstructor` 어노테이션이 붙어있다. 이는 **의존성 주입**을 위한 것으로, `UserController`  뿐만 아니라 다음에 살펴볼 `UserService`, `UserDao`의 생성자에도 각각 붙어 있는 것을 확인할 수 있다. 간단히 요약하면 객체 생성을 자동으로 해주는 역할이다. 자세한 프로세스는 구글링을 통해 살펴보자.
-
-나머지 어노테이션들 역시 구글링을 통해 이해하자.
-
-**2) `BaseResponse`**
-
-Response할 때, 공통 부분은 묶고 다른 부분은 제네릭을 통해 구현함으로써 반복되는 코드를 줄여준다. (`BaseResponse.java` 코드 살펴 볼 것. 여기에 쓰이는`BaseResponseStatus` 는 `enum`을 통해 Status 값을 관리하고 있다.)  
-성공했을 때와 실패했을 때의 Response 값을 각각 메소드로 정의하여 내려주고 있다.
-
-
-**3) `BaseException`**
-
-`BaseException`을 통해 `Service`에서 `Controller`에 Exception을 던진다. 마찬가지로 Status 값은 `BaseResponseStatus` 의 `enum`을 통해 관리한다.
-
-#### 2. Service  / `UserService.java`, `TestService.java`  / @Service
-
-> 1) **비즈니스 로직**을 다루는 곳 (DB 접근[CRUD], DB에서 받아온 것 형식화)
->  + Request의 **논리적** **Validation** 처리 (DB를 거쳐야 검사할 수 있는)
-
-`Service`는 CRUD API의 비즈니스 로직 처리를 다루는 곳이다.
-
-
-#### 3. Repository / `UserRepository.java`, `MemoRepository.java`, `CommentRepository.java`
-Spring Data JPA를 사용하여 DB에 작업을 내리는 메소드로 구성되어 있다.  
-Spring Data JPA에 포함된 기본 메소드를 사용할 수 있으며, 쿼리메소드 기능을 통해 메소드를 추가할 수 있다.
-
-### Swagger
-```
-- 로컬 서버 Swagger 주소 : http://localhost:9000/swagger-ui/index.html
-- 개발 서버 Swagger 주소 : https://gridetest-server.shop/swagger-ui/index.html
-```
-API 테스트 시, 각 서버 환경에 맞는 도메인을 선택해야 CORS 에러가 발생하지 않는다.  
-또한, 회원 생성 후 로그인을 했을 때 반환받는 jwt 토큰을 `Authorize` 탭을 누른 뒤 입력해줘야 나머지 API 들을 정상 실행 가능하다.
-
-#### 1. https 환경에서 POST request 403 error
-로컬 환경에서는 Swagger를 이용한 CRUD 요청이 모두 정상적으로 이뤄졌지만, 개발 서버 환경은 https여서 POST 요청에 대해 403 에러가 발생하였다.  
-이를 해결하기 위해, in-memory user를 추가해줬고 해당 유저 계정으로 로그인 시, 어느 authentication도 거치지 않도록 수정해줌으로써 403 에러를 방지해줬다.  
-```
-- Username: user
-- Password: userPass
-```
-```java
-// SecurityConfig.java
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
-      .permitAll());
-    return http.build();
-}
-```
-다음 계정으로 Swagger 접속 시, 정상적으로 POST 요청이 이뤄진다.
-
-#### 2. Spring Security CSRF Protection
-기본적으로 Spring Security는 CSRF 보호를 시행한다. 즉, 요청 헤더에 CSRF 토큰이 존재하지 않는다면 403 에러를 반환하는 문제가 발생한다.  
-이는 CSRF 보호를 없애주면 해결할 수 있다.  
-```java
-// SecurityConfig.java
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.authorizeRequests(authorizeRequests -> authorizeRequests.anyRequest()
-      .permitAll())
-      .csrf(AbstractHttpConfigurer::disable);
-    return http.build();
-}
-```
-
-### Postman
-Swagger와 마찬가지로 API 실행 시 `Authorizaiton - Basic Auth` 탭으로 들어간다음, 다음 설정을 입력해줘야한다. 
-```
-- Username: user
-- Password: userPass
-```
-Basic Auth 설정 완료 후, 403 에러 없이 정상적으로 API를 작동시킬 수 있다.
-
-## ✨Usage
-### API 만들기 예제
-로컬에서 DemoApplication을 실행시킨다. (로컬 서버 구동 시)
-
-[DB 연결 없이 TEST]
-1. src > test > TestController.java에 구성되어 있는 API를 테스트해보자.
-2. 포스트맨을 통해 GET localhost:9000/test/log로 테스트가 잘 되는지 확인한다.
-
-[DB 연결 이후 TEST]
-1. resources > application.yml에서 본인의 DB 정보를 입력한다.
-2. DB에 TEST를 위한 간단한 테이블을 하나 만든다.
-3. UserController.java, UserService.java, UserDao.java를 구성하여 해당 테이블의 값들을 불러오는 로직을 만든다.
-4. 포스트맨을 통해 본인이 만든 API 테스트가 잘 되는지 확인한다.
-
-### nohup
-SpringBoot 프로젝트를 모두 개발하면 gradle 명령어로 프로젝트를 실행파일로 빌드 할 수 있다.  
-빌드한 파일을 실행할 서버로 옮겨서 프로세스로 실행함으로써 서버를 구동시킬 수 있다.  
-이 때, 서버환경에서 SpringBoot를 백그라운드 프로세스로 실행할 때 nohup 명령어를 사용한다.
-
-### Docker Build
-DockerFile를 이용하여 프로젝트를 빌드 할 수 있다.  
-현재 프로젝트는 dev와 prod 변수를 가지고 로컬 서버, 그리고 개발 서버 환경을 분리하고 있다.  
-EC2 서버에 올려둔 프로젝트는 application.yml 파일 내 설정 중, prod 환경의 설정을 따라야 하므로 다음과 같이 DockerFile을 구성해줬다. 
-```code
-FROM openjdk:11-jdk-slim-buster
-COPY build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
-EXPOSE 9000
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "/app.jar"]
-```
-`-Dspring.profiles.active`값을 사용하여 도커로 빌드된 프로젝트가 어느 개발 환경을 따라갈 것 인지 세팅해줄 수 있다.
-
-### Error
-서버 Error를 마주했다면, 원인을 파악할 수 있는 다양한 방법들을 통해 문제 원인을 찾자.
-- 컴파일 에러 확인
-- log 폴더 확인
-- 그 외 방법들
-
-## ✨License
-- 본 템플릿의 소유권은 소프트스퀘어드에 있습니다. 본 자료에 대한 상업적 이용 및 무단 복제, 배포 및 변경을 원칙적으로 금지하며 이를 위반할 때에는 형사처벌을 받을 수 있습니다.
